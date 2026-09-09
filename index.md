@@ -7,6 +7,9 @@ hero:
   tagline: 从 Agent Loop 到平台化 Agent Harness，通过一手工程文章持续推导统一执行、上下文、工具、评估与安全治理架构。
   actions:
     - theme: brand
+      text: 浏览架构图谱
+      link: /architecture/
+    - theme: alt
       text: 阅读当前架构
       link: /architecture/agent-platform
     - theme: alt
@@ -15,32 +18,45 @@ hero:
 
 features:
   - title: 当前架构
-    details: 以 architecture/agent-platform.md 作为当前稳定架构的事实入口。
+    details: architecture/agent-platform.md 是规范性架构文档，Archify 图谱提供可交互的视觉表达。
   - title: 研究过程
     details: 每篇工程文章按小节保存原文观点、架构分析与平台影响。
   - title: 持续演进
-    details: 每完成一篇研究，再把稳定结论吸收到总体架构，保留完整演进历史。
+    details: 每完成一篇研究，再把稳定结论吸收到总体架构和图谱，保留完整演进历史。
 ---
 
-## Agent Platform 总体架构 · Archify MVP
+## Agent Platform 总体架构
 
-这一版改用 Archify：`Typed JSON IR` 是可编辑、可 Diff 的图源，交互 HTML 由 Archify 校验后确定性生成。
+从业务目标一直到真实世界，平台把动态能力组装、执行策略、稳定运行时与工作环境分层，并由上下文、评估、可观测与安全治理横向贯穿。
 
-<iframe src="./diagrams/core/agent-platform-overview.architecture.html" title="Agent Platform 总体架构图" style="width:100%;height:760px;border:1px solid var(--vp-c-divider);border-radius:12px;background:var(--vp-c-bg);" loading="lazy"></iframe>
+<iframe class="architecture-frame architecture-frame--overview" src="./diagrams/core/agent-platform-overview.architecture.html?embed=1" title="Agent Platform 总体架构图" loading="lazy"></iframe>
 
-[打开独立交互图](/diagrams/core/agent-platform-overview.architecture.html) · [查看 Archify 图源](https://github.com/felixjichao/agent-platform/blob/feat/visual-architecture-mvp/diagrams/core/agent-platform-overview.architecture.json)
+<div class="architecture-links">
+  <a href="./architecture/">浏览完整架构图谱 →</a>
+  <a href="./diagrams/core/agent-platform-overview.architecture.html">打开独立交互图 ↗</a>
+</div>
 
-## Agent Software Stack
+## 三个关键执行层
 
-七层软件栈提供整个项目的统一坐标系：越往上越接近业务语义，越往下越接近稳定执行事实和真实资源。
+Agent Platform 最关键的工程边界集中在 L4～L2：谁决定下一步、谁记录事实，以及 Agent 真正在哪里执行动作。
 
-![Agent Software Stack 七层软件栈](/diagrams/core/agent-software-stack.svg)
-
-## 一个关键边界：Runtime vs Harness
-
-Harness 负责“当前准备怎么完成”，Runtime 负责“实际上发生了什么”。前者应该可替换、可演进，后者承担稳定、持久、可恢复的执行事实。
-
-![Runtime vs Harness](/diagrams/core/runtime-vs-harness.svg)
+<div class="diagram-grid">
+  <a class="diagram-card" href="./architecture/l4-strategy-harness">
+    <span class="diagram-card__eyebrow">L4 · Execution Control</span>
+    <strong>执行策略 / Harness</strong>
+    <p>Direct、Workflow、Agent Loop、PTC、Multi-Agent 如何动态选择；Harness 管策略。</p>
+  </a>
+  <a class="diagram-card" href="./architecture/l3-runtime">
+    <span class="diagram-card__eyebrow">L3 · Execution Facts</span>
+    <strong>统一 Runtime</strong>
+    <p>Work、Session、Run、Event、State 如何组成持久、可恢复的执行事实。</p>
+  </a>
+  <a class="diagram-card" href="./architecture/l2-work-environment">
+    <span class="diagram-card__eyebrow">L2 · Data + Action Plane</span>
+    <strong>Agent Work Environment</strong>
+    <p>Workspace、执行、验证、能力代理和隔离如何组成 Agent 可作用的真实工作环境。</p>
+  </a>
+</div>
 
 ## 研究路线
 
@@ -61,4 +77,4 @@ Harness 负责“当前准备怎么完成”，Runtime 负责“实际上发生�
 
 ## 阅读方式
 
-如果希望直接了解当前结论，从[智能体平台总体架构](/architecture/agent-platform)开始；如果希望理解架构为什么演进成现在的样子，从第一篇研究文章顺序阅读。
+希望快速建立整体认知，从[架构图谱](/architecture/)开始；希望直接了解完整结论，从[智能体平台总体架构](/architecture/agent-platform)开始；希望理解架构为什么演进成现在的样子，从第一篇研究文章顺序阅读。
