@@ -7,6 +7,7 @@ on:
       - feat/visual-architecture-mvp
     paths:
       - 'diagrams/**/*.architecture.json'
+      - scripts/render-archify.sh
       - .github/workflows/render-archify-mvp.yml
 
 permissions:
@@ -18,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Agent Platform
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -26,34 +27,7 @@ jobs:
         run: git clone --depth 1 https://github.com/tt-a1i/archify.git /tmp/archify
 
       - name: Validate and render Archify diagrams
-        shell: bash
-        run: |
-          set -uo pipefail
-          mapfile -t sources < <(find diagrams -type f -name '*.architecture.json' | sort)
-          if [ "${#sources[@]}" -eq 0 ]; then
-            echo "No Archify architecture sources found."
-            exit 0
-          fi
-
-          status=0
-          for source in "${sources[@]}"; do
-            relative="${source#diagrams/}"
-            output="public/diagrams/${relative%.json}.html"
-            mkdir -p "$(dirname "$output")"
-
-            echo "::group::Archify $source"
-            if ! node /tmp/archify/archify/bin/archify.mjs validate architecture "$source" --quality showcase --repo-root . --json; then
-              status=1
-              echo "::endgroup::"
-              continue
-            fi
-            if ! node /tmp/archify/archify/bin/archify.mjs deliver architecture "$source" "$output" --quality showcase --repo-root . --json; then
-              status=1
-            fi
-            echo "::endgroup::"
-          done
-
-          exit "$status"
+        run: bash scripts/render-archify.sh
 
       - name: Commit rendered artifacts
         shell: bash
