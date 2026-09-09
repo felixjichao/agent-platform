@@ -2,7 +2,7 @@
 
 本文档记录 Agent Platform 当前已经形成的规范性架构结论，并随着研究持续演进。
 
-> 当前版本已吸收前六篇研究，新增了多智能体适用条件、Parent / Child Session、动态团队形成、分层并发与委托恢复等结论。
+> 当前版本已吸收前七篇研究。C 编译器 Agent Team 的实践进一步把长期载体从 Session 上移到 Work，并把 Execution Environment 扩展成 Agent Work Environment。
 
 ## 1. 架构主张
 
@@ -17,20 +17,18 @@ Agent Platform 不按“对话 Agent、科研 Agent、知识库 Agent、工作�
     ↓
 统一运行时
     ↓
-Execution Environment
+Agent Work Environment
     ↓
-真实世界
+基础设施 / 真实世界
 ```
 
 其中：
 
-- 业务 / 产品决定要完成什么；
-- Harness 决定当前怎么完成；
-- Evaluation Contract 决定怎样证明完成；
-- Runtime 保存真实执行事实并支持恢复；
-- Execution Environment 负责真正观察和作用于外部世界。
-
-Multi-Agent 是执行策略之一，不是独立的平台内核。
+- 业务层决定要完成什么；
+- Harness 决定当前如何执行；
+- Evaluation Contract 决定如何证明完成；
+- Runtime 记录真正发生的执行事实；
+- Agent Work Environment 决定 Agent 能看到什么、做什么、如何获得反馈和验证。
 
 ## 2. 核心设计原则
 
@@ -41,141 +39,198 @@ Multi-Agent 是执行策略之一，不是独立的平台内核。
 ### 2.2 执行控制权决定 Workflow 与 Agent 的边界
 
 - Workflow：下一步主要由代码或图决定。
-- Agent：下一步主要由模型基于当前 Context 动态决定。
+- Agent：下一步主要由模型根据当前 Context 动态决定。
 
-### 2.3 执行方式是一条连续谱
+### 2.3 Runtime 稳定，Harness 可替换
 
-```text
-Direct
-  ↓
-静态 Workflow
-  ↓
-动态 Workflow / Plan
-  ↓
-Agent Loop
-  ↓
-Dynamic Multi-Agent Topology
-```
+Harness 是对当前模型能力缺口的适应性脚手架。Planner、Evaluator、Context Reset、Delegation Strategy 等应允许版本化、实验、替换和删除。
 
-最后一层不是“必然更高级”，而是在任务可并行且值得承担协调成本时才使用。
-
-### 2.4 Runtime 稳定，Harness 可替换
-
-Harness 是对当前模型能力缺口的适应性脚手架，Planner、Evaluator、Context Reset、Delegation Strategy 等都应允许版本化、实验、替换和删除。
-
-### 2.5 Context 是可重建投影
+### 2.4 Context 是可重建投影
 
 > **Session 追加事实，Context 选择性投影。**
 
 Context 是当前 Working Set，不是持久事实源。
 
-### 2.6 长任务依靠恢复而不是无限 Context
+### 2.5 长期工作连续性不依赖 Agent 连续性
 
-持续工作依赖 Durable State、Handoff、Workspace 和 Recovery。
+> **Durable work continuity should not depend on durable agent continuity.**
 
-### 2.7 Execution State 与 Acceptance State 分离
+Agent 可以退出、忘记、被替换；Work 必须记住。
 
-生成结束不等于验收通过。Execution、Verification 和 Acceptance 必须有独立语义。
+### 2.6 Execution State、Verification State 与 Acceptance State 分离
 
-### 2.8 Delegation 先传递目标，不等于复制整个执行主体
+```text
+Executed
+≠ Verified
+≠ Accepted
+≠ Published / Deployed
+```
 
-Child Agent 应拿到完成局部目标所需的最小 Context、Budget 和能力，而不是无条件复制 Parent 的全部上下文和状态。
+系统不能把“Agent 执行完成”直接等价为“业务接受”。
+
+### 2.7 Multi-Agent 的核心是 Work Scheduling
+
+有效并行度由独立 Work Front 决定，而不是由可启动 Agent 数量决定。
 
 ## 3. 当前软件栈
 
 ```text
 L6 业务 / 产品
-   Goal · Requirement · Application
+   Goal · Project · Requirement
 
 L5 能力契约
    Acceptance Criteria · Quality Criteria · Evaluation Contract
 
 L4 执行策略 / Harness
    Direct · Workflow · Agent Loop · Multi-Agent
-   Planning · Delegation · Context Strategy · Bootstrap · Evaluator
+   Planning · Delegation · Context Strategy · Evaluator
 
 L3 统一运行时
-   Session · State · Action · Result · Resource · Recovery · Delegation
+   Work · Session · Run · State · Action · Result
+   Resource · Delegation · Recovery
 
-L2 执行环境
-   Workspace · Sandbox · API · MCP · DB · Browser · Filesystem
+L2 Agent Work Environment
+   Workspace · Shared Resources · Work Discovery
+   Ownership · Observation · Verification · Sandbox
 
 L1 基础设施 / 真实世界
-   Compute · SaaS · Data · Devices
+   API · MCP · DB · Browser · Files · Compute · SaaS · Devices
 
-横切：Context / Memory · Trace · Budget
+横切：Context / Memory · Trace · Budget · Governance
 ```
 
-## 4. 核心领域边界
+## 4. Work / Session / Run
 
-### 4.1 Session
+### 4.1 Work
 
-Session 是一个 Agent 持续执行关系中的持久历史容器，回答“发生过什么”。它不等于聊天记录或 Context Window。
-
-### 4.2 Parent / Child Session
-
-只有形成独立执行生命周期的 Sub-agent 才需要 Child Session：
+Work 是长期工作的真实载体：
 
 ```text
-Parent Session
-   │
-   │ Delegation
-   ▼
-Child Session
-   ├── Local Goal
-   ├── Local Context
-   ├── Local Actions
-   ├── Local Artifacts
-   └── Result / Failure
+Work / Project
+├── Goal
+├── Acceptance
+├── Shared Resources
+├── Work Frontier
+├── Artifacts
+├── Environment / Workspace
+├── Long-term Progress
+└── Sessions
 ```
 
-Parent 保留全局目标和综合责任，Child 只处理局部工作。
+它可以跨 Agent、跨 Session、跨模型版本持续存在。
 
-### 4.3 Agent-as-Tool
+### 4.2 Session
 
-如果只是短生命周期、聚焦调用且不需要独立恢复，则作为 Parent Session 中的一次 Action，而不是创建 Child Session。
+Session 是一个 Agent 与某个 Work 之间相对连续的认知 / 执行关系。
 
-### 4.4 State
+同一个 Work 可以：
 
-State 是根据持久事实形成的当前执行视图，用于快速回答“现在是什么状态”。
+- 顺序经历多个 Session；
+- 同时存在多个并行 Session；
+- 在 Agent 更换后继续存在。
 
-### 4.5 Context
+因此长期 Goal 不再天然等于一个 Session。
 
-Context 由多个来源动态投影：
+### 4.3 Run
+
+Run 是：
+
+> **Runtime 被触发后，在一个 Session 内发生的一次连续执行片段。**
+
+典型新 Run：
+
+- 用户新消息；
+- Human Approval / Input；
+- Timer / Webhook；
+- Child Completion Event。
+
+基础设施内部恢复通常仍属于同一个 Run，例如 worker restart、tool retry。
+
+### 4.4 Parent / Child Session
+
+自治 Sub-agent 形成独立执行生命周期时创建 Child Session：
 
 ```text
-Session / State / Memory / Notes / Artifacts / Workspace
-                         ↓
-                   Context Builder
-                         ↓
-                      Context
+Work
+├── Parent Session
+│    │ Delegation
+│    └──────────────┐
+├── Child Session A │
+├── Child Session B │
+└── Child Session C │
 ```
 
-### 4.6 Harness
+Parent 拥有全局目标和综合责任，Child 拥有局部目标和局部 Context。
 
-Harness 负责当前任务如何推进，可以包含：
+### 4.5 Agent-as-Tool
 
-- Planner；
-- Delegator / Orchestrator；
-- Evaluator；
-- Context Strategy；
-- Bootstrap；
-- Handoff；
-- Completion / Escalation Strategy。
+短生命周期、聚焦调用且不需要独立恢复的另一个 Agent，可以直接建模为 Parent Session 中的一次 Action。
 
-### 4.7 Execution Environment
+## 5. Agent Work Environment
 
-执行环境描述 Agent 实际可以观察和操作的世界。Sandbox 是其中一种实现。
+Execution Environment 被扩展成更丰富的工作环境：
 
-### 4.8 Recovery
+```text
+Agent Work Environment
+├── Shared Resources
+├── Local Workspace
+├── Work Discovery
+├── Ownership / Lease
+├── Observation
+├── Verification
+├── Feedback / Oracle
+└── Artifacts / Progress
+```
 
-Recovery 负责恢复执行环境、加载持久资源、重建状态并重新校验 Ground Truth。
+### 5.1 Shared State + Local Isolation
 
-## 5. Multi-Agent 执行模型
+Shared-world 多智能体需要：
 
-### 5.1 适用条件
+- 共享事实世界；
+- Agent 局部工作副本；
+- 资源 identity / version；
+- ownership / lease；
+- snapshot / change；
+- conflict handling。
 
-是否使用 Multi-Agent 应根据：
+协作不应只依赖 Agent-to-Agent 文本消息，环境状态本身就是重要协调媒介。
+
+### 5.2 Work Frontier
+
+Work Frontier 是当前**独立、可领取、可验证**的工作项集合：
+
+```text
+Work
+├── Done
+├── Claimed
+├── Blocked
+└── Frontier
+    ├── Work Item A
+    ├── Work Item B
+    └── Work Item C
+```
+
+> **Effective Parallelism ≈ Independent Work Fronts。**
+
+真正的平台问题是 Work Scheduler，而不只是 Agent Scheduler。
+
+### 5.3 Environment Engineering
+
+原始环境结果需要转换为 Agent 可消费的高信号 Observation：
+
+```text
+Raw Environment Result
+      ↓
+Parse / Filter / Diagnose
+      ↓
+Agent-facing Observation
+```
+
+环境质量直接影响 Agent 能否正确理解当前世界并高效继续。
+
+## 6. Multi-Agent 执行模型
+
+### 6.1 适用条件
 
 ```text
 Multi-Agent Value
@@ -186,26 +241,15 @@ Multi-Agent Value
  - 协调成本
 ```
 
-任务复杂本身不是理由。
+任务复杂本身不是使用 Multi-Agent 的理由。
 
-### 5.2 Lead Agent
-
-Lead Agent 承担：
-
-- 全局目标所有权；
-- 全局 Context 管理；
-- 工作拆解和委托；
-- 覆盖度判断；
-- Child 结果协调；
-- 最终综合。
-
-因此可以概括为：
+### 6.2 Lead Agent
 
 > **Lead Agent = Orchestrator + Global Context Owner。**
 
-### 5.3 Dynamic Team Formation
+它负责全局目标、工作拆解、委托、覆盖度、冲突协调和最终综合。
 
-默认不要求用户手工建立固定 Team Graph。Harness 可以根据：
+### 6.3 Dynamic Team Formation
 
 ```text
 Goal
@@ -220,54 +264,115 @@ Execution Strategy
 Single / Workflow / Multi-Agent / Hybrid
 ```
 
-如果选择 Multi-Agent，再动态决定角色、数量、子目标和并行度。
+Agent Team 可以是运行时结果。
 
-> **Agent Team itself can be runtime output.**
+### 6.4 Local Recovery + Global Reconciliation
 
-### 5.4 Local Recovery + Global Reconciliation
+Child 局部失败优先局部恢复；恢复结果再回到 Parent 进行全局重新协调。
 
-```text
-Child Failure
-   ↓
-Local Recovery / Retry
-   ↓
-Result or Failure State
-   ↓
-Parent Reconciliation
-   ↓
-Global Plan Update
-```
+### 6.5 两层并发
 
-Child 局部失败不应强迫整个 Work 重跑，但任何局部状态变化都可能要求 Parent 重新协调全局计划。
+- Delegation Concurrency：多个 Agent 同时工作。
+- Action Concurrency：单个 Agent 内多个 Tool / Action 同时执行。
 
-### 5.5 两层并发
+### 6.6 Async Delegation
 
-必须区分：
+Delegation 应允许成为持久、事件驱动关系，而不是要求 Parent 同步阻塞等待 Child。
 
-- **Delegation Concurrency**：多少 Agent 同时工作；
-- **Action Concurrency**：单个 Agent 内多少 Tool / Action 同时执行。
+## 7. Verification 与 Acceptance
 
-二者拥有不同的预算、背压和失败语义。
-
-### 5.6 Async Delegation
-
-长任务中的 Parent 不应该必须阻塞等待 Child 返回。Delegation 更适合成为持久、事件驱动关系：
+### 7.1 Evaluation Contract
 
 ```text
-Parent delegates
-    ↓
-Child running
-    ↓
-Parent may continue / pause
-    ↓
-Child emits completion event
-    ↓
-Parent reconcile
+Plan                → How to do
+Evaluation Contract → How to prove it is done
 ```
 
-## 6. Effort 与预算
+Evaluation Contract 包含 Criterion、Evidence、Grader / Verifier、Threshold 和 Aggregation。
 
-Effort 不只是模型 reasoning level，而是一组资源预算：
+### 7.2 Acceptance 与 Quality
+
+- Acceptance Criteria：决定能否结束。
+- Quality Criteria：描述完成得有多好。
+
+### 7.3 Verification Ladder
+
+```text
+Local Checks
+   ↓
+Regression
+   ↓
+Representative Workloads
+   ↓
+Integration
+   ↓
+Production-like Verification
+```
+
+先使用便宜、高频的局部反馈，再逐步升级到昂贵但更接近真实目标的验证。
+
+### 7.4 Differential Oracle
+
+Verifier 不应只返回 pass / fail，还应尽量返回高信号差异和诊断，帮助 Agent 决定下一步。
+
+### 7.5 Steward / Guardian
+
+除了 Work Item 局部验证，还需要维护跨任务长期质量：回归、架构约束、技术债和共享资源健康度。
+
+### 7.6 Cost per Successful Outcome
+
+成本最终应衡量：
+
+> **完成一个成功 Outcome 需要多少总资源。**
+
+单次请求或 token 便宜，不代表整体执行策略更经济。
+
+## 8. Recovery 与 Escalation
+
+### 8.1 Recovery
+
+解决当前能力范围内的可恢复故障，如 worker restart、临时 Tool failure、Harness crash。
+
+### 8.2 Escalation
+
+解决当前能力边界无法跨越的问题，例如：
+
+- 需要更强模型；
+- 需要专家 Capability；
+- 需要人工决策；
+- 缺少 Tool；
+- 需要缩小 Scope。
+
+> **Recovery 解决暂时失败，Escalation 解决能力边界。**
+
+## 9. Context、Memory 与持久资源
+
+### 9.1 Context Builder
+
+```text
+Session / State / Memory / Notes / Artifacts / Workspace
+                         ↓
+                   Context Builder
+                         ↓
+                      Context
+```
+
+Context Builder 属于 Harness / Context Strategy。
+
+### 9.2 Compaction
+
+Compaction 改变模型看到什么，不改变真实历史；摘要是派生资源。
+
+### 9.3 Notes、Memory、Workspace、Artifact
+
+- Notes / Todo：当前主观工作认知。
+- Memory：跨时间保留并可召回的信息。
+- Workspace：Work 的外部持久工作状态。
+- Artifact：正式结果或交付物。
+
+Workspace 现在更明确属于 Work，而不是某个 Session 的临时附件。
+
+## 10. Effort 与预算
 
 ```text
 Effort Budget
@@ -280,78 +385,9 @@ Effort Budget
 └── Cost Budget
 ```
 
-Harness 可以根据任务动态分配 effort，但不能越过平台给定的总预算。
+Plan 是可变假设；Budget 是硬约束。
 
-Plan 是可变假设；Budget 是硬约束。系统持久化关键决策、资源使用和证据，不持久化完整 private reasoning。
-
-## 7. 能力契约与验收
-
-### 7.1 Plan 与 Evaluation Contract
-
-```text
-Plan              → How to do
-Evaluation Contract → How to prove it is done
-```
-
-### 7.2 Acceptance Criteria 与 Quality Criteria
-
-- Acceptance Criteria：最低什么条件满足才允许结束。
-- Quality Criteria：结果完成得有多好。
-
-### 7.3 Evaluation Contract
-
-```text
-Evaluation Contract
-├── Criterion
-├── Evidence
-├── Grader / Verifier
-├── Threshold
-└── Aggregation
-```
-
-### 7.4 Outcome Eval 与 Process Eval
-
-- Outcome Eval：最终结果是否成功。
-- Process Eval：执行过程暴露了哪些策略、效率或成本问题。
-
-开放式 Agent 不应该被要求遵循唯一 Golden Agent Path。
-
-### 7.5 Specialist Agent as Capability
-
-Research Specialist、Citation Agent、Verifier 等可以作为一种可发现能力，通过 Agent-as-Tool 或 Child Session 使用，而不必永远成为固定团队成员。
-
-## 8. 长任务连续性
-
-### 8.1 Durable Handoff
-
-Handoff 至少回答剩余工作、已发生事实和恢复入口。
-
-### 8.2 Progress / Notes 是投影
-
-当 Progress 与 Git、Test、Artifact、Runtime Event 等 Ground Truth 冲突时，应重新校验。
-
-### 8.3 Bootstrap 属于 Harness
-
-Initializer、Planner、Reviewer 等具体角色不进入 Runtime Core。
-
-## 9. 上下文与持久资源
-
-### 9.1 Context Builder
-
-负责选择历史、加载 Memory、读取 Notes / Artifacts / Workspace、即时加载能力和知识，并做摘要和压缩。
-
-### 9.2 Compaction
-
-Compaction 改变模型看到什么，不改变真实历史。
-
-### 9.3 Notes、Memory、Workspace、Artifact
-
-- Notes / Todo：当前主观工作认知。
-- Memory：跨时间保留并可召回的信息。
-- Workspace：文件、代码、中间结果和 Checkpoint。
-- Artifact：正式结果或交付物。
-
-## 10. Harness 工程
+## 11. Harness 工程
 
 ```text
 Harness Revision
@@ -367,27 +403,48 @@ Failure Analysis
 Harness Revision
 ```
 
-Harness Revision 与 Session 生命周期分离；发布新 Harness 不意味着隐式迁移正在执行的 Session。
+Harness Revision 与 Session 生命周期分离。
 
-## 11. 当前架构不变量
+## 12. Human Governance
+
+随着 Agent 自主性增强，人类逐渐从 Execution Path 移向 Governance Plane：
+
+```text
+Human / Governance
+├── Goal
+├── Acceptance
+├── Risk Boundary
+├── Escalation
+└── Publish / Deploy Decision
+```
+
+必须区分：
+
+```text
+VerificationPassed
+≠ AcceptedForProduction
+≠ Published / Deployed
+```
+
+## 13. 当前架构不变量
 
 1. **应用形态不等于执行范式。**
 2. **Workflow 与 Agent 的核心区别是执行控制权归属。**
 3. **Runtime 承载持久执行事实，不固化控制策略。**
-4. **静态 Workflow、动态 Plan、Agent Loop 和动态 Multi-Agent 是逐渐增加动态性的执行方式。**
-5. **Workflow Graph 是输入表达；Agent Graph 更接近运行时结果。**
-6. **Session、Harness、Execution Environment 分别回答“发生了什么、怎么推进、在哪里行动”。**
-7. **Runtime 稳定，Harness 可替换、可简化甚至消失。**
-8. **Context 是可重建投影和当前 Working Set。**
-9. **Compaction 改变模型看到什么，不改变真实历史。**
-10. **长任务连续性来自 Durable State + Handoff + Recovery。**
-11. **Progress / Notes 是 Handoff Projection，不是 Source of Truth。**
-12. **Recovery 必须重新校验 Ground Truth。**
-13. **Plan 负责怎么做，Evaluation Contract 负责如何证明已经做成。**
-14. **Execution State 与 Acceptance State 必须分离。**
-15. **Multi-Agent 不是复杂任务默认答案，其价值取决于可并行性、上下文独立性和可合并性。**
-16. **Lead Agent 负责全局编排与全局上下文；Child Agent 负责局部工作。**
-17. **Agent-as-Tool 是 Action；真正自治且需要持久生命周期的 Sub-agent 是 Child Session。**
-18. **Agent Team 可以由 Harness 根据 Goal 和约束动态形成。**
-19. **Multi-Agent 需要局部恢复 + 全局协调，并区分 Delegation Concurrency 与 Action Concurrency。**
-20. **Plan 是可变假设，Budget 是硬约束。**
+4. **Runtime 稳定，Harness 可替换、可简化甚至消失。**
+5. **Context 是可重建投影和当前 Working Set。**
+6. **长期工作连续性不依赖 Agent 或 Session 永久存在；Work 才是长期载体。**
+7. **Work、Session、Run 分别承载长期工作、Agent 连续关系和一次触发后的连续执行片段。**
+8. **Progress / Notes 是 Projection，不是 Source of Truth。**
+9. **Recovery 必须重新校验 Ground Truth。**
+10. **Plan 负责怎么做，Evaluation Contract 负责如何证明已经做成。**
+11. **Execution State、Verification State 与 Acceptance State 必须分离。**
+12. **Multi-Agent 的关键不是 Agent 数量，而是 Work Frontier。**
+13. **Agent Work Environment 既要支持行动，也要支持工作发现、Ownership、Observation 和 Verification。**
+14. **Lead Agent 负责全局编排和全局 Context；Child Agent 负责局部工作。**
+15. **Agent Team 可以由 Harness 根据 Goal 和约束动态形成。**
+16. **Multi-Agent 需要 Local Recovery + Global Reconciliation。**
+17. **Delegation Concurrency 与 Action Concurrency 是两种不同并发。**
+18. **Recovery 与 Escalation 分别解决暂时失败和能力边界。**
+19. **Verification 应形成阶梯，并提供可行动的 Differential Oracle。**
+20. **Human 应逐渐从 Execution Path 移向 Governance Plane。**
