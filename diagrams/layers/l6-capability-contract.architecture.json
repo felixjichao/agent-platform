@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "L6 能力契约",
+    "subtitle": "先定义什么叫真正具备能力，再讨论 Harness 如何实现",
+    "locale": "zh-CN",
+    "output": "public/diagrams/layers/l6-capability-contract.architecture.html",
+    "animation": "trace",
+    "visual_preset": "editorial",
+    "quality_profile": "showcase",
+    "viewBox": [1160, 760],
+    "repository": {"url":"https://github.com/felixjichao/agent-platform","provider":"github","revision":"4bec0f4b40811259f93e1955e87b05c27cca1bba"},
+    "legend": {"mode":"hidden"},
+    "views": [
+      {"id":"contract","label":"能力契约","focus":["requirement","contract","acceptance","quality","eval-contract","evidence"],"note":"Capability Contract 把业务要求拆成 Acceptance、Quality、Evaluation 与 Evidence 四个可验证维度。"},
+      {"id":"implement-prove","label":"实现 / 证明分离","focus":["contract","harness","eval-system"],"note":"Harness 描述如何实现；Eval 描述如何证明。两者共同受同一 Capability Contract 约束。"}
+    ]
+  },
+  "components": [
+    {"id":"requirement","type":"external","label":"Goal / Requirement","sublabel":"业务目标 · 范围 · 约束 · 风险","tag":"想获得什么能力？","pos":[420,40],"size":[320,76],"sources":[{"path":"architecture/agent-platform.md","label":"Goal / Requirement"}]},
+    {"id":"contract","type":"security","label":"Capability Contract","sublabel":"能力边界与证明要求的统一契约","tag":"什么叫真正具备能力？","pos":[420,165],"size":[320,82],"sources":[{"path":"architecture/agent-platform.md","label":"Capability"}]},
+    {"id":"acceptance","type":"cloud","label":"Acceptance Criteria","sublabel":"结果是否满足业务验收","pos":[55,315],"size":[235,74],"sources":[{"path":"architecture/agent-platform.md","label":"Acceptance Criteria"}]},
+    {"id":"quality","type":"cloud","label":"Quality Criteria","sublabel":"质量、可靠性与非功能要求","pos":[325,315],"size":[235,74],"sources":[{"path":"architecture/agent-platform.md","label":"Quality Criteria"}]},
+    {"id":"eval-contract","type":"messagebus","label":"Evaluation Contract","sublabel":"Criterion · Grader · Threshold","pos":[600,315],"size":[235,74],"sources":[{"path":"architecture/agent-platform.md","label":"Evaluation Contract"}]},
+    {"id":"evidence","type":"database","label":"Evidence Requirement","sublabel":"需要什么证据证明成功","pos":[870,315],"size":[235,74],"sources":[{"path":"architecture/agent-platform.md","label":"Evidence Requirement"}]},
+    {"id":"harness","type":"backend","label":"Harness","sublabel":"How to implement","tag":"怎么实现","pos":[245,520],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"Harness"}]},
+    {"id":"eval-system","type":"messagebus","label":"Evaluation","sublabel":"How to prove","tag":"怎么证明","pos":[635,520],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"Eval"}]},
+    {"id":"capability-asset","type":"external","label":"Proven Capability","sublabel":"经过 Trial / Evidence / Grader 验证的能力资产","pos":[420,650],"size":[320,76],"sources":[{"path":"architecture/agent-platform.md","label":"Eval-driven Capability Engineering"}]}
+  ],
+  "connections": [
+    {"id":"requirement-contract","from":"requirement","to":"contract","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"harness-capability","from":"harness","to":"capability-asset","variant":"dashed","fromSide":"bottom","toSide":"left","route":"orthogonal-v","via":[[385,625]]},
+    {"id":"eval-capability","from":"eval-system","to":"capability-asset","variant":"emphasis","fromSide":"bottom","toSide":"right","route":"orthogonal-v","via":[[775,625]]}
+  ],
+  "cards": [
+    {"dot":"cyan","title":"契约先于实现","items":["Capability Definition 不等于 Tool Schema","Acceptance / Quality / Eval / Evidence 必须明确","否则只能证明 Agent 做了事，无法证明具备能力"]},
+    {"dot":"violet","title":"Harness vs Eval","items":["Harness = How to implement","Eval = How to prove","同一能力可替换 Harness，但契约应保持相对稳定"]},
+    {"dot":"emerald","title":"能力资产化","items":["Trial 固化 Harness / Capability / Environment Revision","Trace 证明过程，Outcome 证明真实结果","成功案例逐步进入 Regression Suite"]}
+  ]
+}

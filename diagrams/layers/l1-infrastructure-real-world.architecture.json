@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "L1 基础设施 / 真实世界",
+    "subtitle": "真实资源是动作最终落点，但不应该直接暴露为模型的无边界世界",
+    "locale": "zh-CN",
+    "output": "public/diagrams/layers/l1-infrastructure-real-world.architecture.html",
+    "animation": "trace",
+    "visual_preset": "editorial",
+    "quality_profile": "showcase",
+    "viewBox": [1160, 760],
+    "repository": {"url":"https://github.com/felixjichao/agent-platform","provider":"github","revision":"4bec0f4b40811259f93e1955e87b05c27cca1bba"},
+    "legend": {"mode":"hidden"},
+    "views": [
+      {"id":"reachability","label":"受治理可达性","focus":["environment","proxy","policy","business-systems","data-systems","interaction","compute"],"note":"Agent 通过 Work Environment 和 Capability Proxy 触达真实世界，权限、数据流和范围在出口处收缩。"},
+      {"id":"resource-types","label":"资源类型","focus":["business-systems","data-systems","interaction","compute"],"note":"API / SaaS、数据库 / 文件、浏览器 / 设备、计算 / 网络都是基础设施，不是 Agent 能力本身。"}
+    ]
+  },
+  "components": [
+    {"id":"environment","type":"backend","label":"L2 Agent Work Environment","sublabel":"Data + Action Plane","tag":"受治理执行环境","pos":[420,35],"size":[320,76],"sources":[{"path":"architecture/agent-platform.md","label":"L2 Agent Work Environment"}]},
+    {"id":"proxy","type":"security","label":"Capability Proxy","sublabel":"Semantic Capability → concrete connector","tag":"动作出口","pos":[420,155],"size":[320,78],"sources":[{"path":"architecture/agent-platform.md","label":"Capability Proxy"}]},
+    {"id":"policy","type":"security","label":"Reachability / Data Flow Policy","sublabel":"Principal · Capability · Resource · Scope · Purpose","tag":"Allow · Deny · Redact · Narrow","pos":[420,280],"size":[320,82],"sources":[{"path":"architecture/agent-platform.md","label":"Data Flow Policy"}]},
+    {"id":"business-systems","type":"external","label":"Business Systems","sublabel":"API · MCP Server · SaaS","pos":[55,465],"size":[240,78],"sources":[{"path":"architecture/agent-platform.md","label":"API · MCP Server · SaaS"}]},
+    {"id":"data-systems","type":"database","label":"Data Systems","sublabel":"DB · Files · Object Storage","pos":[325,465],"size":[240,78],"sources":[{"path":"architecture/agent-platform.md","label":"DB"}]},
+    {"id":"interaction","type":"cloud","label":"Interaction Surface","sublabel":"Browser · UI · Devices","pos":[595,465],"size":[240,78],"sources":[{"path":"architecture/agent-platform.md","label":"Browser"}]},
+    {"id":"compute","type":"messagebus","label":"Compute / Network","sublabel":"CPU · GPU · Runtime · Network","pos":[865,465],"size":[240,78],"sources":[{"path":"architecture/agent-platform.md","label":"Compute"}]},
+    {"id":"result","type":"external","label":"Real-world Effects","sublabel":"Read · Write · Execute · Publish · Communicate","tag":"最终副作用与真实结果","pos":[420,635],"size":[320,82],"sources":[{"path":"architecture/agent-platform.md","label":"真实世界"}]}
+  ],
+  "boundaries": [
+    {"kind":"region","label":"L1 Infrastructure / Real World","wraps":["business-systems","data-systems","interaction","compute"],"pad":20}
+  ],
+  "connections": [
+    {"id":"environment-proxy","from":"environment","to":"proxy","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"proxy-policy","from":"proxy","to":"policy","variant":"security","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"policy-result","from":"policy","to":"result","label":"governed effects","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight","labelAt":[790,610]}
+  ],
+  "cards": [
+    {"dot":"cyan","title":"资源 ≠ 能力","items":["MCP / API 是连接实现，不是 Capability Design","真实资源通过语义 Capability 暴露给 Agent","底层资源变化不应直接污染上层 Harness"]},
+    {"dot":"violet","title":"读也是能力边界","items":["Model-visible Data 与 Execution-only Data 分离","Capability Permission 与 Data Flow Permission 分离","可信 Tool 不等于可信 Tool Output"]},
+    {"dot":"emerald","title":"安全目标","items":["Least Privilege × Least Duration × Least Reachability","Containment 限制最大 Blast Radius","真实世界副作用必须可审计、可撤销或可隔离"]}
+  ]
+}

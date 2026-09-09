@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "横切系统：Context · Eval · Observability · Security",
+    "subtitle": "这些能力不是独立层，而是贯穿能力定义、执行、验证与真实动作的系统约束",
+    "locale": "zh-CN",
+    "output": "public/diagrams/layers/cross-cutting-governance.architecture.html",
+    "animation": "trace",
+    "visual_preset": "editorial",
+    "quality_profile": "showcase",
+    "viewBox": [1200, 820],
+    "repository": {"url":"https://github.com/felixjichao/agent-platform","provider":"github","revision":"4bec0f4b40811259f93e1955e87b05c27cca1bba"},
+    "legend": {"mode":"hidden"},
+    "views": [
+      {"id":"context-eval","label":"Context / Eval","focus":["context","execution-core","evaluation"],"note":"Context 决定模型当前看到什么；Evaluation 决定如何证明能力与结果。"},
+      {"id":"trace-security","label":"Trace / Security","focus":["observability","execution-core","security"],"note":"Trace 让执行事实可见；Security 限制 Principal、Capability、Resource、Data Flow 与 Reachability。"},
+      {"id":"asset-governance","label":"版本与预算","focus":["registry","execution-core","budget"],"note":"Harness、Capability、Eval、Environment 都必须版本化；预算与并发限制贯穿执行生命周期。"}
+    ]
+  },
+  "components": [
+    {"id":"contract","type":"security","label":"Capability Contract","sublabel":"Acceptance · Quality · Eval · Evidence","pos":[440,35],"size":[320,72],"sources":[{"path":"architecture/agent-platform.md","label":"L6 能力契约"}]},
+    {"id":"execution-core","type":"messagebus","label":"Execution System","sublabel":"L5 Capability · L4 Harness · L3 Runtime · L2 Environment","tag":"动态、长期、非确定执行","pos":[400,315],"size":[400,92],"sources":[{"path":"architecture/agent-platform.md","label":"横切系统"}]},
+    {"id":"world","type":"external","label":"Real-world Outcome","sublabel":"Artifact · Resource State · Side Effects","pos":[440,650],"size":[320,76],"sources":[{"path":"architecture/agent-platform.md","label":"真实世界"}]},
+    {"id":"context","type":"database","label":"Context / Memory","sublabel":"Working Set · Projection · Recall · Compaction","tag":"模型当前看到什么","pos":[55,165],"size":[290,78],"sources":[{"path":"architecture/agent-platform.md","label":"Context / Memory"}]},
+    {"id":"observability","type":"messagebus","label":"Observability / Trace","sublabel":"Event · Trace · Metric · Replay · Causation","tag":"系统实际发生了什么","pos":[55,465],"size":[290,78],"sources":[{"path":"architecture/agent-platform.md","label":"Observability / Trace"}]},
+    {"id":"evaluation","type":"cloud","label":"Evaluation / Verification","sublabel":"Trial · Outcome · Evidence · Grader · Oracle","tag":"如何证明成功","pos":[855,165],"size":[290,78],"sources":[{"path":"architecture/agent-platform.md","label":"Evaluation"}]},
+    {"id":"security","type":"security","label":"Security / Governance","sublabel":"Identity · Authority · Trust · Reachability · Data Flow","tag":"能触达多大的世界","pos":[855,465],"size":[290,78],"sources":[{"path":"architecture/agent-platform.md","label":"Security / Governance"}]},
+    {"id":"registry","type":"database","label":"Registry / Versioning","sublabel":"Harness · Capability · Eval · Environment Revision","pos":[55,650],"size":[290,76],"sources":[{"path":"architecture/agent-platform.md","label":"Registry / Versioning"}]},
+    {"id":"budget","type":"external","label":"Budget / Cost","sublabel":"Token · Compute · Tool Calls · Parallelism · Runtime","pos":[855,650],"size":[290,76],"sources":[{"path":"architecture/agent-platform.md","label":"Budget / Cost"}]}
+  ],
+  "connections": [
+    {"id":"contract-execution","from":"contract","to":"execution-core","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"execution-world","from":"execution-core","to":"world","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"context-execution","from":"context","to":"execution-core","label":"projection","variant":"dashed","fromSide":"right","toSide":"left","route":"orthogonal-h","via":[[365,204],[365,350]]},
+    {"id":"observability-execution","from":"execution-core","to":"observability","label":"facts / trace","variant":"dashed","fromSide":"left","toSide":"right","route":"orthogonal-h","via":[[365,372],[365,504]]},
+    {"id":"evaluation-execution","from":"evaluation","to":"execution-core","label":"criteria / grader","variant":"dashed","fromSide":"left","toSide":"right","route":"orthogonal-h","via":[[835,204],[835,350]]},
+    {"id":"security-execution","from":"security","to":"execution-core","label":"policy / scope","variant":"security","fromSide":"left","toSide":"right","route":"orthogonal-h","via":[[835,504],[835,372]]}
+  ],
+  "cards": [
+    {"dot":"cyan","title":"Context 是投影","items":["Session ≠ State ≠ Context","Context contains a map, not the whole world","Compaction 改变模型看到什么，不改变执行事实"]},
+    {"dot":"violet","title":"Eval 是能力规格","items":["Harness = How to implement","Eval = How to prove","Trace 与 Outcome 分离，Criterion / Evidence / Grader 分离"]},
+    {"dot":"emerald","title":"治理贯穿全链路","items":["身份、委托、权限、数据流与 Reachability 共同决定可达世界","版本化让实验和回归可复现","Cost per Successful Outcome 比单次 token 成本更重要"]}
+  ]
+}
