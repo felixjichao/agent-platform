@@ -22,11 +22,13 @@ features:
     details: 每完成一篇研究，再把稳定结论吸收到总体架构，保留完整演进历史。
 ---
 
-## Agent Platform 总体心智模型
+## Agent Platform 总体架构 · Archify MVP
 
-从业务目标一直到真实世界，平台把动态能力组装、执行策略和稳定运行时分层，并由上下文、评估、可观测与安全治理横向贯穿。
+这一版改用 Archify：`Typed JSON IR` 是可编辑、可 Diff 的图源，交互 HTML 由 Archify 校验后确定性生成。
 
-![Agent Platform 总体心智模型](/diagrams/core/agent-platform-overview.svg)
+<iframe src="./diagrams/core/agent-platform-overview.architecture.html" title="Agent Platform 总体架构图" style="width:100%;height:760px;border:1px solid var(--vp-c-divider);border-radius:12px;background:var(--vp-c-bg);" loading="lazy"></iframe>
+
+[打开独立交互图](/diagrams/core/agent-platform-overview.architecture.html) · [查看 Archify 图源](https://github.com/felixjichao/agent-platform/blob/feat/visual-architecture-mvp/diagrams/core/agent-platform-overview.architecture.json)
 
 ## Agent Software Stack
 

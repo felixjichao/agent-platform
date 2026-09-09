@@ -1,0 +1,39 @@
+name: Render Archify MVP
+
+on:
+  push:
+    branches:
+      - feat/visual-architecture-mvp
+    paths:
+      - diagrams/core/agent-platform-overview.architecture.json
+      - .github/workflows/render-archify-mvp.yml
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Agent Platform
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Checkout Archify
+        run: git clone --depth 1 https://github.com/tt-a1i/archify.git /tmp/archify
+      - name: Validate Archify source
+        run: node /tmp/archify/archify/bin/archify.mjs validate architecture diagrams/core/agent-platform-overview.architecture.json --quality showcase --repo-root . --json
+      - name: Render Archify artifact
+        run: node /tmp/archify/archify/bin/archify.mjs deliver architecture diagrams/core/agent-platform-overview.architecture.json public/diagrams/core/agent-platform-overview.architecture.html --quality showcase --repo-root . --json
+      - name: Commit rendered artifact
+        run: |
+          git add public/diagrams/core/agent-platform-overview.architecture.html
+          if git diff --cached --quiet; then
+            echo "Archify output is already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "docs: render Agent Platform overview with Archify"
+          git push
