@@ -22,6 +22,24 @@ features:
     details: 每完成一篇研究，再把稳定结论吸收到总体架构，保留完整演进历史。
 ---
 
+## Agent Platform 总体心智模型
+
+从业务目标一直到真实世界，平台把动态能力组装、执行策略和稳定运行时分层，并由上下文、评估、可观测与安全治理横向贯穿。
+
+![Agent Platform 总体心智模型](/diagrams/core/agent-platform-overview.svg)
+
+## Agent Software Stack
+
+七层软件栈提供整个项目的统一坐标系：越往上越接近业务语义，越往下越接近稳定执行事实和真实资源。
+
+![Agent Software Stack 七层软件栈](/diagrams/core/agent-software-stack.svg)
+
+## 一个关键边界：Runtime vs Harness
+
+Harness 负责“当前准备怎么完成”，Runtime 负责“实际上发生了什么”。前者应该可替换、可演进，后者承担稳定、持久、可恢复的执行事实。
+
+![Runtime vs Harness](/diagrams/core/runtime-vs-harness.svg)
+
 ## 研究路线
 
 当前研究从执行控制出发，逐步扩展到长任务、多智能体、评估、能力工程、代码执行与安全治理：
