@@ -1,20 +1,21 @@
-name: Render Archify Diagrams
+name: Validate Architecture Docs
 
 on:
   push:
-    branches:
-      - main
-      - feat/visual-architecture-mvp
     paths:
       - 'diagrams/**/*.architecture.json'
-      - scripts/render-archify.sh
-      - .github/workflows/render-archify-mvp.yml
+      - 'architecture/**/*.md'
+      - '.vitepress/**'
+      - 'index.md'
+      - 'scripts/render-archify.sh'
+      - 'package.json'
+      - '.github/workflows/render-archify-mvp.yml'
 
 permissions:
   contents: write
 
 jobs:
-  render:
+  validate:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
@@ -23,11 +24,22 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
       - name: Checkout Archify
         run: git clone --depth 1 https://github.com/tt-a1i/archify.git /tmp/archify
 
       - name: Validate and render Archify diagrams
         run: bash scripts/render-archify.sh
+
+      - name: Install documentation dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build VitePress site
+        run: npm run docs:build
 
       - name: Commit rendered artifacts
         shell: bash
