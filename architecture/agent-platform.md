@@ -2,7 +2,7 @@
 
 本文档记录 Agent Platform 当前已经形成的规范性架构结论，并随着研究持续演进。
 
-> 当前版本已吸收《Building effective agents》和《Scaling Managed Agents: Decoupling the brain from the hands》的架构结论。
+> 当前版本已吸收《Building effective agents》《Scaling Managed Agents》和《Effective context engineering for AI agents》的架构结论。
 
 ## 1. 架构主张
 
@@ -24,12 +24,7 @@ Execution Environment
 真实世界
 ```
 
-其中：
-
-- 业务 / 产品决定要完成什么；
-- 执行策略与 Harness 决定当前如何推进；
-- 统一运行时保存持久执行事实；
-- 执行环境负责真正观察和作用于外部世界。
+同时，上下文不是一条独立的持久状态链，而是由多个持久来源动态构建的模型工作集。
 
 ## 2. 核心设计原则
 
@@ -41,8 +36,6 @@ Execution Environment
 
 - 工作流：下一步主要由预定义代码或图决定。
 - 智能体：下一步主要由模型根据当前上下文动态决定。
-
-运行时不绑定某一种控制方式。
 
 ### 2.3 执行方式是一条连续谱
 
@@ -56,32 +49,19 @@ Direct
 Agent Loop
 ```
 
-复杂度和自主性应按任务需要逐渐增加。
-
 ### 2.4 Runtime 稳定，Harness 可替换
 
-Harness 编码了“当前模型还需要哪些脚手架”的假设，这些假设会随着模型能力变化。
+Harness 编码了当前模型需要的执行脚手架；Session、持久事实、动作执行和恢复能力不能依赖某个 Harness 进程长期存在。
 
-因此：
+### 2.5 Context 是投影，不是事实源
 
-> **Runtime should be stable; Harness should be replaceable.**
+> **Session 追加事实，Context 选择性投影。**
 
-Harness 可以增删计划、评估、上下文重置等策略，但 Session、持久事实、动作执行和恢复能力不能依赖某个 Harness 进程长期存在。
+Context 丢失后应能从 Session、State、Memory、Notes、Artifacts、Workspace 等来源重新构建。
 
-### 2.5 脑与手解耦
+### 2.6 Context 是工作集
 
-模型与 Harness 构成控制侧；Execution Environment 构成执行侧。两侧通过稳定的动作接口连接。
-
-```text
-模型 + Harness
-    │
-    │ Action Request
-    ▼
-Execution Environment
-    │
-    ▼
-Result / Observation
-```
+Context 的目标不是包含全部世界，而是对当前决策足够。它应该保留“地图”和导航入口，而不是把所有资源一次性塞入模型窗口。
 
 ## 3. 当前软件栈
 
@@ -90,101 +70,156 @@ L5 业务 / 产品
    Goal · Application
 
 L4 执行策略 / Harness
-   Direct · Workflow · Agent Loop · Harness
+   Direct · Workflow · Agent Loop · Harness · Context Strategy
 
 L3 统一运行时
-   Session · Execution · State · Action · Result
+   Session · State · Action · Result · Resource
 
 L2 执行环境
-   Sandbox · API · MCP · DB · Browser · Filesystem
+   Workspace · Sandbox · API · MCP · DB · Browser · Filesystem
 
 L1 基础设施 / 真实世界
    Compute · SaaS · Data · Devices
-```
 
-这一分层仍会继续演进，但“策略—运行时—执行环境”的边界已经开始稳定。
+横切：Context / Memory
+```
 
 ## 4. 核心领域边界
 
 ### 4.1 Session
 
-Session 不是简单聊天记录，而是一个 Agent 持续执行关系中的持久历史容器。它回答：
+Session 不是聊天记录，而是一个 Agent 持续执行关系中的持久历史容器。它回答“发生过什么”。
 
-> **发生过什么？**
+### 4.2 State
 
-长期事实必须独立于 Harness 生命周期保存。
+State 是当前执行状态的可变视图，用于快速回答“现在是什么状态”。它不是完整历史。
 
-### 4.2 Harness
+### 4.3 Context
 
-Harness 是当前模型的执行脚手架，负责：
-
-- 当前如何推进任务；
-- 如何规划或循环；
-- 什么时候评估；
-- 什么时候结束或继续。
-
-这些属于策略，不应过早固化为 Runtime Core。
-
-### 4.3 Execution Environment
-
-执行环境回答：
-
-> **Agent 实际在哪里、以什么方式行动？**
-
-它可以是 Sandbox，也可以是 API、MCP、数据库、浏览器、远程计算机或设备。Sandbox 是一种实现，不是平台唯一抽象。
-
-## 5. 执行策略
-
-### 5.1 工作流控制原语
-
-典型模式可以归约为：
-
-- 顺序执行（Sequence）
-- 条件分支（Branch）
-- 分叉 / 汇合（Fork / Join）
-- 循环（Loop）
-- 动态展开（Dynamic Expansion）
-
-工作流 DSL 和 DAG 属于上层表达，可以映射到这些控制能力。
-
-### 5.2 工作流图与智能体执行图
+Context 是当前模型调用的工作集：
 
 ```text
-Workflow Graph
-= 执行前给定的输入结构
-
-Agent Graph
-= 运行过程中动态形成的执行结果
+Session
+State
+Memory
+Notes
+Artifacts
+Workspace
+Skills / Capabilities
+External Resources
+      ↓
+Context Builder
+      ↓
+Context
 ```
 
-统一运行时不以固定 DAG 作为唯一事实模型。
+因此：
 
-### 5.3 多智能体的位置
+> **Session != Chat History != Context Window。**
 
-多智能体暂时视为更高层执行拓扑，而不是统一运行时的基础原语。
+### 4.4 Harness
 
-## 6. 持久状态原则
+Harness 负责当前任务如何推进，以及如何规划、评估、压缩上下文或结束任务。它属于策略层。
 
-真正影响恢复、审计和后续执行的状态必须进入运行时持久层：
+### 4.5 Execution Environment
+
+执行环境描述 Agent 实际可以观察和操作的世界，包括 Sandbox、API、MCP、数据库、浏览器、文件系统和远程设备。
+
+## 5. 上下文与持久资源
+
+### 5.1 Context Builder
+
+Context Builder 是 Harness 的策略组件，负责：
+
+- 选择相关历史；
+- 加载必要 Memory；
+- 读取 Notes / Artifact / Workspace；
+- 按需加载 Skill、Tool 定义或外部知识；
+- 做摘要、压缩和排序。
+
+### 5.2 稳定信息与即时加载
+
+Context 可以按变化频率分成：
 
 ```text
-Harness
-  ↓ append / read
-Durable Session State
-  ↓ recover
-New Harness
+稳定前缀
+├── System / Policy
+├── Agent Definition
+└── Capability Metadata
+
+阶段性稳定
+├── Goal
+├── Checkpoint
+└── Summary / Plan
+
+动态尾部
+├── recent working history
+├── tool observations
+└── JIT resources
 ```
 
-Harness 可以短生命周期甚至无状态化；Session 的持续时间可以远长于 Harness 进程。
+这既减少无关信息，也有利于 Prompt Cache。
 
-## 7. 当前架构不变量
+### 5.3 Compaction
+
+Compaction 属于 Context Strategy：
+
+```text
+Session facts
+    ↓
+select / summarize / compact
+    ↓
+Context
+```
+
+它不应该删除或重写真实历史。摘要是派生资源，而不是新的 Source of Truth。
+
+### 5.4 Notes、Memory、Workspace、Artifact
+
+- **Notes / Todo**：Agent 当前主观工作认知，可能被修改或证明错误。
+- **Memory**：跨时间保留、未来可召回的信息。
+- **Workspace**：外部持久工作状态，如文件、代码、中间结果和 Checkpoint。
+- **Artifact**：正式结果或交付物，具有版本、评审或发布语义。
+
+它们可以共享底层资源存储，但语义必须分开。
+
+## 6. 执行策略
+
+### 6.1 工作流控制原语
+
+典型模式可以归约为顺序执行、条件分支、分叉 / 汇合、循环和动态展开。
+
+### 6.2 工作流图与智能体执行图
+
+```text
+Workflow Graph = 执行前给定的输入结构
+Agent Graph    = 运行过程中动态形成的执行结果
+```
+
+### 6.3 Sub-agent 的边界
+
+需要区分：
+
+- **Agent-as-Tool**：一次聚焦调用，可作为 Parent Session 中的一次 Action。
+- **Autonomous Sub-agent**：具有独立目标、多轮上下文、Artifact 和恢复需求，应使用 Child Session。
+
+Sub-agent 的重要价值是上下文隔离和卸载，而不仅是增加模型实例。
+
+## 7. 持久状态原则
+
+真正影响恢复、审计和后续执行的状态必须进入运行时持久层。Harness 可以短生命周期甚至无状态化。
+
+## 8. 当前架构不变量
 
 1. **应用形态不等于执行范式。**
 2. **工作流与智能体的核心区别是执行控制权归属。**
-3. **统一运行时负责承载持久执行事实，不固化某一种“下一步如何决定”的策略。**
-4. **静态工作流、动态计划和 Agent Loop 是执行控制逐渐动态化的连续谱。**
+3. **统一运行时负责持久执行事实，不固化某一种执行控制策略。**
+4. **静态工作流、动态计划和 Agent Loop 是连续谱。**
 5. **Workflow Graph 是输入表达；Agent Graph 更接近运行时结果。**
 6. **Session、Harness、Execution Environment 分别回答“发生了什么、怎么推进、在哪里行动”。**
 7. **持久状态不能依赖 Harness 进程。**
-8. **Runtime 应稳定，Harness 应可替换、可简化甚至消失。**
-9. **Sandbox 是执行环境的一种实现，而不是执行环境本身。**
+8. **Runtime 稳定，Harness 可替换、可简化甚至消失。**
+9. **Context 是持久事实的可重建投影，不是 Source of Truth。**
+10. **Context 是当前 Working Set，不是整个世界。**
+11. **Compaction 改变模型看到什么，不改变真实发生过什么。**
+12. **Agent-as-Tool 是 Action；真正自治且需要持久生命周期的 Sub-agent 才是 Child Session。**
