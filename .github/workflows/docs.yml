@@ -35,6 +35,33 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Verify README homepage sync
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          case "${{ github.event_name }}" in
+            pull_request)
+              base="${{ github.event.pull_request.base.sha }}"
+              ;;
+            push)
+              base="${{ github.event.before }}"
+              if [[ "$base" == "0000000000000000000000000000000000000000" ]]; then
+                exit 0
+              fi
+              ;;
+            *)
+              exit 0
+              ;;
+          esac
+
+          changed_files="$(git diff --name-only "$base" "${{ github.sha }}")"
+
+          if grep -qx 'README.md' <<<"$changed_files" && ! grep -qx 'index.md' <<<"$changed_files"; then
+            echo "::error file=README.md::README.md 已更新，但 index.md 未同步更新。请同步文档站首页后再提交。"
+            exit 1
+          fi
+
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
