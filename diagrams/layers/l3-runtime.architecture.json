@@ -10,31 +10,12 @@
     "visual_preset": "editorial",
     "quality_profile": "showcase",
     "viewBox": [1180, 760],
-    "repository": {
-      "url": "https://github.com/felixjichao/agent-platform",
-      "provider": "github",
-      "revision": "4bec0f4b40811259f93e1955e87b05c27cca1bba"
-    },
-    "legend": {"mode": "hidden"},
+    "repository": {"url":"https://github.com/felixjichao/agent-platform","provider":"github","revision":"4bec0f4b40811259f93e1955e87b05c27cca1bba"},
+    "legend": {"mode":"hidden"},
     "views": [
-      {
-        "id": "domain-model",
-        "label": "领域模型",
-        "focus": ["work", "session", "run", "event-log", "state"],
-        "note": "Work 承载长期目标，Session 承载相对连续关系，Run 是一次连续执行片段，Event 是事实，State 是投影。"
-      },
-      {
-        "id": "action-observation",
-        "label": "Action → Observation",
-        "focus": ["run", "action", "result", "observation"],
-        "note": "Action 是受治理请求；Result 是执行事实；Observation 是面向模型的投影。"
-      },
-      {
-        "id": "durability",
-        "label": "持久与恢复",
-        "focus": ["work", "event-log", "state", "recovery", "artifact"],
-        "note": "Agent 可以退出或被替换；Work、Event、Artifact 与恢复状态必须持续存在。"
-      }
+      {"id":"domain-model","label":"领域模型","focus":["work","session","run","event-log","state"],"note":"Work 承载长期目标，Session 承载相对连续关系，Run 是一次连续执行片段，Event 是事实，State 是投影。"},
+      {"id":"action-observation","label":"Action → Observation","focus":["run","action","result","observation"],"note":"Action 是受治理请求；Result 是执行事实；Observation 是面向模型的投影。"},
+      {"id":"durability","label":"持久与恢复","focus":["work","event-log","state","recovery","artifact"],"note":"Agent 可以退出或被替换；Work、Event、Artifact 与恢复状态必须持续存在。"}
     ]
   },
   "components": [
@@ -43,11 +24,11 @@
     {"id":"run","type":"backend","label":"Run","sublabel":"一次连续执行片段","tag":"Message / Approval / Timer / Event 触发","pos":[440,255],"size":[300,78],"sources":[{"path":"architecture/agent-platform.md","label":"Run"}]},
     {"id":"event-log","type":"messagebus","label":"Event Log","sublabel":"append-only execution facts · causation · correlation","tag":"事实来源","pos":[440,390],"size":[300,82],"sources":[{"path":"architecture/agent-platform.md","label":"Event"}]},
     {"id":"state","type":"database","label":"State Projection","sublabel":"由 Event 重建的当前运行视图","tag":"可丢弃、可重建","pos":[440,535],"size":[300,78],"sources":[{"path":"architecture/agent-platform.md","label":"Command / Event / State"}]},
-    {"id":"action","type":"security","label":"Action","sublabel":"受治理的执行请求","pos":[815,255],"size":[270,72],"sources":[{"path":"architecture/agent-platform.md","label":"Action"}]},
+    {"id":"action","type":"security","label":"Action","sublabel":"受治理的执行请求","pos":[815,258],"size":[270,72],"sources":[{"path":"architecture/agent-platform.md","label":"Action"}]},
     {"id":"result","type":"external","label":"Result","sublabel":"真实执行结果 / execution fact","pos":[815,390],"size":[270,72],"sources":[{"path":"architecture/agent-platform.md","label":"Result"}]},
     {"id":"observation","type":"cloud","label":"Observation","sublabel":"Filter · Transform · Aggregate · Redact","tag":"model-facing projection","pos":[815,535],"size":[270,78],"sources":[{"path":"architecture/agent-platform.md","label":"Observation"}]},
-    {"id":"recovery","type":"backend","label":"Recovery","sublabel":"Restart · Retry · Resume · Reconcile","pos":[90,255],"size":[270,72],"sources":[{"path":"architecture/agent-platform.md","label":"Recovery"}]},
-    {"id":"artifact","type":"database","label":"Artifact","sublabel":"版本化正式交付物 / 可引用结果","pos":[90,535],"size":[270,78],"sources":[{"path":"architecture/agent-platform.md","label":"Artifact"}]}
+    {"id":"recovery","type":"backend","label":"Recovery","sublabel":"Restart · Retry · Resume · Reconcile","pos":[90,258],"size":[270,72],"sources":[{"path":"architecture/agent-platform.md","label":"Recovery"}]},
+    {"id":"artifact","type":"database","label":"Artifact","sublabel":"版本化正式交付物 / 可引用结果","pos":[90,392],"size":[270,78],"sources":[{"path":"architecture/agent-platform.md","label":"Artifact"}]}
   ],
   "connections": [
     {"id":"work-session","from":"work","to":"session","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
@@ -58,7 +39,7 @@
     {"id":"action-result","from":"action","to":"result","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
     {"id":"result-observation","from":"result","to":"observation","variant":"dashed","fromSide":"bottom","toSide":"top","route":"straight"},
     {"id":"recovery-run","from":"recovery","to":"run","label":"resume","variant":"dashed","fromSide":"right","toSide":"left","route":"straight"},
-    {"id":"events-artifact","from":"event-log","to":"artifact","label":"materialize","variant":"dashed","fromSide":"left","toSide":"right","route":"orthogonal-h","via":[[390,500]]}
+    {"id":"events-artifact","from":"event-log","to":"artifact","label":"materialize","variant":"dashed","fromSide":"left","toSide":"right","route":"straight"}
   ],
   "cards": [
     {"dot":"cyan","title":"三个时间尺度","items":["Work：长期目标与共享世界","Session：Agent 与 Work 的相对连续关系","Run：一次触发后的连续执行片段"]},
