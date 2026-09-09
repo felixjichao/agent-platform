@@ -2,6 +2,8 @@
 
 本仓库用于沉淀智能体平台（Agent Platform）的架构研究与演进过程。
 
+**在线阅读：<https://felixjichao.github.io/agent-platform/>**
+
 ## 文档入口
 
 - [智能体平台总体架构](architecture/agent-platform.md)：当前规范性架构文档，记录经过研究后已经稳定下来的平台架构。
