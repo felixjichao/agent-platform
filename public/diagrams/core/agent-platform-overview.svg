@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Agent Platform 总体心智模型</title>
+  <desc id="desc">从业务目标、能力契约、能力组装、执行策略、统一运行时、工作环境到真实世界的整体架构。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8fbff"/>
+      <stop offset="1" stop-color="#eef4ff"/>
+    </linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#1d46ae"/>
+      <stop offset="1" stop-color="#4c7df0"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="#16346e" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0 0L12 6L0 12Z" fill="#6b7a99"/>
+    </marker>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <text x="100" y="92" font-family="Inter, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="48" font-weight="700" fill="#172033">Agent Platform 总体心智模型</text>
+  <text x="100" y="134" font-family="Inter, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="22" fill="#5e6b84">把动态、非确定的智能执行过程，约束在可持久、可恢复、可验证、可治理的生产系统中</text>
+
+  <g font-family="Inter, 'PingFang SC', 'Microsoft YaHei', sans-serif" filter="url(#shadow)">
+    <rect x="140" y="220" rx="20" width="260" height="118" fill="#ffffff" stroke="#d6e1f5" stroke-width="2"/>
+    <text x="270" y="264" text-anchor="middle" font-size="28" font-weight="700" fill="#172033">业务目标</text>
+    <text x="270" y="302" text-anchor="middle" font-size="17" fill="#6a768d">Goal · Project · Task</text>
+
+    <rect x="450" y="220" rx="20" width="260" height="118" fill="#ffffff" stroke="#d6e1f5" stroke-width="2"/>
+    <text x="580" y="264" text-anchor="middle" font-size="28" font-weight="700" fill="#172033">能力契约</text>
+    <text x="580" y="302" text-anchor="middle" font-size="17" fill="#6a768d">Acceptance · Quality · Eval</text>
+
+    <rect x="760" y="220" rx="20" width="260" height="118" fill="#ffffff" stroke="#d6e1f5" stroke-width="2"/>
+    <text x="890" y="264" text-anchor="middle" font-size="28" font-weight="700" fill="#172033">动态能力组装</text>
+    <text x="890" y="302" text-anchor="middle" font-size="17" fill="#6a768d">Skill · Tool · Knowledge</text>
+
+    <rect x="1070" y="220" rx="20" width="390" height="118" fill="url(#brand)"/>
+    <text x="1265" y="264" text-anchor="middle" font-size="28" font-weight="700" fill="#ffffff">Harness / 执行策略</text>
+    <text x="1265" y="302" text-anchor="middle" font-size="17" fill="#dce7ff">Workflow · Agent Loop · PTC · Multi-Agent</text>
+  </g>
+
+  <g stroke="#6b7a99" stroke-width="3" fill="none" marker-end="url(#arrow)">
+    <path d="M400 279H438"/>
+    <path d="M710 279H748"/>
+    <path d="M1020 279H1058"/>
+  </g>
+
+  <g font-family="Inter, 'PingFang SC', 'Microsoft YaHei', sans-serif" filter="url(#shadow)">
+    <rect x="390" y="438" rx="22" width="820" height="126" fill="#172033"/>
+    <text x="800" y="485" text-anchor="middle" font-size="31" font-weight="700" fill="#ffffff">统一 Runtime</text>
+    <text x="800" y="528" text-anchor="middle" font-size="18" fill="#cbd5e8">Work · Session · Run · Event · State · Action · Result · Artifact · Recovery</text>
+
+    <rect x="390" y="640" rx="22" width="820" height="126" fill="#ffffff" stroke="#bdd0f3" stroke-width="2"/>
+    <text x="800" y="687" text-anchor="middle" font-size="31" font-weight="700" fill="#1d46ae">Agent Work Environment</text>
+    <text x="800" y="730" text-anchor="middle" font-size="18" fill="#5f6c83">Workspace · Execution · Verification · Capability Proxy · Sandbox</text>
+  </g>
+
+  <g stroke="#6b7a99" stroke-width="3" fill="none" marker-end="url(#arrow)">
+    <path d="M1265 338V404Q1265 422 1247 422H818"/>
+    <path d="M800 564V628"/>
+    <path d="M800 766V826"/>
+  </g>
+
+  <text x="800" y="863" text-anchor="middle" font-family="Inter, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="25" font-weight="700" fill="#34415a">真实世界：API · SaaS · DB · Browser · Files · Compute · Network</text>
+
+  <g font-family="Inter, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+    <rect x="86" y="420" rx="18" width="210" height="360" fill="#ffffff" stroke="#d6e1f5" stroke-width="2"/>
+    <text x="191" y="462" text-anchor="middle" font-size="18" font-weight="700" fill="#33415c">横向系统能力</text>
+    <g font-size="17" fill="#586780">
+      <text x="120" y="510">Context / Memory</text>
+      <text x="120" y="556">Evaluation</text>
+      <text x="120" y="602">Observability / Trace</text>
+      <text x="120" y="648">Security / Governance</text>
+      <text x="120" y="694">Registry / Versioning</text>
+      <text x="120" y="740">Budget / Cost</text>
+    </g>
+  </g>
+</svg>
