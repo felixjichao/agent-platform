@@ -2,16 +2,16 @@
 
 本文档记录 Agent Platform 当前已经形成的规范性架构结论，并随着研究持续演进。
 
-> 当前版本已吸收前七篇研究。C 编译器 Agent Team 的实践进一步把长期载体从 Session 上移到 Work，并把 Execution Environment 扩展成 Agent Work Environment。
+> 当前版本已吸收前八篇研究。Eval 被进一步提升为 Capability Contract 的可执行组成部分，并与 Trial、Trace、Outcome、Grader 和 Environment 建立完整关系。
 
 ## 1. 架构主张
 
-Agent Platform 不按“对话 Agent、科研 Agent、知识库 Agent、工作流 Agent”等产品形态分别建设执行内核，而是围绕稳定的平台边界组织：
+Agent Platform 不按产品形态分别建设执行内核，而是围绕稳定的平台边界组织：
 
 ```text
 业务 / 产品
     ↓
-能力目标 / 验收要求
+能力契约
     ↓
 执行策略 / Harness
     ↓
@@ -24,11 +24,12 @@ Agent Work Environment
 
 其中：
 
-- 业务层决定要完成什么；
-- Harness 决定当前如何执行；
-- Evaluation Contract 决定如何证明完成；
+- 业务 / 产品决定要完成什么；
+- Capability Contract 定义“能力是什么、怎样证明”；
+- Harness 决定当前如何实现；
 - Runtime 记录真正发生的执行事实；
-- Agent Work Environment 决定 Agent 能看到什么、做什么、如何获得反馈和验证。
+- Agent Work Environment 决定 Agent 能看到什么、做什么、如何获得反馈和验证；
+- Eval 测量 Trial 是否满足 Capability Contract，并为 Harness 演进提供反馈。
 
 ## 2. 核心设计原则
 
@@ -43,7 +44,7 @@ Agent Work Environment
 
 ### 2.3 Runtime 稳定，Harness 可替换
 
-Harness 是对当前模型能力缺口的适应性脚手架。Planner、Evaluator、Context Reset、Delegation Strategy 等应允许版本化、实验、替换和删除。
+Harness 是对当前模型能力缺口的适应性脚手架，其复杂度必须通过 Eval 证明。
 
 ### 2.4 Context 是可重建投影
 
@@ -53,24 +54,15 @@ Context 是当前 Working Set，不是持久事实源。
 
 ### 2.5 长期工作连续性不依赖 Agent 连续性
 
-> **Durable work continuity should not depend on durable agent continuity.**
-
 Agent 可以退出、忘记、被替换；Work 必须记住。
 
-### 2.6 Execution State、Verification State 与 Acceptance State 分离
+### 2.6 Trial 是 Agent Eval 的基本测量单位
 
-```text
-Executed
-≠ Verified
-≠ Accepted
-≠ Published / Deployed
-```
+Agent 的能力不能由单次 response 代表。Eval 需要观察完整 Trial，包括 Environment、Trace 和 Outcome。
 
-系统不能把“Agent 执行完成”直接等价为“业务接受”。
+### 2.7 Outcome 是事实，Score 是测量投影
 
-### 2.7 Multi-Agent 的核心是 Work Scheduling
-
-有效并行度由独立 Work Front 决定，而不是由可启动 Agent 数量决定。
+Eval Score 不是 Source of Truth，必须可追溯到 Task、Evidence、Grader 和 Measurement Configuration。
 
 ## 3. 当前软件栈
 
@@ -79,6 +71,7 @@ L6 业务 / 产品
    Goal · Project · Requirement
 
 L5 能力契约
+   Capability Definition
    Acceptance Criteria · Quality Criteria · Evaluation Contract
 
 L4 执行策略 / Harness
@@ -96,7 +89,8 @@ L2 Agent Work Environment
 L1 基础设施 / 真实世界
    API · MCP · DB · Browser · Files · Compute · SaaS · Devices
 
-横切：Context / Memory · Trace · Budget · Governance
+横切：
+Context / Memory · Trace · Eval · Budget · Governance
 ```
 
 ## 4. Work / Session / Run
@@ -108,7 +102,7 @@ Work 是长期工作的真实载体：
 ```text
 Work / Project
 ├── Goal
-├── Acceptance
+├── Capability / Acceptance Contract
 ├── Shared Resources
 ├── Work Frontier
 ├── Artifacts
@@ -117,58 +111,21 @@ Work / Project
 └── Sessions
 ```
 
-它可以跨 Agent、跨 Session、跨模型版本持续存在。
-
 ### 4.2 Session
 
-Session 是一个 Agent 与某个 Work 之间相对连续的认知 / 执行关系。
-
-同一个 Work 可以：
-
-- 顺序经历多个 Session；
-- 同时存在多个并行 Session；
-- 在 Agent 更换后继续存在。
-
-因此长期 Goal 不再天然等于一个 Session。
+Session 是一个 Agent 与某个 Work 之间相对连续的认知 / 执行关系。同一 Work 可以跨多个 Session、多个 Agent 和多个模型版本持续存在。
 
 ### 4.3 Run
 
-Run 是：
+Run 是 Runtime 被触发后，在一个 Session 内发生的一次连续执行片段。
 
-> **Runtime 被触发后，在一个 Session 内发生的一次连续执行片段。**
-
-典型新 Run：
-
-- 用户新消息；
-- Human Approval / Input；
-- Timer / Webhook；
-- Child Completion Event。
-
-基础设施内部恢复通常仍属于同一个 Run，例如 worker restart、tool retry。
+典型新 Run：用户新输入、Human Approval、Timer / Webhook、Child Completion Event。
 
 ### 4.4 Parent / Child Session
 
-自治 Sub-agent 形成独立执行生命周期时创建 Child Session：
-
-```text
-Work
-├── Parent Session
-│    │ Delegation
-│    └──────────────┐
-├── Child Session A │
-├── Child Session B │
-└── Child Session C │
-```
-
-Parent 拥有全局目标和综合责任，Child 拥有局部目标和局部 Context。
-
-### 4.5 Agent-as-Tool
-
-短生命周期、聚焦调用且不需要独立恢复的另一个 Agent，可以直接建模为 Parent Session 中的一次 Action。
+自治 Sub-agent 形成独立执行生命周期时创建 Child Session；短生命周期 Agent-as-Tool 仍可作为 Parent 中的一次 Action。
 
 ## 5. Agent Work Environment
-
-Execution Environment 被扩展成更丰富的工作环境：
 
 ```text
 Agent Work Environment
@@ -182,51 +139,17 @@ Agent Work Environment
 └── Artifacts / Progress
 ```
 
-### 5.1 Shared State + Local Isolation
+### 5.1 Work Frontier
 
-Shared-world 多智能体需要：
-
-- 共享事实世界；
-- Agent 局部工作副本；
-- 资源 identity / version；
-- ownership / lease；
-- snapshot / change；
-- conflict handling。
-
-协作不应只依赖 Agent-to-Agent 文本消息，环境状态本身就是重要协调媒介。
-
-### 5.2 Work Frontier
-
-Work Frontier 是当前**独立、可领取、可验证**的工作项集合：
-
-```text
-Work
-├── Done
-├── Claimed
-├── Blocked
-└── Frontier
-    ├── Work Item A
-    ├── Work Item B
-    └── Work Item C
-```
+Work Frontier 是当前独立、可领取、可验证的 Work Item 集合。
 
 > **Effective Parallelism ≈ Independent Work Fronts。**
 
-真正的平台问题是 Work Scheduler，而不只是 Agent Scheduler。
+Multi-Agent 的关键调度对象是 Work，而不是 Agent 数量。
 
-### 5.3 Environment Engineering
+### 5.2 Environment Engineering
 
-原始环境结果需要转换为 Agent 可消费的高信号 Observation：
-
-```text
-Raw Environment Result
-      ↓
-Parse / Filter / Diagnose
-      ↓
-Agent-facing Observation
-```
-
-环境质量直接影响 Agent 能否正确理解当前世界并高效继续。
+原始环境结果需要经过 Parse / Filter / Diagnose，转化成高信号 Agent-facing Observation。
 
 ## 6. Multi-Agent 执行模型
 
@@ -241,61 +164,223 @@ Multi-Agent Value
  - 协调成本
 ```
 
-任务复杂本身不是使用 Multi-Agent 的理由。
-
 ### 6.2 Lead Agent
 
 > **Lead Agent = Orchestrator + Global Context Owner。**
 
-它负责全局目标、工作拆解、委托、覆盖度、冲突协调和最终综合。
-
 ### 6.3 Dynamic Team Formation
 
-```text
-Goal
-+ Capabilities
-+ Knowledge
-+ Permissions
-+ Budget
-+ Risk
-      ↓
-Execution Strategy
-      ↓
-Single / Workflow / Multi-Agent / Hybrid
-```
+Harness 可以根据 Goal、Capabilities、Knowledge、Permissions、Budget 和 Risk 动态选择 Single、Workflow、Multi-Agent 或 Hybrid，并形成具体 Agent Team。
 
-Agent Team 可以是运行时结果。
+### 6.4 Recovery 与并发
 
-### 6.4 Local Recovery + Global Reconciliation
+- Local Recovery + Global Reconciliation；
+- Delegation Concurrency 与 Action Concurrency 分离；
+- Delegation 可以是持久、异步、事件驱动关系。
 
-Child 局部失败优先局部恢复；恢复结果再回到 Parent 进行全局重新协调。
+## 7. Eval Architecture
 
-### 6.5 两层并发
-
-- Delegation Concurrency：多个 Agent 同时工作。
-- Action Concurrency：单个 Agent 内多个 Tool / Action 同时执行。
-
-### 6.6 Async Delegation
-
-Delegation 应允许成为持久、事件驱动关系，而不是要求 Parent 同步阻塞等待 Child。
-
-## 7. Verification 与 Acceptance
-
-### 7.1 Evaluation Contract
+### 7.1 基本对象
 
 ```text
-Plan                → How to do
-Evaluation Contract → How to prove it is done
+Eval Suite
+   └── Task
+        └── Trial
+             ├── Agent / Harness Revision
+             ├── Environment Revision
+             ├── Transcript / Trace
+             ├── Outcome
+             └── Grader Results
 ```
 
-Evaluation Contract 包含 Criterion、Evidence、Grader / Verifier、Threshold 和 Aggregation。
+#### Task
 
-### 7.2 Acceptance 与 Quality
+定义要测量的能力和初始条件。
 
-- Acceptance Criteria：决定能否结束。
-- Quality Criteria：描述完成得有多好。
+#### Trial
 
-### 7.3 Verification Ladder
+一次完整 Agent 执行，是 Agent Eval 的基本单位。
+
+#### Transcript / Trace
+
+描述执行过程：模型步骤、Action、Delegation、Retry、Tool Result、Budget 等。
+
+#### Outcome
+
+描述 Trial 结束后真实世界的状态和交付结果。
+
+#### Grader
+
+根据 Criterion 和 Evidence 对 Outcome 或 Process 做测量。
+
+### 7.2 Evaluation Contract
+
+```text
+Evaluation Contract
+├── Criterion
+├── Evidence Source
+├── Grader
+├── Threshold / Criticality
+└── Aggregation
+```
+
+Criterion 定义“什么叫好”，Evidence 定义“看什么证明”，Grader 定义“怎么测”。三者不能混为一个 Judge Prompt。
+
+### 7.3 Grader 类型
+
+- Deterministic：测试、结构校验、环境状态、规则。
+- LLM Judge：开放式语义、综合性和主观质量。
+- Human：高风险、最终业务责任和难以自动化的判断。
+
+适合确定性检查时优先使用确定性 Grader。
+
+### 7.4 非确定性与多 Trial
+
+Agent 具有非确定性，同一个 Task 需要多次 Trial。
+
+- **pass@k**：k 次至少一次成功，更接近 Capability / Search Potential。
+- **pass^k**：k 次全部成功，更接近 Reliability。
+
+能力存在与生产可靠性不能用同一个单次通过率代表。
+
+### 7.5 Capability Eval 与 Regression Eval
+
+```text
+Capability Eval
+→ 探索新的能力边界
+      ↓ graduation
+Regression Eval
+→ 守住已经证明的能力
+```
+
+Task 应有生命周期：新能力被证明后，将代表性案例晋升到长期 Regression Suite。
+
+### 7.6 Task Spec
+
+一个稳定 Task 至少描述：
+
+```text
+Task Spec
+├── Initial State
+├── Goal
+├── Constraints
+├── Available Capabilities
+├── Acceptable Outcomes
+├── Evaluation Criteria
+└── Environment Requirements
+```
+
+Reference Solution 用于证明 Task 可解并验证 Grader，不要求 Agent 遵循相同执行路径。
+
+### 7.7 Eval Environment
+
+Eval Environment 必须：
+
+- 与 Production 行为足够接近；
+- Trial 间隔离；
+- 可重置；
+- 可观测；
+- 固定关键依赖版本。
+
+Eval Harness 应调用真实 Runtime，而不是重新实现一套假的 Agent。
+
+### 7.8 Eval Score 是 Measurement Projection
+
+```text
+Trial / Outcome
+    ↓
+Measurement Configuration
+(Task + Rubric + Grader + Judge Model + Threshold)
+    ↓
+Eval Score
+```
+
+Task、Rubric、Grader、Judge Model、Eval Harness 都需要版本化。Judge 还应通过 Human Ground Truth 校准。
+
+### 7.9 Quality / Reliability / Efficiency
+
+不建议用单一总分掩盖不同维度：
+
+- **Quality**：结果好不好；
+- **Reliability**：能否稳定重复成功；
+- **Efficiency**：达到成功 Outcome 需要多少时间、token、tool call 和成本。
+
+### 7.10 Research Eval
+
+Research Agent 应共享 Evidence Chain：
+
+```text
+Claim
+  ↓ supported by
+Evidence Ref
+  ↓ points to
+Source Ref
+```
+
+关键维度：Groundedness、Coverage、Source Quality、Factual Accuracy、Synthesis。
+
+Judge Strategy 可使用多个独立 Judge，但是否值得应由与 Human Ground Truth 的校准结果决定。
+
+### 7.11 Eval Infrastructure vs Eval Content
+
+平台负责 Eval Infrastructure：
+
+- Runner；
+- Environment；
+- Trace；
+- Grader SDK；
+- Statistics；
+- Versioning。
+
+Capability / Domain Owner 负责 Eval Content：
+
+- Tasks；
+- Criteria；
+- Rubrics；
+- Reference Solutions；
+- Failure Cases；
+- Domain-specific Graders。
+
+> **Eval Infrastructure 是平台能力；Eval Content 是 Capability Asset。**
+
+### 7.12 Eval 是 Capability Specification
+
+```text
+Requirement
+   ↓
+Capability Eval
+   ↓
+Harness Development
+   ↓
+Trial
+   ↓
+Gap Analysis
+   ↓
+Iteration
+```
+
+因此 Capability Contract 有两个互补面：
+
+```text
+Harness
+→ How to implement
+
+Eval
+→ How to prove
+```
+
+## 8. Verification 与 Acceptance
+
+### 8.1 状态分离
+
+```text
+Execution State
+≠ Verification State
+≠ Acceptance State
+≠ Publish / Deploy State
+```
+
+### 8.2 Verification Ladder
 
 ```text
 Local Checks
@@ -309,70 +394,44 @@ Integration
 Production-like Verification
 ```
 
-先使用便宜、高频的局部反馈，再逐步升级到昂贵但更接近真实目标的验证。
+### 8.3 Differential Oracle
 
-### 7.4 Differential Oracle
+Verifier 应尽量提供高信号诊断，而不只是 pass / fail。
 
-Verifier 不应只返回 pass / fail，还应尽量返回高信号差异和诊断，帮助 Agent 决定下一步。
+### 8.4 Acceptance 与 Quality
 
-### 7.5 Steward / Guardian
+- Acceptance Criteria：决定能否结束。
+- Quality Criteria：描述完成得有多好。
 
-除了 Work Item 局部验证，还需要维护跨任务长期质量：回归、架构约束、技术债和共享资源健康度。
+## 9. 整体质量系统
 
-### 7.6 Cost per Successful Outcome
-
-成本最终应衡量：
-
-> **完成一个成功 Outcome 需要多少总资源。**
-
-单次请求或 token 便宜，不代表整体执行策略更经济。
-
-## 8. Recovery 与 Escalation
-
-### 8.1 Recovery
-
-解决当前能力范围内的可恢复故障，如 worker restart、临时 Tool failure、Harness crash。
-
-### 8.2 Escalation
-
-解决当前能力边界无法跨越的问题，例如：
-
-- 需要更强模型；
-- 需要专家 Capability；
-- 需要人工决策；
-- 缺少 Tool；
-- 需要缩小 Scope。
-
-> **Recovery 解决暂时失败，Escalation 解决能力边界。**
-
-## 9. Context、Memory 与持久资源
-
-### 9.1 Context Builder
+离线 Eval 不是完整质量系统。Production 还需要：
 
 ```text
-Session / State / Memory / Notes / Artifacts / Workspace
-                         ↓
-                   Context Builder
-                         ↓
-                      Context
+Offline Eval
+Production Monitoring
+A/B Experiment
+User Feedback
+Transcript Review
+Human Evaluation
+Failure / Incident Mining
 ```
 
-Context Builder 属于 Harness / Context Strategy。
+Production failure 应能够沉淀为新的 Capability Eval 或 Regression Task，形成数据闭环。
 
-### 9.2 Compaction
+## 10. Recovery 与 Escalation
 
-Compaction 改变模型看到什么，不改变真实历史；摘要是派生资源。
+Recovery 解决暂时、可恢复的故障；Escalation 解决当前能力边界无法跨越的问题。
 
-### 9.3 Notes、Memory、Workspace、Artifact
+## 11. Context、Memory 与持久资源
 
-- Notes / Todo：当前主观工作认知。
-- Memory：跨时间保留并可召回的信息。
-- Workspace：Work 的外部持久工作状态。
-- Artifact：正式结果或交付物。
+Context Builder 从 Session、State、Memory、Notes、Artifacts、Workspace 等来源动态投影当前 Working Set。
 
-Workspace 现在更明确属于 Work，而不是某个 Session 的临时附件。
+Compaction 改变模型看到什么，不改变真实历史。
 
-## 10. Effort 与预算
+Workspace 属于 Work 的长期工作状态；Artifact 是正式结果；Notes 是主观工作认知；Memory 是跨时间召回信息。
+
+## 12. Effort 与预算
 
 ```text
 Effort Budget
@@ -387,7 +446,7 @@ Effort Budget
 
 Plan 是可变假设；Budget 是硬约束。
 
-## 11. Harness 工程
+## 13. Harness 工程
 
 ```text
 Harness Revision
@@ -405,46 +464,29 @@ Harness Revision
 
 Harness Revision 与 Session 生命周期分离。
 
-## 12. Human Governance
+## 14. Human Governance
 
-随着 Agent 自主性增强，人类逐渐从 Execution Path 移向 Governance Plane：
+人类逐渐从 Execution Path 移向 Governance Plane，负责 Goal、Acceptance、Risk Boundary、Escalation 和最终 Publish / Deploy Decision。
 
-```text
-Human / Governance
-├── Goal
-├── Acceptance
-├── Risk Boundary
-├── Escalation
-└── Publish / Deploy Decision
-```
-
-必须区分：
-
-```text
-VerificationPassed
-≠ AcceptedForProduction
-≠ Published / Deployed
-```
-
-## 13. 当前架构不变量
+## 15. 当前架构不变量
 
 1. **应用形态不等于执行范式。**
 2. **Workflow 与 Agent 的核心区别是执行控制权归属。**
 3. **Runtime 承载持久执行事实，不固化控制策略。**
 4. **Runtime 稳定，Harness 可替换、可简化甚至消失。**
 5. **Context 是可重建投影和当前 Working Set。**
-6. **长期工作连续性不依赖 Agent 或 Session 永久存在；Work 才是长期载体。**
-7. **Work、Session、Run 分别承载长期工作、Agent 连续关系和一次触发后的连续执行片段。**
-8. **Progress / Notes 是 Projection，不是 Source of Truth。**
-9. **Recovery 必须重新校验 Ground Truth。**
+6. **Work 是长期连续性的载体；Agent 和 Session 都可以被替换。**
+7. **Work、Session、Run 分别承载长期工作、Agent 连续关系和一次触发后的连续执行。**
+8. **Multi-Agent 的关键调度对象是 Work Frontier。**
+9. **Agent Work Environment 同时支持工作发现、行动、观测和验证。**
 10. **Plan 负责怎么做，Evaluation Contract 负责如何证明已经做成。**
-11. **Execution State、Verification State 与 Acceptance State 必须分离。**
-12. **Multi-Agent 的关键不是 Agent 数量，而是 Work Frontier。**
-13. **Agent Work Environment 既要支持行动，也要支持工作发现、Ownership、Observation 和 Verification。**
-14. **Lead Agent 负责全局编排和全局 Context；Child Agent 负责局部工作。**
-15. **Agent Team 可以由 Harness 根据 Goal 和约束动态形成。**
-16. **Multi-Agent 需要 Local Recovery + Global Reconciliation。**
-17. **Delegation Concurrency 与 Action Concurrency 是两种不同并发。**
-18. **Recovery 与 Escalation 分别解决暂时失败和能力边界。**
-19. **Verification 应形成阶梯，并提供可行动的 Differential Oracle。**
-20. **Human 应逐渐从 Execution Path 移向 Governance Plane。**
+11. **Trial 是 Agent Eval 的基本单位，而不是单次 response。**
+12. **Transcript / Trace 与 Outcome 必须分离。**
+13. **Outcome 是事实，Eval Score 是 Measurement Projection。**
+14. **Capability Eval 探索能力边界，Regression Eval 守住已获得能力。**
+15. **非确定性 Agent 必须多 Trial 测量；pass@k 和 pass^k 分别反映不同问题。**
+16. **Eval Infrastructure 属于平台能力，Eval Content 属于 Capability Asset。**
+17. **Eval 是可执行 Capability Specification：Harness 说明怎么实现，Eval 说明怎么证明。**
+18. **Execution、Verification、Acceptance 和 Publish 状态不能混为一体。**
+19. **开放式 Agent 不需要遵循 Golden Agent Path，Outcome 与 Process 应分别评估。**
+20. **Human 最终位于 Goal、Risk、Acceptance 和 Publish 所在的 Governance Plane。**
