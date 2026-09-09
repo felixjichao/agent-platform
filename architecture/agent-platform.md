@@ -2,7 +2,7 @@
 
 本文档记录 Agent Platform 当前已经形成的规范性架构结论，并随着研究持续演进。
 
-> 当前版本已吸收前十篇研究。Capability Engineering 进一步拆分出程序性能力（Skill）与行动能力（Tool），并形成运行时动态组装 Agent 的模型。
+> 当前版本已吸收前十一篇研究。PTC（Programmatic Tool Calling）进一步把 Execution Strategy 与 Execution Environment 分开，并明确 LLM 应主要处于 Control Plane，而数据与动作尽可能留在执行平面。
 
 ## 1. 架构主张
 
@@ -23,9 +23,9 @@ L1 基础设施 / 真实世界
 - 业务 / 产品决定 **要完成什么**；
 - 能力契约定义 **能力是什么、怎样证明**；
 - 能力工程提供 **Agent 能发现、学习和调用什么能力**；
-- Harness / 执行策略决定 **当前怎么执行**；
+- Harness / 执行策略决定 **当前怎么执行和编排**；
 - Runtime 记录 **真实发生了什么**；
-- Work Environment 决定 **Agent 如何观察、行动和验证**；
+- Work Environment 提供 **受治理的数据与动作平面**；
 - Eval / Trace 反馈 **做得怎样以及为什么**。
 
 ## 2. 七层软件栈
@@ -43,29 +43,30 @@ L5 能力工程
    Skill · Tool · Capability Adapter · MCP Binding
 
 L4 执行策略 / Harness
-   Direct · Workflow · Agent Loop · Multi-Agent
+   Direct · Workflow · Agent Loop · PTC · Multi-Agent
    Planning · Delegation · Context Strategy · Evaluator
 
 L3 统一运行时
-   Work · Session · Run · State · Action · Result
+   Work · Session · Run · State · Action · Result · Observation
    Resource · Delegation · Recovery
 
 L2 Agent Work Environment
-   Workspace · Shared Resources · Work Discovery
-   Ownership · Observation · Verification · Sandbox
+   Workspace · Programmatic Execution · Shared Resources
+   Work Discovery · Ownership · Observation Projection
+   Verification · Sandbox · Capability Proxy
 
 L1 基础设施 / 真实世界
    API · MCP · DB · Browser · Files · Compute · SaaS · Devices
 
 横切：
-Context / Memory · Trace · Eval · Budget · Governance
+Context / Memory · Trace · Eval · Budget · Data Flow · Governance
 ```
 
 ## 3. 核心设计原则
 
 ### 3.1 应用形态与执行范式分离
 
-对话、研究、知识库、Coding 等是应用形态；Direct、Workflow、Agent Loop、Multi-Agent 等是执行范式。
+对话、研究、知识库、Coding 等是应用形态；Direct、Workflow、Agent Loop、PTC、Multi-Agent 等是执行范式。
 
 ### 3.2 执行控制权决定 Workflow 与 Agent 的边界
 
@@ -76,9 +77,23 @@ Context / Memory · Trace · Eval · Budget · Governance
 
 Harness 是当前模型能力缺口的适应性脚手架，其复杂度必须通过 Eval 证明。
 
-### 3.4 Agent 可以动态组装
+### 3.4 LLM 是 Control Plane，不是 Data Plane
 
-Agent 不需要永久拥有一套静态 Tool / Skill 全集。有效 Agent 可以在运行时被组装：
+模型负责高价值决策和策略调整；批量数据搬运、循环、过滤、join 和 aggregation 尽量留在 Execution Environment。
+
+```text
+Agent / Harness
+= Execution Control Plane
+
+Agent Work Environment
+= Data + Action Plane
+```
+
+### 3.5 One Reasoning Step != One Action
+
+一个模型决策可能直接产生一个 Tool Call，也可能产生一个 Program，而 Program 再展开大量 Actions。因此 Runtime 不绑定 `1 model step = 1 tool call`。
+
+### 3.6 Agent 可以动态组装
 
 ```text
 Base Agent
@@ -90,51 +105,86 @@ Base Agent
 Effective Agent
 ```
 
-### 3.5 Context 是可重建投影
+### 3.7 Context 是可重建投影
 
 Context 是当前 Working Set，不是持久事实源。
 
-### 3.6 长期工作连续性不依赖 Agent 连续性
+### 3.8 长期工作连续性不依赖 Agent 连续性
 
 Agent 可以退出、忘记、被替换；Work 必须记住。
 
-### 3.7 Outcome 是事实，Eval Score 是测量投影
+## 4. Execution Strategy
 
-评分必须可追溯到 Task、Evidence、Grader 和版本化 Measurement Configuration。
+### 4.1 执行连续谱
 
-## 4. Capability Engineering
+```text
+Direct
+  ↓
+Static Workflow
+  ↓
+Dynamic Workflow / Plan
+  ↓
+Agent Loop
+  ↓
+PTC / Programmatic Orchestration
+  ↓
+Dynamic Multi-Agent
+```
 
-### 4.1 Capability 分类
+这些不是互斥层级。一个 Multi-Agent Child 内部也可以使用 PTC，一个 Workflow 节点也可以启动 Agent Loop。
 
-当前至少区分：
+### 4.2 Workflow Control Primitives
+
+基础控制原语：Sequence、Branch、Fork / Join、Loop、Dynamic Expansion。
+
+Workflow Graph 是输入表达；Agent Graph 更接近运行时结果。
+
+### 4.3 PTC
+
+PTC 是 Tool Orchestration Mode，而不是 Tool Type。
+
+```text
+Direct
+Model → Tool → Model → Tool → Model
+
+PTC
+Model → Program → many Tools / loops / filters → Observation → Model
+```
+
+同一个 Tool 可以同时支持 Direct 和 PTC。
+
+### 4.4 Multi-Agent
+
+使用 Multi-Agent 取决于可并行性、上下文独立性、结果可合并性、依赖密度和协调成本。
+
+Lead Agent = Orchestrator + Global Context Owner。
+
+Agent Team 可以根据 Goal、Capabilities、Knowledge、Permissions、Budget 和 Risk 动态形成。
+
+## 5. Capability Engineering
+
+### 5.1 Capability 分类
 
 ```text
 Capability
 ├── Procedural Capability
 │   └── Skill
-│
 └── Action Capability
     └── Tool
 ```
 
-未来还可以增加 Knowledge Capability、Agent Capability 等类型，但核心是保持**语义能力**与具体实现解耦。
-
-### 4.2 Skill、Tool、Harness
+### 5.2 Skill、Tool、Harness、MCP
 
 ```text
-Tool
-→ Agent 能做什么动作？
-
-Skill
-→ 这类任务通常应该怎么做？
-
-Harness
-→ 当前任务此刻怎么推进？
+Skill   → 这类任务应该怎么做
+Tool    → 能执行什么动作
+MCP     → 如何连接外部系统
+Harness → 当前任务怎么推进
 ```
 
-> **Tool 是行动能力，Skill 是程序性知识，Harness 是当前执行策略。**
+MCP 是连接标准，不是 Capability Design Standard。
 
-### 4.3 Capability Adapter
+### 5.3 Capability Adapter
 
 ```text
 Backend API / Service
@@ -144,212 +194,216 @@ Capability Adapter
 Agent-facing Tool
 ```
 
-后端接口粒度不等于 Agent Capability 粒度。Adapter 负责把稳定 mechanics 下沉，给 Agent 暴露有业务语义的行动边界。
+稳定 mechanics 下沉到 Capability，需要智能判断的决策留给 Harness。
 
-### 4.4 Capability Taxonomy
-
-```text
-Domain
-  ↓
-Resource
-  ↓
-Semantic Capability
-  ↓
-Concrete Tool / Skill
-```
-
-每个 Capability 应明确 What、When、When NOT、Neighbor / Boundary。
-
-### 4.5 Capability Discovery
-
-随着能力数量扩大，平台不再把全量定义注入 Context：
+### 5.4 Capability Discovery
 
 ```text
-Capability Discovery
-      ↓
-Metadata Selection
-      ↓
+Capability Catalog
+      ↓ discovery
+Metadata
+      ↓ select
 Skill / Tool Loading
       ↓
 Execution
 ```
 
-> **Discovery != Loading。**
+Discovery 与 Loading 分离。
 
-Capability Catalog 是全量资产目录，Context 只承载当前需要的子集。
+### 5.5 Skill Progressive Disclosure
 
-### 4.6 Progressive Disclosure for Skill
+Metadata → `SKILL.md` → references / scripts / resources。
 
-```text
-Level 1
-Skill Metadata
-name + description
-      ↓
-Level 2
-SKILL.md
-      ↓
-Level 3
-references / scripts / resources
-```
+Skill-local Script 不自动成为平台 Tool。
 
-Metadata 是 Knowledge Routing Prompt。它既要帮助正确激活，也要支持“不该激活时不激活”。
+### 5.6 Tool Contract
 
-### 4.7 Skill Anatomy
+Tool Contract 包括 Identity、Applicability、Semantics、Schema、Usage Guidance、Side Effects 和 Permission / Risk。
 
-```text
-Skill
-├── Instructions
-├── Scripts
-├── References
-└── Resources
-```
+### 5.7 Tool Result 与 Observation
 
-Skill-local Script 用于封装某个 Skill 内稳定、局部的 deterministic mechanics；它不自动成为平台全局 Tool。
+Tool 既是 Action Capability，也是 Context Producer。
 
-### 4.8 Skill Information Architecture
+Result 是真实执行事实；Observation 是面向模型的信息投影。
 
-`SKILL.md` 不应长成巨型手册。它应主要包含：
+### 5.8 Eval-driven Capability Engineering
 
-- 核心原则；
-- 决策路径；
-- Knowledge Map；
-- Resource Entry Points。
+Tool 与 Skill 都必须通过真实 Task、Trial、Trace 和 Regression Eval 迭代。
 
-深入内容拆到 references。拆分依据优先是 Context Co-occurrence，而不是传统文档目录。
+## 6. Programmatic Execution Runtime
 
-### 4.9 Tool Contract
+PTC 不应该被实现成一个无限权限 `python` Tool，而需要受治理的 Programmatic Execution Runtime：
 
 ```text
-Tool Contract
-├── Identity
-├── Applicability
-├── Semantics
-├── Input / Output Schema
-├── Usage Guidance
-├── Side Effects
-└── Permission / Risk
+Programmatic Execution Runtime
+├── Sandbox / Isolation
+├── Workspace
+├── Capability Proxy
+├── Permission Policy
+├── Data Flow Policy
+├── Resource Budget
+├── Secrets Isolation
+├── Action Trace
+├── Kill / Timeout
+└── Recovery
 ```
 
-Schema 说明机器允许什么；Guidance 说明 Agent 怎样才能用对。
+### 6.1 Code Permission != Business Capability Permission
 
-### 4.10 Result 与 Observation
+允许执行代码，不代表代码自动拥有 GitHub、数据库、Slack 等业务权限。
+
+程序内部仍通过 Capability Proxy 调用受治理 Capability。
+
+```text
+Effective Permission
+≈ Sandbox Boundary
+  ∩ Capability Grant
+  ∩ User Permission
+  ∩ Task Policy
+```
+
+### 6.2 程序内部 Action 必须可观测
+
+Trace 不能只有：
+
+```text
+CodeExecutionStarted
+CodeExecutionSucceeded
+```
+
+而应保留：
+
+```text
+Program
+├── Action A
+├── Action B
+├── Action C
+├── Policy Decision
+├── Retry
+└── Result
+```
+
+模型步骤、程序和具体 Action 形成层级 Trace。
+
+### 6.3 Program Budget
+
+至少治理：
+
+- max_tool_calls；
+- max_runtime；
+- max_cost；
+- max_parallelism；
+- CPU / memory；
+- data read / write limits。
+
+Harness 可以生成复杂程序，但 Environment 必须限制其资源上界。
+
+## 7. Data Plane 与 Observation
+
+### 7.1 三类数据
+
+```text
+Model-visible Data
+→ 可进入 Context
+
+Execution-only Data
+→ 程序可处理，但模型不可见
+
+Persistent Resource
+→ 写入 Workspace / Resource Store，通过 Ref 使用
+```
+
+> **可以允许 Agent 系统处理数据，而不允许模型直接看到这些数据。**
+
+### 7.2 Result → Observation Pipeline
 
 ```text
 Action
   ↓
 Raw Result
   ↓
-Transform / Filter / Summarize / Reference
+Transform
+├── Filter
+├── Join
+├── Aggregate
+├── Redact
+├── Persist
+└── Summarize
   ↓
 Observation
   ↓
 Context
 ```
 
-Result 是执行事实；Observation 是面向模型的信息投影。Tool 同时是 Action Capability 和 Context Producer。
+Observation Projection 是 Agent Work Environment 与 Context Engineering 的连接点。
 
-### 4.11 Agentic Boundary
+### 7.3 Data Flow Policy
 
-> **Deterministic mechanics 下沉到 Capability；uncertain decisions 留给 Harness。**
-
-Tool 太原子会把机械 orchestration 推给 Agent；太巨大则会把真正需要智能判断的决策藏进黑盒 Workflow。
-
-### 4.12 Skill 与 MCP
+Capability Permission 只回答“能不能调用某个动作”，还需要 Data Flow Policy 回答“某类数据能从哪里流向哪里”。
 
 ```text
-MCP
-→ 怎么连接外部系统？
-
-Tool
-→ 可以执行什么动作？
-
-Skill
-→ 应该怎样完成一类任务？
+Source
++ Data Classification
++ Destination
++ Capability
++ Purpose / Work Context
+      ↓
+Allow / Deny / Redact
 ```
 
-MCP 是连接标准，不是 Capability Design Standard。
-
-推荐绑定关系：
+例如：
 
 ```text
-Skill
-  ↓ requires
-Semantic Capability
-  ↓ binds
-Tool
-  ↓ implemented via
-MCP / API / Local Script
+PII DB → approved CRM       ✓
+PII DB → arbitrary LLM      ✗
+PII DB → public internet    ✗
 ```
 
-Skill 应尽量依赖语义能力，而不是硬编码某个具体 MCP Server。
+PTC 尤其依赖确定性的 Data Flow Enforcement，因为中间数据可能完全不经过模型。
 
-### 4.13 Skill / Tool Registry
+## 8. Workspace 与代码生命周期
 
-> **Agent uses capability; Agent does not own capability.**
-
-Skill / Tool 都应具备：
-
-- independent；
-- portable；
-- versioned；
-- discoverable；
-- composable；
-- governed。
-
-Agent Definition 逐渐从“静态能力全集”转向“基础身份 + 动态能力发现”。
-
-### 4.14 Eval-driven Capability Engineering
-
-Tool：
+Workspace 是 Work 的持久工作世界：
 
 ```text
-Real Tasks
-→ Agent Trials
-→ Trace Mining
-→ Tool-use Smells
-→ Tool Revision
-→ Regression Eval
+Workspace
+├── Intermediate Files
+├── Generated Programs
+├── Checkpoints
+├── Data Artifacts
+└── Progress
 ```
 
-Skill：
+生成代码分三层生命周期：
 
 ```text
-Capability Gap
-→ Skill Candidate
-→ Activation / Restraint / Outcome Eval
-→ Publish / Revise
+Ephemeral Code
+→ 当前 Run
+
+Workspace Code
+→ 当前 Work
+
+Promoted Capability
+→ 跨 Work 平台资产
 ```
 
-常见 Skill Failure：Discovery、False Activation、Navigation、Instruction、Over-contexting、Procedure Failure。
-
-## 5. Capability Supply Chain 与权限边界
-
-Skill 可以包含 Instructions、Scripts 和 Dependencies，因此是可执行供应链资产。
-
-必须区分：
+晋升流程：
 
 ```text
-Install
-≠ Activate
-≠ Execute Script
-≠ Grant Capability
+Ephemeral
+   ↓ useful
+Workspace
+   ↓ reusable
+Capability Candidate
+   ↓ Eval / Security / Review
+Promoted Capability
 ```
 
-Skill 可以声明 Requirement，但不能自行扩大权限：
+Agent 可以提出 Candidate，但不能在生产 Session 内直接自发布为全局可信 Capability。
 
-```text
-Effective Permission
-≈ Skill Requirement
-  ∩ Agent Policy
-  ∩ User Permission
-  ∩ Task Need
-```
+## 9. Work / Session / Run
 
-Skill Revision 和 Tool Revision 都需要固定版本，使 Recovery、Audit 和 Eval 可以重现当时真正使用的能力。
-
-## 6. Work / Session / Run
-
-### 6.1 Work
+### 9.1 Work
 
 ```text
 Work / Project
@@ -363,77 +417,47 @@ Work / Project
 └── Sessions
 ```
 
-Work 是长期目标与共享世界的载体。
-
-### 6.2 Session
+### 9.2 Session
 
 Session 是一个 Agent 与 Work 的相对连续认知 / 执行关系。
 
-### 6.3 Run
+### 9.3 Run
 
 Run 是 Runtime 被触发后，在一个 Session 内发生的一次连续执行片段。
 
-### 6.4 Parent / Child Session
+### 9.4 Parent / Child Session
 
-需要独立目标、多轮 Context、Artifact 和 Recovery 的自治 Sub-agent 使用 Child Session；短生命周期 Agent-as-Tool 是 Parent 中的一次 Action。
+自治 Sub-agent 需要独立目标、多轮 Context、Artifact 和 Recovery 时使用 Child Session；Agent-as-Tool 是 Parent 中一次 Action。
 
-## 7. Agent Work Environment
+## 10. Agent Work Environment
 
 ```text
 Agent Work Environment
 ├── Shared Resources
 ├── Local Workspace
+├── Programmatic Execution
 ├── Work Discovery
 ├── Ownership / Lease
-├── Observation
+├── Observation Projection
 ├── Verification
 ├── Feedback / Oracle
-└── Artifacts / Progress
+├── Capability Proxy
+└── Sandbox / Isolation
 ```
 
-### 7.1 Work Frontier
+### 10.1 Work Frontier
 
-Work Frontier 是当前独立、可领取、可验证的 Work Item 集合。
+当前独立、可领取、可验证的 Work Item 集合决定有效并行度。
 
-> **Effective Parallelism ≈ Independent Work Fronts。**
+> **Multi-Agent 的关键是 Work Scheduler，不是 Agent Scheduler。**
 
-### 7.2 Environment Engineering
+### 10.2 Environment Engineering
 
 环境负责把原始结果转化为高信号 Observation，并提供可行动反馈。
 
-## 8. Execution Strategy
+## 11. Context、Memory 与持久资源
 
-### 8.1 连续谱
-
-```text
-Direct
-  ↓
-Static Workflow
-  ↓
-Dynamic Workflow / Plan
-  ↓
-Agent Loop
-  ↓
-Dynamic Multi-Agent
-```
-
-### 8.2 Workflow Control Primitives
-
-Sequence、Branch、Fork / Join、Loop、Dynamic Expansion。
-
-Workflow Graph 是输入表达；Agent Graph 更接近运行时结果。
-
-### 8.3 Multi-Agent
-
-使用 Multi-Agent 取决于可并行性、上下文独立性、结果可合并性、依赖密度和协调成本。
-
-Lead Agent = Orchestrator + Global Context Owner。
-
-Agent Team 可以根据 Goal、Capabilities、Knowledge、Permissions、Budget 和 Risk 动态形成。
-
-## 9. Context、Memory 与持久资源
-
-### 9.1 Context Builder
+### 11.1 Context Builder
 
 ```text
 Session / State / Memory / Notes / Artifacts / Workspace / Capabilities
@@ -443,91 +467,92 @@ Session / State / Memory / Notes / Artifacts / Workspace / Capabilities
                            Context
 ```
 
-### 9.2 Context 是 Working Set
+### 11.2 Context 是 Working Set
 
-稳定 System / Policy / Capability Metadata 适合前置，稀疏知识、完整 Tool / Skill 内容和外部数据适合 JIT 加载。
+稳定 Policy / Agent Definition / Capability Metadata 前置，完整 Tool / Skill、外部知识和数据按需加载。
 
-### 9.3 Compaction
+### 11.3 Compaction
 
-Compaction 改变模型看到什么，不改变真实历史。摘要是派生资源。
+Compaction 改变模型看到什么，不改变真实历史。
 
-### 9.4 资源语义
+### 11.4 资源语义
 
-- Notes / Todo：当前主观工作认知；
-- Memory：跨时间保留并召回的信息；
-- Workspace：Work 的持久工作状态；
-- Artifact：正式结果或交付物。
+Notes / Todo 是主观工作认知；Memory 是跨时间信息；Workspace 是持久工作状态；Artifact 是正式结果。
 
-## 10. Eval Architecture
+## 12. Eval Architecture
 
-Trial 是 Agent Eval 的基本单位。
+Trial 是 Agent Eval 的基本单位：
 
 ```text
-Eval Suite
-   └── Task
-        └── Trial
-             ├── Harness Revision
-             ├── Capability Revisions
-             ├── Environment Revision
-             ├── Trace
-             ├── Outcome
-             └── Grader Results
+Task
+  ↓
+Trial
+├── Harness Revision
+├── Capability Revisions
+├── Environment Revision
+├── Trace
+├── Outcome
+└── Grader Results
 ```
 
-Evaluation Contract 由 Criterion、Evidence Source、Grader、Threshold / Criticality 和 Aggregation 组成。
+Evaluation Contract 由 Criterion、Evidence Source、Grader、Threshold / Criticality、Aggregation 组成。
 
-- pass@k 更接近能力 / 搜索潜力；
-- pass^k 更接近可靠性；
-- Capability Eval 探索能力边界；
-- Regression Eval 守住已获得能力。
+- pass@k：能力 / 搜索潜力；
+- pass^k：可靠性；
+- Capability Eval：探索能力边界；
+- Regression Eval：守住能力。
 
-Eval Infrastructure 属于平台能力，Eval Content 属于 Capability Asset。
+Outcome 是事实，Score 是 Measurement Projection。
 
-> **Harness → How to implement；Eval → How to prove。**
+Eval Infrastructure 属于平台能力；Eval Content 属于 Capability Asset。
 
-## 11. Verification 与 Acceptance
+## 13. Verification 与 Acceptance
 
 Execution State、Verification State、Acceptance State、Publish / Deploy State 分离。
 
 Verification Ladder：Local Checks → Regression → Representative Workloads → Integration → Production-like Verification。
 
-## 12. Recovery 与 Escalation
+## 14. Recovery 与 Escalation
 
 Recovery 解决暂时、可恢复故障；Escalation 解决当前能力边界。
 
-## 13. Effort 与预算
+## 15. Effort 与预算
 
-Reasoning、Delegation、Action、Search、Evaluation、Time 和 Cost 都是可治理预算。Plan 是可变假设，Budget 是硬约束。
+Reasoning、Delegation、Action、Search、Evaluation、Time、Cost 以及 Program Resource 都是可治理预算。
 
-## 14. Harness 工程
+Plan 是可变假设；Budget 是硬约束。
+
+## 16. Harness 工程
 
 Harness Revision → Trial → Trace + Outcome → Eval → Failure Analysis → Harness Revision。
 
 Harness 版本与 Session 生命周期分离。
 
-## 15. Governance
+## 17. Governance
 
 Human 逐渐从 Execution Path 移向 Governance Plane，负责 Goal、Acceptance、Risk Boundary、Escalation 和最终 Publish / Deploy Decision。
 
-## 16. 当前架构不变量
+Capability Candidate 晋升、Data Flow Policy、Program Permission 也属于 Governance 的治理范围。
+
+## 18. 当前架构不变量
 
 1. **应用形态不等于执行范式。**
 2. **Workflow 与 Agent 的核心区别是执行控制权归属。**
 3. **Runtime 承载持久执行事实，不固化控制策略。**
 4. **Runtime 稳定，Harness 可替换、可简化甚至消失。**
-5. **Agent 可以由 Base Agent + Skills + Tools + Knowledge + Task Context 动态组装。**
-6. **Tool 是行动能力，Skill 是程序性知识，Harness 是当前执行策略。**
-7. **MCP 是连接标准，不是 Capability Design Standard。**
-8. **API 不等于 Agent Capability；Capability Adapter 负责建立 Agent-facing Tool。**
-9. **Capability Discovery 与 Loading 分离，避免全量 Tool / Skill 永久进入 Context。**
-10. **Skill 是可执行供应链资产；Install、Activate、Execute、Grant 是不同阶段。**
-11. **Deterministic mechanics 下沉到 Capability，uncertain decisions 留给 Harness。**
-12. **Skill / Tool Engineering 必须由真实 Task、Trace 和 Eval 驱动。**
-13. **Context 是可重建投影和当前 Working Set。**
-14. **Work 是长期连续性的载体。**
-15. **Work、Session、Run 分别承载长期工作、Agent 连续关系和一次连续执行。**
-16. **Multi-Agent 的关键调度对象是 Work Frontier。**
-17. **Agent Work Environment 同时支持工作发现、行动、观测和验证。**
-18. **Trial 是 Agent Eval 的基本单位。**
-19. **Outcome 是事实，Eval Score 是 Measurement Projection。**
+5. **PTC 是 Execution Strategy / Tool Orchestration Mode，不是 Tool Type。**
+6. **LLM 应作为 Execution Control Plane，而不是承担大规模 Data Transportation。**
+7. **One Reasoning Step 可以展开 many Environment Actions。**
+8. **Code Permission 不等于 Business Capability Permission。**
+9. **程序内部 Action 仍必须经过授权、Budget、Trace 和 Audit。**
+10. **Result 是执行事实，Observation 是面向模型的信息投影。**
+11. **Execution-only Data 可以被程序处理，而不进入 Model Context。**
+12. **Capability Policy 与 Data Flow Policy 是两个不同治理维度。**
+13. **生成代码按 Run → Work → Platform 分层生命周期管理。**
+14. **从 Workspace Code 晋升为共享 Capability 必须经过 Eval、安全和评审。**
+15. **Tool 是行动能力，Skill 是程序性知识，MCP 是连接标准，Harness 是当前执行策略。**
+16. **Agent 可以由 Base Agent + Skills + Tools + Knowledge + Task Context 动态组装。**
+17. **Context 是可重建投影和当前 Working Set。**
+18. **Work 是长期连续性的载体。**
+19. **Multi-Agent 的关键调度对象是 Work Frontier。**
 20. **Eval 是可执行 Capability Specification。**
