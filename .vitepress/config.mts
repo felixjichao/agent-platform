@@ -38,11 +38,7 @@ function buildArticleSidebar() {
     .map((entry) => {
       const articleDir = resolve(articlesRoot, entry.name)
       const articleNumber = entry.name.match(/^(\d+)-/)?.[1] ?? ''
-      const articleTitle = markdownTitle(
-        resolve(articleDir, 'README.md'),
-        fallbackTitle(entry.name)
-      )
-
+      const articleTitle = markdownTitle(resolve(articleDir, 'README.md'), fallbackTitle(entry.name))
       const chapters = readdirSync(articleDir, { withFileTypes: true })
         .filter((file) => file.isFile() && /^\d+-.*\.md$/.test(file.name))
         .sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true }))
@@ -87,9 +83,14 @@ export default defineConfig({
           items: [
             { text: '架构图谱', link: '/architecture/' },
             { text: '总体架构', link: '/architecture/agent-platform' },
+            { text: 'L7 · 业务 / 产品', link: '/architecture/l7-business-product' },
+            { text: 'L6 · 能力契约', link: '/architecture/l6-capability-contract' },
+            { text: 'L5 · 能力工程', link: '/architecture/l5-capability-engineering' },
             { text: 'L4 · 执行策略 / Harness', link: '/architecture/l4-strategy-harness' },
             { text: 'L3 · 统一 Runtime', link: '/architecture/l3-runtime' },
-            { text: 'L2 · Work Environment', link: '/architecture/l2-work-environment' }
+            { text: 'L2 · Work Environment', link: '/architecture/l2-work-environment' },
+            { text: 'L1 · 基础设施 / 真实世界', link: '/architecture/l1-infrastructure-real-world' },
+            { text: '横切系统与治理', link: '/architecture/cross-cutting-governance' }
           ]
         }
       ],
