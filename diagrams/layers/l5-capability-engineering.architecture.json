@@ -35,7 +35,7 @@
     {"id":"backend-adapter","from":"backend","to":"adapter","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
     {"id":"adapter-tool","from":"adapter","to":"agent-tool","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
     {"id":"skill-metadata-detail","from":"skill-metadata","to":"skill-detail","variant":"dashed","fromSide":"bottom","toSide":"top","route":"straight"},
-    {"id":"selection-agent","from":"selection","to":"effective-agent","label":"assemble","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"}
+    {"id":"selection-agent","from":"selection","to":"effective-agent","label":"assemble","labelAt":[600,405],"variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"}
   ],
   "cards": [
     {"dot":"cyan","title":"四个边界","items":["Tool：能做什么动作","Skill：这类任务通常怎么做","MCP：如何连接外部系统","Harness：当前任务现在怎么推进"]},

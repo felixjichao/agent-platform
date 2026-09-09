@@ -30,8 +30,8 @@
   ],
   "connections": [
     {"id":"requirement-contract","from":"requirement","to":"contract","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
-    {"id":"harness-capability","from":"harness","to":"capability-asset","variant":"dashed","fromSide":"bottom","toSide":"left","route":"orthogonal-v","via":[[385,625]]},
-    {"id":"eval-capability","from":"eval-system","to":"capability-asset","variant":"emphasis","fromSide":"bottom","toSide":"right","route":"orthogonal-v","via":[[775,625]]}
+    {"id":"harness-capability","from":"harness","to":"capability-asset","variant":"dashed","fromSide":"bottom","toSide":"left","route":"orthogonal-v","via":[[385,688]]},
+    {"id":"eval-capability","from":"eval-system","to":"capability-asset","variant":"emphasis","fromSide":"bottom","toSide":"right","route":"orthogonal-v","via":[[775,688]]}
   ],
   "cards": [
     {"dot":"cyan","title":"契约先于实现","items":["Capability Definition 不等于 Tool Schema","Acceptance / Quality / Eval / Evidence 必须明确","否则只能证明 Agent 做了事，无法证明具备能力"]},

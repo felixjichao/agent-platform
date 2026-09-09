@@ -32,10 +32,10 @@
   "connections": [
     {"id":"contract-execution","from":"contract","to":"execution-core","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
     {"id":"execution-world","from":"execution-core","to":"world","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
-    {"id":"context-execution","from":"context","to":"execution-core","label":"projection","variant":"dashed","fromSide":"right","toSide":"left","route":"orthogonal-h","via":[[365,204],[365,350]]},
-    {"id":"observability-execution","from":"execution-core","to":"observability","label":"facts / trace","variant":"dashed","fromSide":"left","toSide":"right","route":"orthogonal-h","via":[[365,372],[365,504]]},
-    {"id":"evaluation-execution","from":"evaluation","to":"execution-core","label":"criteria / grader","variant":"dashed","fromSide":"left","toSide":"right","route":"orthogonal-h","via":[[835,204],[835,350]]},
-    {"id":"security-execution","from":"security","to":"execution-core","label":"policy / scope","variant":"security","fromSide":"left","toSide":"right","route":"orthogonal-h","via":[[835,504],[835,372]]}
+    {"id":"context-execution","from":"context","to":"execution-core","label":"projection","variant":"dashed","fromSide":"right","toSide":"left","route":"orthogonal-h","via":[[365,204],[365,361]]},
+    {"id":"observability-execution","from":"execution-core","to":"observability","label":"facts / trace","variant":"dashed","fromSide":"left","toSide":"right","route":"orthogonal-h","via":[[365,361],[365,504]]},
+    {"id":"evaluation-execution","from":"evaluation","to":"execution-core","label":"criteria / grader","variant":"dashed","fromSide":"left","toSide":"right","route":"orthogonal-h","via":[[835,204],[835,361]]},
+    {"id":"security-execution","from":"security","to":"execution-core","label":"policy / scope","variant":"security","fromSide":"left","toSide":"right","route":"orthogonal-h","via":[[835,504],[835,361]]}
   ],
   "cards": [
     {"dot":"cyan","title":"Context 是投影","items":["Session ≠ State ≠ Context","Context contains a map, not the whole world","Compaction 改变模型看到什么，不改变执行事实"]},
