@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Runtime vs Harness</title>
+  <desc id="desc">Harness 管执行策略，Runtime 管真实执行事实。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbfdff"/><stop offset="1" stop-color="#eef4ff"/></linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2457d6"/><stop offset="1" stop-color="#4c7df0"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="#173a7a" flood-opacity="0.11"/></filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0L12 6L0 12Z" fill="#73809a"/></marker>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <text x="100" y="92" font-family="Inter, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="48" font-weight="700" fill="#172033">Runtime 管事实，Harness 管策略</text>
+  <text x="100" y="136" font-family="Inter, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="22" fill="#5f6c84">稳定的平台边界，不应该固化某一代模型时代的执行脚手架</text>
+
+  <g filter="url(#shadow)" font-family="Inter, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+    <rect x="110" y="220" width="610" height="520" rx="30" fill="url(#brand)"/>
+    <text x="165" y="286" font-size="36" font-weight="700" fill="#ffffff">Harness</text>
+    <text x="165" y="322" font-size="20" fill="#dce7ff">当前准备怎么完成</text>
+    <line x1="165" y1="350" x2="665" y2="350" stroke="#aac2ff" stroke-opacity="0.55"/>
+    <g font-size="22" fill="#ffffff">
+      <text x="165" y="402">Planning / Todo</text>
+      <text x="165" y="452">Context Strategy</text>
+      <text x="165" y="502">Evaluator / Completion Strategy</text>
+      <text x="165" y="552">Delegation Strategy</text>
+      <text x="165" y="602">Workflow / Agent Loop / PTC</text>
+    </g>
+    <rect x="165" y="646" width="500" height="54" rx="14" fill="#ffffff" fill-opacity="0.14"/>
+    <text x="415" y="681" text-anchor="middle" font-size="19" font-weight="700" fill="#ffffff">可替换 · 可演进 · 可简化 · 甚至可消失</text>
+
+    <rect x="880" y="220" width="610" height="520" rx="30" fill="#172033"/>
+    <text x="935" y="286" font-size="36" font-weight="700" fill="#ffffff">Runtime</text>
+    <text x="935" y="322" font-size="20" fill="#cbd5e8">实际上发生了什么</text>
+    <line x1="935" y1="350" x2="1435" y2="350" stroke="#67738a"/>
+    <g font-size="22" fill="#f3f6fb">
+      <text x="935" y="402">Work / Session / Run</text>
+      <text x="935" y="452">Event / State</text>
+      <text x="935" y="502">Action / Result / Observation</text>
+      <text x="935" y="552">Artifact / Recovery</text>
+      <text x="935" y="602">Lifecycle / Causality / Persistence</text>
+    </g>
+    <rect x="935" y="646" width="500" height="54" rx="14" fill="#ffffff" fill-opacity="0.08"/>
+    <text x="1185" y="681" text-anchor="middle" font-size="19" font-weight="700" fill="#ffffff">稳定 · 持久 · 可恢复 · 可审计</text>
+  </g>
+
+  <g stroke="#73809a" stroke-width="3" fill="none" marker-end="url(#arrow)">
+    <path d="M720 430H858"/>
+    <path d="M880 535H742"/>
+  </g>
+  <g font-family="Inter, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="17" font-weight="700" fill="#58667f">
+    <text x="800" y="412" text-anchor="middle">发出执行意图</text>
+    <text x="800" y="568" text-anchor="middle">返回事实与观察</text>
+  </g>
+
+  <rect x="286" y="790" width="1028" height="62" rx="18" fill="#ffffff" stroke="#cbd8ee" stroke-width="2"/>
+  <text x="800" y="830" text-anchor="middle" font-family="Inter, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="23" font-weight="700" fill="#263550">平台稳定性依赖 Runtime 的事实模型，而不是某个 Harness 进程长期存活</text>
+</svg>
