@@ -7,6 +7,9 @@ hero:
   tagline: 把动态组装、非确定、长期、并行、可编程的智能执行过程，约束在持久、可恢复、可验证、可观测、可治理、能够持续演进的生产系统中。
   actions:
     - theme: brand
+      text: 浏览架构图谱
+      link: /architecture/
+    - theme: alt
       text: 阅读当前架构
       link: /architecture/agent-platform
     - theme: alt
@@ -23,6 +26,17 @@ features:
 ---
 
 <!-- README-SYNC: README.md 的核心定位或架构判断变化时必须同步更新本页，CI 会检查。 -->
+
+## Agent Platform 总体架构
+
+从业务目标一直到真实世界，平台把能力契约、能力工程、执行策略、稳定 Runtime 与 Work Environment 分层，并由 Context、Eval、Observability 与 Security 横向贯穿。
+
+<iframe class="architecture-frame architecture-frame--overview" src="./diagrams/core/agent-platform-overview.architecture.html?embed=1" title="Agent Platform 总体架构图" loading="lazy"></iframe>
+
+<div class="architecture-links">
+  <a href="./architecture/">浏览完整架构图谱 →</a>
+  <a href="./diagrams/core/agent-platform-overview.architecture.html">打开独立交互图 ↗</a>
+</div>
 
 ## 核心判断
 
@@ -41,36 +55,27 @@ features:
 11. **Eval 是 Capability Specification**：Harness 说明怎么实现，Eval 说明怎么证明具备能力。
 12. **Agent Security 的本质是 Reachability Control**：通过确定性边界限制每个 Work、Run、Child Agent 可触达的世界。
 
-## Agent Software Stack
+## 三个关键执行层
 
-```text
-┌───────────────────────────────────────────────┐
-│ L7 业务 / 产品                                │
-│ Goal · Project · Business Task                │
-├───────────────────────────────────────────────┤
-│ L6 能力契约                                   │
-│ Acceptance · Quality · Evaluation Contract    │
-├───────────────────────────────────────────────┤
-│ L5 能力工程                                   │
-│ Skill · Tool · Capability Discovery · MCP     │
-├───────────────────────────────────────────────┤
-│ L4 执行策略                                   │
-│ Workflow · Agent Loop · PTC · Multi-Agent     │
-├───────────────────────────────────────────────┤
-│ L3 统一运行时                                 │
-│ Work · Session · Run · Event · State          │
-│ Action · Observation · Artifact · Recovery    │
-├───────────────────────────────────────────────┤
-│ L2 Agent Work Environment                     │
-│ Workspace · Execution · Verification          │
-│ Capability Proxy · Sandbox                    │
-├───────────────────────────────────────────────┤
-│ L1 基础设施 / 真实世界                        │
-│ API · SaaS · DB · Browser · Files · Compute   │
-└───────────────────────────────────────────────┘
-```
+Agent Platform 最关键的工程边界集中在 L4～L2：谁决定下一步、谁记录事实，以及 Agent 真正在哪里执行动作。
 
-横向贯穿整个软件栈的是 Context / Memory、Evaluation、Observability / Trace、Security / Governance、Registry / Versioning 与 Budget / Cost。
+<div class="diagram-grid">
+  <a class="diagram-card" href="./architecture/l4-strategy-harness">
+    <span class="diagram-card__eyebrow">L4 · Execution Control</span>
+    <strong>执行策略 / Harness</strong>
+    <p>Direct、Workflow、Agent Loop、PTC、Multi-Agent 如何动态选择；Harness 管策略。</p>
+  </a>
+  <a class="diagram-card" href="./architecture/l3-runtime">
+    <span class="diagram-card__eyebrow">L3 · Execution Facts</span>
+    <strong>统一 Runtime</strong>
+    <p>Work、Session、Run、Event、State 如何组成持久、可恢复的执行事实。</p>
+  </a>
+  <a class="diagram-card" href="./architecture/l2-work-environment">
+    <span class="diagram-card__eyebrow">L2 · Data + Action Plane</span>
+    <strong>Agent Work Environment</strong>
+    <p>Workspace、执行、验证、能力代理和隔离如何组成 Agent 可作用的真实工作环境。</p>
+  </a>
+</div>
 
 ## 研究路线
 
@@ -87,4 +92,6 @@ features:
 11. [Code execution with MCP](/articles/11-code-execution-with-mcp/)：程序化工具调用与代码执行。
 12. [How we contain Claude](/articles/12-how-we-contain-claude/)：执行隔离、权限边界与安全治理。
 
-如果只想了解当前结论，从[智能体平台总体架构](/architecture/agent-platform)开始；如果希望理解这些判断如何逐步形成，从第一篇研究文章顺序阅读。
+## 阅读方式
+
+希望快速建立整体认知，从[架构图谱](/architecture/)开始；希望直接了解完整结论，从[智能体平台总体架构](/architecture/agent-platform)开始；希望理解这些判断如何逐步形成，从第一篇研究文章顺序阅读。

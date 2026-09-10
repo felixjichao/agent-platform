@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "L4 执行策略 / Harness",
+    "subtitle": "Harness 决定当前任务怎么推进；Runtime 只记录实际发生了什么",
+    "locale": "zh-CN",
+    "output": "public/diagrams/layers/l4-strategy-harness.architecture.html",
+    "animation": "trace",
+    "visual_preset": "editorial",
+    "quality_profile": "showcase",
+    "viewBox": [1200, 760],
+    "repository": {
+      "url": "https://github.com/felixjichao/agent-platform",
+      "provider": "github",
+      "revision": "4bec0f4b40811259f93e1955e87b05c27cca1bba"
+    },
+    "legend": {"mode": "hidden"},
+    "views": [
+      {"id":"strategy-flow","label":"策略主链","focus":["task-input","harness","strategy-decision","runtime"],"note":"Harness 读取目标、上下文、能力和约束，选择本次执行策略，再把真实动作交给 Runtime。"},
+      {"id":"execution-modes","label":"执行范式","focus":["direct","workflow","agent-loop","ptc","multi-agent"],"note":"Direct、Workflow、Agent Loop、PTC、Multi-Agent 是可组合的执行模式，而不是五套产品架构。"},
+      {"id":"replaceable-harness","label":"可替换 Harness","focus":["harness","strategy-decision","runtime"],"note":"Planner、Delegation、Context、Eval、Completion 等策略应随模型能力演进，而 Runtime 保持稳定。"}
+    ]
+  },
+  "components": [
+    {"id":"task-input","type":"external","label":"Task Input","sublabel":"Goal · Context · Capabilities · Constraints","tag":"当前要完成什么？","pos":[535,45],"size":[360,78],"sources":[{"path":"architecture/agent-platform.md","label":"L4 执行策略"}]},
+    {"id":"harness","type":"backend","label":"Harness / Strategy Controller","sublabel":"Planning · Delegation · Context · Eval · Completion","tag":"策略可替换、可演进、可移除","pos":[535,175],"size":[360,86],"sources":[{"path":"architecture/agent-platform.md","label":"Runtime 稳定，Harness 可替换"}]},
+    {"id":"strategy-decision","type":"messagebus","label":"Execution Strategy Decision","sublabel":"按任务结构、风险、预算、并行度动态选择","tag":"应用形态 ≠ 执行范式","pos":[535,310],"size":[360,78],"sources":[{"path":"architecture/agent-platform.md","label":"Execution Strategy"}]},
+    {"id":"direct","type":"external","label":"Direct","sublabel":"一次决策 / 少量 Tool","pos":[35,455],"size":[200,72],"sources":[{"path":"architecture/agent-platform.md","label":"Direct"}]},
+    {"id":"workflow","type":"backend","label":"Workflow","sublabel":"代码拥有主要控制权","pos":[267,455],"size":[200,72],"sources":[{"path":"architecture/agent-platform.md","label":"Workflow"}]},
+    {"id":"agent-loop","type":"cloud","label":"Agent Loop","sublabel":"模型动态决定下一 Action","pos":[499,455],"size":[200,72],"sources":[{"path":"architecture/agent-platform.md","label":"Agent Loop"}]},
+    {"id":"ptc","type":"messagebus","label":"PTC","sublabel":"程序化 Tool 编排","pos":[731,455],"size":[200,72],"sources":[{"path":"architecture/agent-platform.md","label":"PTC"}]},
+    {"id":"multi-agent","type":"security","label":"Multi-Agent","sublabel":"独立 Work Front 并行","pos":[963,455],"size":[200,72],"sources":[{"path":"architecture/agent-platform.md","label":"Multi-Agent"}]},
+    {"id":"runtime","type":"messagebus","label":"L3 Unified Runtime","sublabel":"Work · Session · Run · Event · Action · Result","tag":"记录实际发生了什么","pos":[535,620],"size":[360,82],"sources":[{"path":"architecture/agent-platform.md","label":"L3 统一运行时"}]}
+  ],
+  "boundaries": [
+    {"kind":"region","label":"Execution Paradigms · 可组合而非互斥","wraps":["direct","workflow","agent-loop","ptc","multi-agent"],"pad":20}
+  ],
+  "connections": [
+    {"id":"input-harness","from":"task-input","to":"harness","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"harness-decision","from":"harness","to":"strategy-decision","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"decision-runtime","from":"strategy-decision","to":"runtime","label":"Action / control","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight","labelAt":[855,590]}
+  ],
+  "cards": [
+    {"dot":"cyan","title":"控制权连续谱","items":["Workflow：下一步主要由预定义代码决定","Agent Loop：下一步主要由模型基于 Context 决定","Static Workflow → Dynamic Plan → Agent Loop 是连续谱"]},
+    {"dot":"violet","title":"Harness 的职责","items":["Planning / Delegation / Context Strategy","Evaluation / Completion / Escalation Strategy","编码当前模型能力假设，而不是固化进 Runtime"]},
+    {"dot":"emerald","title":"选择原则","items":["确定性 mechanics 尽量下沉","不确定、高价值决策留给模型","Multi-Agent 取决于独立 Work Front，而不是任务看起来复杂"]}
+  ]
+}

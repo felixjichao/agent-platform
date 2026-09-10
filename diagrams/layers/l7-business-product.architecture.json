@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "L7 业务 / 产品",
+    "subtitle": "产品定义要完成什么；执行范式只是实现选择，不应反过来定义产品",
+    "locale": "zh-CN",
+    "output": "public/diagrams/layers/l7-business-product.architecture.html",
+    "animation": "trace",
+    "visual_preset": "editorial",
+    "quality_profile": "showcase",
+    "viewBox": [1180, 760],
+    "repository": {"url":"https://github.com/felixjichao/agent-platform","provider":"github","revision":"4bec0f4b40811259f93e1955e87b05c27cca1bba"},
+    "legend": {"mode":"hidden"},
+    "views": [
+      {"id":"business-flow","label":"业务主链","focus":["business-context","goal","project","task","contract"],"note":"从业务环境与目标逐层收敛为可执行、可验收的 Business Task，再进入能力契约。"},
+      {"id":"product-forms","label":"产品形态","focus":["chat","research","knowledge","coding","workflow-product"],"note":"对话、科研、知识库、Coding、Workflow 是应用形态，不等于底层执行范式。"}
+    ]
+  },
+  "components": [
+    {"id":"business-context","type":"external","label":"Business Context","sublabel":"User Value · Domain · Policy · Responsibility","tag":"为什么要做？","pos":[430,35],"size":[320,78],"sources":[{"path":"architecture/agent-platform.md","label":"L7 业务 / 产品"}]},
+    {"id":"goal","type":"cloud","label":"Goal","sublabel":"业务目标与期望结果","tag":"要得到什么结果？","pos":[430,150],"size":[320,72],"sources":[{"path":"architecture/agent-platform.md","label":"Goal"}]},
+    {"id":"project","type":"backend","label":"Project / Work","sublabel":"长期目标、范围与共享资源","pos":[430,260],"size":[320,72],"sources":[{"path":"architecture/agent-platform.md","label":"Work / Project"}]},
+    {"id":"task","type":"messagebus","label":"Business Task","sublabel":"可推进、可追踪、可验收的工作单元","tag":"当前要完成什么？","pos":[430,370],"size":[320,78],"sources":[{"path":"architecture/agent-platform.md","label":"Business Task"}]},
+    {"id":"contract","type":"security","label":"L6 Capability Contract","sublabel":"Acceptance · Quality · Evaluation · Evidence","tag":"把业务目标变成能力证明","pos":[430,500],"size":[320,82],"sources":[{"path":"architecture/agent-platform.md","label":"L6 能力契约"}]},
+    {"id":"chat","type":"external","label":"Chat","sublabel":"通用对话","pos":[35,640],"size":[190,66]},
+    {"id":"research","type":"external","label":"Research","sublabel":"科研 / 研究助手","pos":[265,640],"size":[190,66]},
+    {"id":"knowledge","type":"external","label":"Knowledge Base","sublabel":"企业知识库","pos":[495,640],"size":[190,66]},
+    {"id":"coding","type":"external","label":"Coding","sublabel":"代码与工程任务","pos":[725,640],"size":[190,66]},
+    {"id":"workflow-product","type":"external","label":"Workflow Product","sublabel":"确定流程型产品","pos":[955,640],"size":[190,66]}
+  ],
+  "boundaries": [
+    {"kind":"region","label":"Application Forms · 应用形态 ≠ 执行范式","wraps":["chat","research","knowledge","coding","workflow-product"],"pad":18}
+  ],
+  "connections": [
+    {"id":"context-goal","from":"business-context","to":"goal","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"goal-project","from":"goal","to":"project","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"project-task","from":"project","to":"task","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"task-contract","from":"task","to":"contract","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"}
+  ],
+  "cards": [
+    {"dot":"cyan","title":"这一层只回答一件事","items":["业务要完成什么，而不是 Agent 应该怎么做","目标、责任、约束和用户价值属于产品层","执行策略由下层根据任务动态选择"]},
+    {"dot":"violet","title":"避免产品绑架架构","items":["Chat 不等于 Agent Loop","Knowledge Base 不等于 RAG-only Workflow","同一产品可以混合 Direct / Workflow / Agent / PTC / Multi-Agent"]},
+    {"dot":"emerald","title":"向下传递","items":["Business Task 进入 Capability Contract","接受标准必须先于具体 Harness 实现","业务责任不能下沉后丢失"]}
+  ]
+}

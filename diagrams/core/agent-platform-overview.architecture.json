@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Agent Platform 总体架构",
+    "subtitle": "从业务目标到真实世界的统一智能执行基础设施",
+    "locale": "zh-CN",
+    "output": "public/diagrams/core/agent-platform-overview.architecture.html",
+    "animation": "trace",
+    "visual_preset": "editorial",
+    "quality_profile": "showcase",
+    "viewBox": [1360, 900],
+    "repository": {
+      "url": "https://github.com/felixjichao/agent-platform",
+      "provider": "github",
+      "revision": "4bec0f4b40811259f93e1955e87b05c27cca1bba"
+    },
+    "legend": {"mode": "hidden"},
+    "views": [
+      {"id":"main-flow","label":"七层主链","focus":["business","contract","capability","strategy","runtime","environment","world"],"note":"从业务目标逐层落到真实世界：能力、策略与运行时各自承担不同职责。"},
+      {"id":"runtime-harness","label":"Runtime / Harness 边界","focus":["strategy","runtime","environment","context","evaluation"],"note":"Harness 负责当前怎么推进；Runtime 负责实际发生了什么；Environment 负责真实动作。"},
+      {"id":"cross-cutting","label":"横切治理","focus":["context","observability","evaluation","governance","registry","budget","runtime","environment"],"note":"上下文、评估、可观测、安全、版本与预算不是独立层，而是贯穿执行系统。"}
+    ]
+  },
+  "components": [
+    {"id":"business","type":"external","label":"L7 业务 / 产品","sublabel":"Goal · Project · Business Task · Requirement","tag":"要完成什么？","pos":[450,30],"size":[500,68],"sources":[{"path":"architecture/agent-platform.md","label":"L7 业务 / 产品"}]},
+    {"id":"contract","type":"security","label":"L6 能力契约","sublabel":"Acceptance · Quality · Evaluation Contract","tag":"什么叫真正具备这项能力？","pos":[450,125],"size":[500,68],"sources":[{"path":"architecture/agent-platform.md","label":"L6 能力契约"}]},
+    {"id":"capability","type":"cloud","label":"L5 能力工程","sublabel":"Skill · Tool · Capability Catalog · Discovery · MCP","tag":"Agent 可以学什么、做什么？","pos":[450,220],"size":[500,68],"sources":[{"path":"architecture/agent-platform.md","label":"L5 能力工程"}]},
+    {"id":"strategy","type":"backend","label":"L4 执行策略 / Harness","sublabel":"Direct · Workflow · Agent Loop · PTC · Multi-Agent","tag":"当前任务怎么推进？","pos":[450,315],"size":[500,68],"sources":[{"path":"architecture/agent-platform.md","label":"L4 执行策略"}]},
+    {"id":"runtime","type":"messagebus","label":"L3 统一 Runtime","sublabel":"Work · Session · Run · Event · State · Action · Observation · Artifact","tag":"实际发生了什么？","pos":[450,410],"size":[500,76],"sources":[{"path":"architecture/agent-platform.md","label":"L3 统一运行时"}]},
+    {"id":"environment","type":"backend","label":"L2 Agent Work Environment","sublabel":"Workspace · Execution · Verification · Capability Proxy · Sandbox","tag":"Agent 能观察和作用于什么世界？","pos":[450,513],"size":[500,76],"sources":[{"path":"architecture/agent-platform.md","label":"L2 Work Environment"}]},
+    {"id":"world","type":"external","label":"L1 基础设施 / 真实世界","sublabel":"API · SaaS · DB · Browser · Files · Compute · Network · Devices","tag":"真正的资源在哪里？","pos":[450,616],"size":[500,68],"sources":[{"path":"architecture/agent-platform.md","label":"L1 基础设施"}]},
+    {"id":"context","type":"database","label":"Context / Memory","sublabel":"Working Set · Projection · Recall · Compaction","tag":"模型当前看到什么？","pos":[70,280],"size":[260,76],"sources":[{"path":"architecture/agent-platform.md","label":"Context / Memory"}]},
+    {"id":"observability","type":"messagebus","label":"Observability / Trace","sublabel":"Event · Trace · Metric · Replay","tag":"系统如何被看见？","pos":[70,470],"size":[260,76],"sources":[{"path":"architecture/agent-platform.md","label":"Observability / Trace"}]},
+    {"id":"evaluation","type":"cloud","label":"Evaluation / Verification","sublabel":"Trial · Outcome · Evidence · Grader","tag":"如何证明能力？","pos":[1070,280],"size":[260,76],"sources":[{"path":"architecture/agent-platform.md","label":"Evaluation"}]},
+    {"id":"governance","type":"security","label":"Security / Governance","sublabel":"Identity · Authority · Isolation · Reachability","tag":"Agent 能触达多大的世界？","pos":[1070,470],"size":[260,76],"sources":[{"path":"architecture/agent-platform.md","label":"Security / Governance"}]},
+    {"id":"registry","type":"database","label":"Registry / Versioning","sublabel":"Capability · Harness · Eval · Revision","pos":[310,755],"size":[330,68]},
+    {"id":"budget","type":"external","label":"Budget / Cost","sublabel":"Token · Compute · Tool Calls · Parallelism","pos":[760,755],"size":[330,68]}
+  ],
+  "boundaries": [{"kind":"region","label":"Agent Platform","wraps":["contract","capability","strategy","runtime","environment"],"pad":24}],
+  "connections": [
+    {"id":"business-contract","from":"business","to":"contract","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"contract-capability","from":"contract","to":"capability","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"capability-strategy","from":"capability","to":"strategy","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"strategy-runtime","from":"strategy","to":"runtime","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"runtime-environment","from":"runtime","to":"environment","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"environment-world","from":"environment","to":"world","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"context-strategy","from":"context","to":"strategy","label":"build context","variant":"dashed","fromSide":"right","toSide":"left","route":"orthogonal-h"},
+    {"id":"observability-runtime","from":"runtime","to":"observability","label":"facts / trace","variant":"dashed","fromSide":"left","toSide":"right","route":"orthogonal-h"},
+    {"id":"evaluation-contract","from":"evaluation","to":"contract","label":"prove capability","variant":"dashed","fromSide":"left","toSide":"right","route":"orthogonal-h"},
+    {"id":"governance-environment","from":"governance","to":"environment","label":"reachability","variant":"security","fromSide":"left","toSide":"right","route":"orthogonal-h"}
+  ],
+  "cards": [
+    {"dot":"cyan","title":"核心边界","items":["Runtime 管事实；Harness 管策略","Work 承载长期连续性，而不是 Agent","Event 是事实；State 与 Context 是投影"]},
+    {"dot":"violet","title":"执行模型","items":["应用形态不等于执行范式","LLM 更适合作为控制面，而不是数据面","Agent Work Environment 承载动作面与数据面"]},
+    {"dot":"emerald","title":"平台目标","items":["持久 · 可恢复 · 可验证 · 可观测","可治理 · 可版本化 · 可持续演进","Agent Platform = 智能执行基础设施"]}
+  ]
+}

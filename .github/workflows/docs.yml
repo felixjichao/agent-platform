@@ -5,6 +5,8 @@ on:
     paths:
       - '**/*.md'
       - '.vitepress/**'
+      - 'diagrams/**/*.architecture.json'
+      - 'scripts/render-archify.sh'
       - 'package.json'
       - '.github/workflows/docs.yml'
   push:
@@ -13,6 +15,8 @@ on:
     paths:
       - '**/*.md'
       - '.vitepress/**'
+      - 'diagrams/**/*.architecture.json'
+      - 'scripts/render-archify.sh'
       - 'package.json'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
@@ -66,6 +70,12 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
+
+      - name: Checkout Archify
+        run: git clone --depth 1 https://github.com/tt-a1i/archify.git /tmp/archify
+
+      - name: Validate and render diagrams
+        run: bash scripts/render-archify.sh
 
       - name: Install dependencies
         run: npm install --no-audit --no-fund
