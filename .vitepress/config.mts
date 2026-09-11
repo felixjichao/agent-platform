@@ -73,8 +73,7 @@ export default defineConfig({
       { text: '首页', link: '/' },
       { text: '架构图谱', link: '/architecture/' },
       { text: '总体架构', link: '/architecture/agent-platform' },
-      { text: '架构研究', link: '/articles/01-building-effective-agents/' },
-      { text: '写作规范', link: '/docs-style-guide' }
+      { text: '架构研究', link: '/articles/01-building-effective-agents/' }
     ],
     sidebar: {
       '/architecture/': [
