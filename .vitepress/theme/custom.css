@@ -16,20 +16,145 @@
 }
 
 .VPDoc .content-container {
-  max-width: 880px;
+  max-width: 800px;
 }
 
 .VPDoc .content-container:has(.architecture-frame) {
   max-width: 1120px;
 }
 
+.vp-doc {
+  color: var(--vp-c-text-1);
+  font-size: 16px;
+  line-height: 1.82;
+}
+
+.vp-doc h1 {
+  margin: 0 0 24px;
+  font-size: 32px;
+  line-height: 1.28;
+  letter-spacing: -0.02em;
+}
+
 .vp-doc h2 {
+  margin: 44px 0 16px;
   border-top: 0;
   padding-top: 20px;
+  font-size: 24px;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.vp-doc h3 {
+  margin: 32px 0 12px;
+  font-size: 19px;
+  line-height: 1.45;
+}
+
+.vp-doc h4 {
+  margin: 24px 0 10px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.vp-doc p {
+  margin: 16px 0;
+  line-height: 1.82;
+}
+
+.vp-doc strong {
+  color: var(--vp-c-text-1);
+  font-weight: 650;
+}
+
+.vp-doc a {
+  font-weight: 500;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
 }
 
 .vp-doc blockquote {
-  border-left-width: 3px;
+  margin: 24px 0;
+  border-left: 3px solid var(--vp-c-brand-1);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 18px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+}
+
+.vp-doc blockquote > :first-child {
+  margin-top: 0;
+}
+
+.vp-doc blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.vp-doc :not(pre) > code {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 5px;
+  padding: 0.12em 0.38em;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  font-size: 0.88em;
+  font-weight: 500;
+}
+
+.vp-doc div[class*='language-'] {
+  margin: 24px 0;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.vp-doc div[class*='language-'] pre {
+  line-height: 1.65;
+}
+
+.vp-doc ul,
+.vp-doc ol {
+  margin: 14px 0;
+  padding-left: 1.5em;
+}
+
+.vp-doc li + li {
+  margin-top: 4px;
+}
+
+.vp-doc li > p {
+  margin: 6px 0;
+}
+
+.vp-doc table {
+  display: block;
+  width: 100%;
+  margin: 24px 0;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.vp-doc th,
+.vp-doc td {
+  padding: 10px 14px;
+}
+
+.vp-doc th {
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  font-weight: 650;
+  text-align: left;
+}
+
+.vp-doc hr {
+  margin: 36px 0;
+  border-color: var(--vp-c-divider);
+}
+
+.vp-doc .custom-block {
+  margin: 24px 0;
+  border-radius: 10px;
 }
 
 .architecture-frame {
@@ -107,6 +232,10 @@
 }
 
 @media (max-width: 900px) {
+  .VPDoc .content-container {
+    max-width: 100%;
+  }
+
   .diagram-grid,
   .diagram-grid--two {
     grid-template-columns: 1fr;
@@ -123,6 +252,30 @@
 }
 
 @media (max-width: 640px) {
+  .vp-doc {
+    font-size: 15.5px;
+    line-height: 1.78;
+  }
+
+  .vp-doc h1 {
+    font-size: 28px;
+  }
+
+  .vp-doc h2 {
+    margin-top: 36px;
+    padding-top: 16px;
+    font-size: 22px;
+  }
+
+  .vp-doc h3 {
+    margin-top: 28px;
+    font-size: 18px;
+  }
+
+  .vp-doc blockquote {
+    padding: 10px 14px;
+  }
+
   .architecture-frame,
   .architecture-frame--overview {
     height: 540px;
