@@ -20,16 +20,16 @@ features:
   - title: 运行时管事实
     details: 工作、会话、运行、事件、状态、动作、结果与恢复构成稳定的执行事实。
   - title: 执行框架管策略
-    details: 工作流、智能体循环、PTC、多智能体等执行策略可以持续替换和演进。
+    details: 工作流、智能体循环、PTC、多智能体等执行策略可以持续替换和演进，并按风险动态决定自主空间。
   - title: 平台管边界
-    details: 上下文、评估、追踪、安全与治理共同把非确定执行约束成生产系统。
+    details: 上下文、评估、追踪、安全治理与人工监督共同把非确定执行约束成生产系统。
 ---
 
 <!-- README-SYNC: README.md 的核心定位或架构判断变化时必须同步更新本页，CI 会检查。 -->
 
 ## Agent Platform 总体架构
 
-从业务目标一直到真实世界，平台把能力契约、能力工程、执行策略、稳定运行时与智能体工作环境分层，并由上下文、评估、可观测性与安全治理横向贯穿。
+从业务目标一直到真实世界，平台把能力契约、能力工程、执行策略、稳定运行时与智能体工作环境分层，并由上下文、评估、可观测性、安全治理与人工监督横向贯穿。
 
 <iframe class="architecture-frame architecture-frame--overview" src="./diagrams/core/agent-platform-overview.architecture.html?embed=1" title="Agent Platform 总体架构图" loading="lazy"></iframe>
 
@@ -40,7 +40,7 @@ features:
 
 ## 核心判断
 
-当前研究形成了 12 个核心架构判断：
+当前研究形成了 13 个核心架构判断：
 
 1. **应用形态不等于执行范式**：对话、科研、知识库、Coding 是产品形态；直接执行、工作流、智能体循环、PTC、多智能体是执行范式。
 2. **工作流与智能体的真正区别是执行控制权**：二者是从静态控制到动态控制的一条连续谱。
@@ -54,6 +54,7 @@ features:
 10. **多智能体的关键是工作前沿**：平台真正需要调度的是可独立推进的工作单元，而不是智能体数量。
 11. **评估是能力规格**：执行框架说明怎么实现，评估说明怎么证明具备能力。
 12. **智能体安全的本质是可达范围控制**：通过确定性边界限制每个工作、运行、子智能体可触达的世界。
+13. **自主性是部署治理结果**：自主性不是模型固定等级；系统应在风险、可逆性、可达范围、验证能力和人工监督约束下动态分配自主空间。
 
 ## 三个关键执行层
 
@@ -63,17 +64,17 @@ Agent Platform 最关键的工程边界集中在 L4～L2：谁决定下一步、
   <a class="diagram-card" href="./architecture/l4-strategy-harness">
     <span class="diagram-card__eyebrow">L4 · 执行控制</span>
     <strong>执行策略 / 执行框架</strong>
-    <p>直接执行、工作流、智能体循环、PTC、多智能体如何动态选择；执行框架负责策略。</p>
+    <p>直接执行、工作流、智能体循环、PTC、多智能体决定任务怎么推进；执行框架还负责自主策略与控制权转移。</p>
   </a>
   <a class="diagram-card" href="./architecture/l3-runtime">
     <span class="diagram-card__eyebrow">L3 · 执行事实</span>
     <strong>统一运行时</strong>
-    <p>工作、会话、运行、事件、状态如何组成持久、可恢复的执行事实。</p>
+    <p>工作、会话、运行、事件、状态如何组成持久、可恢复的执行事实，并记录人工中断、纠偏与升级。</p>
   </a>
   <a class="diagram-card" href="./architecture/l2-work-environment">
     <span class="diagram-card__eyebrow">L2 · 数据面 + 动作面</span>
     <strong>智能体工作环境</strong>
-    <p>工作空间、执行、验证、能力代理和隔离如何组成智能体可以作用的真实工作环境。</p>
+    <p>工作空间、执行、验证、能力代理和隔离如何组成智能体可以作用、验证和被监督的真实工作环境。</p>
   </a>
 </div>
 
@@ -91,6 +92,7 @@ Agent Platform 最关键的工程边界集中在 L4～L2：谁决定下一步、
 10. [Agent Skills](/articles/10-agent-skills/)：可组合、可发现的能力封装。
 11. [Code execution with MCP](/articles/11-code-execution-with-mcp/)：程序化工具调用与代码执行。
 12. [How we contain Claude](/articles/12-how-we-contain-claude/)：执行隔离、权限边界与安全治理。
+13. [Measuring AI agent autonomy in practice](/articles/13-measuring-agent-autonomy/)：自主性、人工监督、风险治理与部署后监控。
 
 ## 阅读方式
 

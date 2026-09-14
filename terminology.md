@@ -105,6 +105,7 @@
 | Evaluation Strategy | 评估策略 | 直接使用中文 |
 | Completion Strategy | 完成策略 | 直接使用中文 |
 | Escalation Strategy | 升级策略 | 指升级到其他 Agent、人或流程 |
+| Autonomy Policy | 自主策略 | 指在既定边界内允许智能体自行决定多少 |
 
 ## 5. 运行时领域模型
 
@@ -170,6 +171,14 @@
 | Authority | 权限 | 在授权语境中优先“权限” |
 | Isolation | 隔离 | 直接使用中文 |
 | Reachability | 可达范围 | 指 Agent 能触达的资源边界 |
+| Autonomy | 自主性 | 指真实部署中智能体独立于人工直接指导与监督做出执行决策的程度；不是模型固定属性 |
+| Human Oversight | 人工监督 | 指运行过程中对智能体的观察、干预、纠偏、评审和验收等监督机制 |
+| Human Oversight Plane | 人工监督面 | 指面向运行过程的观察、干预和纠偏能力集合 |
+| Control Transfer | 控制权转移 | 指执行控制权在人、智能体和确定性系统之间发生转移 |
+| Supervisory Control | 监督式控制 | 指减少逐步操作、通过持续观察和必要干预控制执行过程 |
+| Post-deployment Monitoring | 部署后监控 | 指系统上线后持续观测真实用户、权限和任务条件下的执行行为 |
+| Deployment Evaluation | 部署评估 | 指基于真实部署数据评估质量、自主性、风险和人工介入等系统表现 |
+| Reversibility | 可逆性 | 指动作发生后能否通过撤销、回滚或恢复降低后果 |
 | Registry | 注册表 | 指能力、版本等注册信息集合 |
 | Versioning | 版本管理 | 直接使用中文 |
 | Revision | 修订版本 | 指 Harness、能力等的具体修订 |

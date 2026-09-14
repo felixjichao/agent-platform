@@ -12,6 +12,38 @@ if [ "${#sources[@]}" -eq 0 ]; then
   exit 0
 fi
 
+fetch_repository_evidence_revision() {
+  local source="$1"
+  local revision
+
+  revision="$(node - "$source" <<'NODE'
+const fs = require('node:fs')
+const source = process.argv[2]
+const diagram = JSON.parse(fs.readFileSync(source, 'utf8'))
+process.stdout.write(diagram.meta?.repository?.revision ?? '')
+NODE
+)"
+
+  if [ -z "$revision" ]; then
+    return 0
+  fi
+
+  if git cat-file -e "${revision}^{commit}" 2>/dev/null; then
+    return 0
+  fi
+
+  echo "Fetching pinned repository evidence revision $revision"
+  if ! git fetch --no-tags --depth=1 origin "$revision"; then
+    echo "::error file=$source::Unable to fetch pinned repository evidence revision $revision."
+    return 1
+  fi
+
+  if ! git cat-file -e "${revision}^{commit}" 2>/dev/null; then
+    echo "::error file=$source::Pinned repository evidence revision $revision is still unavailable after fetch."
+    return 1
+  fi
+}
+
 status=0
 for source in "${sources[@]}"; do
   relative="${source#${DIAGRAM_ROOT}/}"
@@ -19,6 +51,11 @@ for source in "${sources[@]}"; do
   mkdir -p "$(dirname "$output")"
 
   echo "::group::Archify $source"
+  if ! fetch_repository_evidence_revision "$source"; then
+    status=1
+    echo "::endgroup::"
+    continue
+  fi
   if ! node "$ARCHIFY_BIN" validate architecture "$source" --quality "$ARCHIFY_QUALITY" --repo-root . --json; then
     status=1
     echo "::endgroup::"
