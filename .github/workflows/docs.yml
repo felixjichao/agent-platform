@@ -7,6 +7,8 @@ on:
       - '.vitepress/**'
       - 'diagrams/**/*.architecture.json'
       - 'scripts/render-archify.sh'
+      - 'scripts/check-terminology.mjs'
+      - 'terminology-rules.json'
       - 'package.json'
       - '.github/workflows/docs.yml'
   push:
@@ -17,6 +19,8 @@ on:
       - '.vitepress/**'
       - 'diagrams/**/*.architecture.json'
       - 'scripts/render-archify.sh'
+      - 'scripts/check-terminology.mjs'
+      - 'terminology-rules.json'
       - 'package.json'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
@@ -70,6 +74,9 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
+
+      - name: Check terminology consistency
+        run: npm run check:terminology
 
       - name: Checkout Archify
         run: git clone --depth 1 https://github.com/tt-a1i/archify.git /tmp/archify
