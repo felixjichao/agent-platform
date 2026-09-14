@@ -2,8 +2,8 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "L2 Agent Work Environment",
-    "subtitle": "把模型控制面与数据 / 动作面分离，让 Agent 在受治理的世界中执行",
+    "title": "L2 智能体工作环境",
+    "subtitle": "把模型控制面与数据面 / 动作面分离，让智能体在受治理的世界中执行",
     "locale": "zh-CN",
     "output": "public/diagrams/layers/l2-work-environment.architecture.html",
     "animation": "trace",
@@ -13,39 +13,39 @@
     "repository": {"url":"https://github.com/felixjichao/agent-platform","provider":"github","revision":"4bec0f4b40811259f93e1955e87b05c27cca1bba"},
     "legend": {"mode":"hidden"},
     "views": [
-      {"id":"control-action-plane","label":"控制面 / 动作面","focus":["agent-harness","runtime","program-runtime","capability-proxy","real-world"],"note":"LLM / Harness 做高价值决策；Work Environment 承担代码执行、数据处理与真实动作。"},
-      {"id":"workspace-execution","label":"持久工作环境","focus":["workspace","program-runtime","ownership","sandbox"],"note":"Workspace、Ownership / Lease、Sandbox 让长期与并行工作不依赖单个 Context。"},
-      {"id":"feedback-loop","label":"验证与反馈","focus":["verification","observation","telemetry","runtime"],"note":"Raw Result 必须经过验证和 Observation Projection，才能形成高信号模型反馈。"}
+      {"id":"control-action-plane","label":"控制面 / 动作面","focus":["agent-harness","runtime","program-runtime","capability-proxy","real-world"],"note":"LLM / 执行框架负责高价值决策；智能体工作环境承担代码执行、数据处理与真实动作。"},
+      {"id":"workspace-execution","label":"持久工作环境","focus":["workspace","program-runtime","ownership","sandbox"],"note":"工作空间、所有权 / 租约、沙箱让长期与并行工作不依赖单个上下文。"},
+      {"id":"feedback-loop","label":"验证与反馈","focus":["verification","observation","telemetry","runtime"],"note":"原始结果必须经过验证和观察投影，才能形成高信号模型反馈。"}
     ]
   },
   "components": [
-    {"id":"agent-harness","type":"cloud","label":"Agent / Harness","sublabel":"Reasoning · Planning · Strategy","tag":"Execution Control Plane","pos":[450,35],"size":[300,76],"sources":[{"path":"architecture/agent-platform.md","label":"LLM 应是 Control Plane"}]},
-    {"id":"runtime","type":"messagebus","label":"L3 Unified Runtime","sublabel":"Action governance · Event · State · Recovery","pos":[450,145],"size":[300,76],"sources":[{"path":"architecture/agent-platform.md","label":"L3 统一运行时"}]},
-    {"id":"workspace","type":"database","label":"Workspace / Shared Resources","sublabel":"Files · Code · Data · Checkpoints · Progress","pos":[75,307],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"Workspace"}]},
-    {"id":"program-runtime","type":"backend","label":"Programmatic Execution Runtime","sublabel":"Code · Loop · Filter · Join · Aggregate","tag":"Data + Action Plane","pos":[460,305],"size":[280,82],"sources":[{"path":"architecture/agent-platform.md","label":"Programmatic Execution Runtime"}]},
-    {"id":"capability-proxy","type":"security","label":"Capability Proxy","sublabel":"Tool / API / MCP · scoped permission","tag":"受治理的真实动作出口","pos":[845,307],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"Capability Proxy"}]},
-    {"id":"ownership","type":"messagebus","label":"Work Discovery / Ownership","sublabel":"Frontier · Lease · Shared State · Conflict","pos":[75,465],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"Work Discovery"}]},
-    {"id":"verification","type":"cloud","label":"Verification / Oracle","sublabel":"Local Checks · Differential Feedback · Evidence","pos":[460,465],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"Verification"}]},
-    {"id":"observation","type":"database","label":"Observation Projection","sublabel":"Filter · Transform · Redact · Persist","tag":"Raw Result → high-signal Observation","pos":[845,465],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"Observation Projection"}]},
-    {"id":"sandbox","type":"security","label":"Sandbox / Isolation","sublabel":"Permission · Data Flow · Secrets · Budget · Kill / Timeout","pos":[75,615],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"Sandbox / Isolation"}]},
-    {"id":"telemetry","type":"messagebus","label":"Telemetry Channel","sublabel":"Action Trace · Logs · Metrics · Resource Usage","pos":[460,615],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"Telemetry Channel"}]},
-    {"id":"real-world","type":"external","label":"L1 Infrastructure / Real World","sublabel":"API · SaaS · DB · Browser · Files · Compute · Network","pos":[845,735],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"L1 基础设施 / 真实世界"}]}
+    {"id":"agent-harness","type":"cloud","label":"智能体 / 执行框架","sublabel":"推理 · 规划 · 策略","tag":"执行控制面","pos":[450,35],"size":[300,76],"sources":[{"path":"architecture/agent-platform.md","label":"LLM 应是控制面"}]},
+    {"id":"runtime","type":"messagebus","label":"L3 统一运行时","sublabel":"动作治理 · 事件 · 状态 · 恢复","pos":[450,145],"size":[300,76],"sources":[{"path":"architecture/agent-platform.md","label":"L3 统一运行时"}]},
+    {"id":"workspace","type":"database","label":"工作空间 / 共享资源","sublabel":"文件 · 代码 · 数据 · 检查点 · 进度","pos":[75,307],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"工作空间"}]},
+    {"id":"program-runtime","type":"backend","label":"程序化执行运行时","sublabel":"代码 · 循环 · 过滤 · 连接 · 聚合","tag":"数据面 + 动作面","pos":[460,305],"size":[280,82],"sources":[{"path":"architecture/agent-platform.md","label":"程序化执行运行时"}]},
+    {"id":"capability-proxy","type":"security","label":"能力代理","sublabel":"工具 / API / MCP · 范围化权限","tag":"受治理的真实动作出口","pos":[845,307],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"能力代理"}]},
+    {"id":"ownership","type":"messagebus","label":"工作发现 / 所有权","sublabel":"工作前沿 · 租约 · 共享状态 · 冲突","pos":[75,465],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"工作发现"}]},
+    {"id":"verification","type":"cloud","label":"验证 / 判定器","sublabel":"本地检查 · 差异反馈 · 证据","pos":[460,465],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"验证"}]},
+    {"id":"observation","type":"database","label":"观察投影","sublabel":"过滤 · 转换 · 脱敏 · 持久化","tag":"原始结果 → 高信号观察","pos":[845,465],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"观察投影"}]},
+    {"id":"sandbox","type":"security","label":"沙箱 / 隔离","sublabel":"权限 · 数据流 · 密钥 · 预算 · 终止 / 超时","pos":[75,615],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"沙箱 / 隔离"}]},
+    {"id":"telemetry","type":"messagebus","label":"遥测通道","sublabel":"动作追踪 · 日志 · 指标 · 资源使用","pos":[460,615],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"遥测通道"}]},
+    {"id":"real-world","type":"external","label":"L1 基础设施 / 真实世界","sublabel":"API · SaaS · 数据库 · 浏览器 · 文件 · 计算 · 网络","pos":[845,735],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"L1 基础设施 / 真实世界"}]}
   ],
   "boundaries": [
-    {"kind":"region","label":"Agent Work Environment","wraps":["workspace","program-runtime","capability-proxy","ownership","verification","observation","sandbox","telemetry"],"pad":22}
+    {"kind":"region","label":"智能体工作环境","wraps":["workspace","program-runtime","capability-proxy","ownership","verification","observation","sandbox","telemetry"],"pad":22}
   ],
   "connections": [
     {"id":"agent-runtime","from":"agent-harness","to":"runtime","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
-    {"id":"runtime-program","from":"runtime","to":"program-runtime","label":"governed Action","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight","labelAt":[600,270]},
-    {"id":"workspace-program","from":"workspace","to":"program-runtime","label":"read / write","variant":"dashed","fromSide":"right","toSide":"left","route":"straight"},
-    {"id":"program-capability","from":"program-runtime","to":"capability-proxy","label":"invoke","variant":"security","fromSide":"right","toSide":"left","route":"straight"},
+    {"id":"runtime-program","from":"runtime","to":"program-runtime","label":"受治理动作","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight","labelAt":[600,270]},
+    {"id":"workspace-program","from":"workspace","to":"program-runtime","label":"读 / 写","variant":"dashed","fromSide":"right","toSide":"left","route":"straight"},
+    {"id":"program-capability","from":"program-runtime","to":"capability-proxy","label":"调用","variant":"security","fromSide":"right","toSide":"left","route":"straight"},
     {"id":"capability-world","from":"capability-proxy","to":"real-world","variant":"emphasis","fromSide":"right","toSide":"right","route":"orthogonal-v","via":[[1160,346],[1160,774]]},
-    {"id":"verification-observation","from":"verification","to":"observation","label":"evidence / feedback","variant":"dashed","fromSide":"right","toSide":"left","route":"straight"},
-    {"id":"ownership-workspace","from":"ownership","to":"workspace","label":"lease / state","variant":"dashed","fromSide":"top","toSide":"bottom","route":"straight"}
+    {"id":"verification-observation","from":"verification","to":"observation","label":"证据 / 反馈","variant":"dashed","fromSide":"right","toSide":"left","route":"straight"},
+    {"id":"ownership-workspace","from":"ownership","to":"workspace","label":"租约 / 状态","variant":"dashed","fromSide":"top","toSide":"bottom","route":"straight"}
   ],
   "cards": [
-    {"dot":"cyan","title":"环境工程","items":["Context 不是世界本身；Workspace 才是外部持久工作状态","数据搬运、循环、过滤、聚合尽量放到执行环境","允许执行代码 ≠ 允许调用任意业务 Capability"]},
-    {"dot":"violet","title":"反馈闭环","items":["Raw Result 不直接等于 Observation","Verification / Oracle 提供可定位的差异反馈","Telemetry 服务可观测、预算与恢复，而不是塞满模型 Context"]},
-    {"dot":"emerald","title":"安全边界","items":["Capability Permission 与 Data Flow Permission 分离","Sandbox 管隔离；Capability Proxy 管受治理动作出口","Budget / Timeout / Secrets / Reachability 都属于环境约束"]}
+    {"dot":"cyan","title":"环境工程","items":["上下文不是世界本身；工作空间才是外部持久工作状态","数据搬运、循环、过滤、聚合尽量放到执行环境","允许执行代码 ≠ 允许调用任意业务能力"]},
+    {"dot":"violet","title":"反馈闭环","items":["原始结果不直接等于观察","验证 / 判定器提供可定位的差异反馈","遥测服务可观测性、预算与恢复，而不是塞满模型上下文"]},
+    {"dot":"emerald","title":"安全边界","items":["能力权限与数据流权限分离","沙箱管隔离；能力代理管受治理动作出口","预算 / 超时 / 密钥 / 可达范围都属于环境约束"]}
   ]
 }
