@@ -3,7 +3,7 @@
   "diagram_type": "architecture",
   "meta": {
     "title": "L6 能力契约",
-    "subtitle": "先定义什么叫真正具备能力，再讨论 Harness 如何实现",
+    "subtitle": "先定义什么叫真正具备能力，再讨论执行框架如何实现",
     "locale": "zh-CN",
     "output": "public/diagrams/layers/l6-capability-contract.architecture.html",
     "animation": "trace",
@@ -13,20 +13,20 @@
     "repository": {"url":"https://github.com/felixjichao/agent-platform","provider":"github","revision":"4bec0f4b40811259f93e1955e87b05c27cca1bba"},
     "legend": {"mode":"hidden"},
     "views": [
-      {"id":"contract","label":"能力契约","focus":["requirement","contract","acceptance","quality","eval-contract","evidence"],"note":"Capability Contract 把业务要求拆成 Acceptance、Quality、Evaluation 与 Evidence 四个可验证维度。"},
-      {"id":"implement-prove","label":"实现 / 证明分离","focus":["contract","harness","eval-system"],"note":"Harness 描述如何实现；Eval 描述如何证明。两者共同受同一 Capability Contract 约束。"}
+      {"id":"contract","label":"能力契约","focus":["requirement","contract","acceptance","quality","eval-contract","evidence"],"note":"能力契约把业务要求拆成验收、质量、评估与证据四个可验证维度。"},
+      {"id":"implement-prove","label":"实现 / 证明分离","focus":["contract","harness","eval-system"],"note":"执行框架描述如何实现；评估体系描述如何证明。两者共同受同一能力契约约束。"}
     ]
   },
   "components": [
-    {"id":"requirement","type":"external","label":"Goal / Requirement","sublabel":"业务目标 · 范围 · 约束 · 风险","tag":"想获得什么能力？","pos":[420,40],"size":[320,76],"sources":[{"path":"architecture/agent-platform.md","label":"Goal / Requirement"}]},
-    {"id":"contract","type":"security","label":"Capability Contract","sublabel":"能力边界与证明要求的统一契约","tag":"什么叫真正具备能力？","pos":[420,165],"size":[320,82],"sources":[{"path":"architecture/agent-platform.md","label":"Capability"}]},
-    {"id":"acceptance","type":"cloud","label":"Acceptance Criteria","sublabel":"结果是否满足业务验收","pos":[55,315],"size":[235,74],"sources":[{"path":"architecture/agent-platform.md","label":"Acceptance Criteria"}]},
-    {"id":"quality","type":"cloud","label":"Quality Criteria","sublabel":"质量、可靠性与非功能要求","pos":[325,315],"size":[235,74],"sources":[{"path":"architecture/agent-platform.md","label":"Quality Criteria"}]},
-    {"id":"eval-contract","type":"messagebus","label":"Evaluation Contract","sublabel":"Criterion · Grader · Threshold","pos":[600,315],"size":[235,74],"sources":[{"path":"architecture/agent-platform.md","label":"Evaluation Contract"}]},
-    {"id":"evidence","type":"database","label":"Evidence Requirement","sublabel":"需要什么证据证明成功","pos":[870,315],"size":[235,74],"sources":[{"path":"architecture/agent-platform.md","label":"Evidence Requirement"}]},
-    {"id":"harness","type":"backend","label":"Harness","sublabel":"How to implement","tag":"怎么实现","pos":[245,520],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"Harness"}]},
-    {"id":"eval-system","type":"messagebus","label":"Evaluation","sublabel":"How to prove","tag":"怎么证明","pos":[635,520],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"Eval"}]},
-    {"id":"capability-asset","type":"external","label":"Proven Capability","sublabel":"经过 Trial / Evidence / Grader 验证的能力资产","pos":[420,650],"size":[320,76],"sources":[{"path":"architecture/agent-platform.md","label":"Eval-driven Capability Engineering"}]}
+    {"id":"requirement","type":"external","label":"目标 / 需求","sublabel":"业务目标 · 范围 · 约束 · 风险","tag":"想获得什么能力？","pos":[420,40],"size":[320,76],"sources":[{"path":"architecture/agent-platform.md","label":"目标 / 需求"}]},
+    {"id":"contract","type":"security","label":"能力契约","sublabel":"能力边界与证明要求的统一契约","tag":"什么叫真正具备能力？","pos":[420,165],"size":[320,82],"sources":[{"path":"architecture/agent-platform.md","label":"能力"}]},
+    {"id":"acceptance","type":"cloud","label":"验收标准","sublabel":"结果是否满足业务验收","pos":[55,315],"size":[235,74],"sources":[{"path":"architecture/agent-platform.md","label":"验收标准"}]},
+    {"id":"quality","type":"cloud","label":"质量标准","sublabel":"质量、可靠性与非功能要求","pos":[325,315],"size":[235,74],"sources":[{"path":"architecture/agent-platform.md","label":"质量标准"}]},
+    {"id":"eval-contract","type":"messagebus","label":"评估契约","sublabel":"判定标准 · 评分器 · 阈值","pos":[600,315],"size":[235,74],"sources":[{"path":"architecture/agent-platform.md","label":"评估契约"}]},
+    {"id":"evidence","type":"database","label":"证据要求","sublabel":"需要什么证据证明成功","pos":[870,315],"size":[235,74],"sources":[{"path":"architecture/agent-platform.md","label":"证据要求"}]},
+    {"id":"harness","type":"backend","label":"执行框架","sublabel":"如何实现","tag":"怎么实现","pos":[245,520],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"执行框架"}]},
+    {"id":"eval-system","type":"messagebus","label":"评估体系","sublabel":"如何证明","tag":"怎么证明","pos":[635,520],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"评估"}]},
+    {"id":"capability-asset","type":"external","label":"已验证能力","sublabel":"经过试验 / 证据 / 评分器验证的能力资产","pos":[420,650],"size":[320,76],"sources":[{"path":"architecture/agent-platform.md","label":"评估驱动的能力工程"}]}
   ],
   "connections": [
     {"id":"requirement-contract","from":"requirement","to":"contract","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
@@ -34,8 +34,8 @@
     {"id":"eval-capability","from":"eval-system","to":"capability-asset","variant":"emphasis","fromSide":"bottom","toSide":"right","route":"orthogonal-v","via":[[775,688]]}
   ],
   "cards": [
-    {"dot":"cyan","title":"契约先于实现","items":["Capability Definition 不等于 Tool Schema","Acceptance / Quality / Eval / Evidence 必须明确","否则只能证明 Agent 做了事，无法证明具备能力"]},
-    {"dot":"violet","title":"Harness vs Eval","items":["Harness = How to implement","Eval = How to prove","同一能力可替换 Harness，但契约应保持相对稳定"]},
-    {"dot":"emerald","title":"能力资产化","items":["Trial 固化 Harness / Capability / Environment Revision","Trace 证明过程，Outcome 证明真实结果","成功案例逐步进入 Regression Suite"]}
+    {"dot":"cyan","title":"契约先于实现","items":["能力定义不等于工具 Schema","验收 / 质量 / 评估 / 证据必须明确","否则只能证明智能体做了事，无法证明具备能力"]},
+    {"dot":"violet","title":"执行框架与评估","items":["执行框架说明如何实现","评估体系说明如何证明","同一能力可替换执行框架，但契约应保持相对稳定"]},
+    {"dot":"emerald","title":"能力资产化","items":["试验固定执行框架 / 能力 / 环境版本","追踪证明过程，结果证明真实产出","成功案例逐步进入回归评估集"]}
   ]
 }

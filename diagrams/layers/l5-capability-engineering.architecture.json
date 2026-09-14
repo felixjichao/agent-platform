@@ -3,7 +3,7 @@
   "diagram_type": "architecture",
   "meta": {
     "title": "L5 能力工程",
-    "subtitle": "Agent 使用能力，但不拥有能力：发现、选择、加载与实现需要分层",
+    "subtitle": "智能体使用能力，但不拥有能力：发现、选择、加载与实现需要分层",
     "locale": "zh-CN",
     "output": "public/diagrams/layers/l5-capability-engineering.architecture.html",
     "animation": "trace",
@@ -13,21 +13,21 @@
     "repository": {"url":"https://github.com/felixjichao/agent-platform","provider":"github","revision":"4bec0f4b40811259f93e1955e87b05c27cca1bba"},
     "legend": {"mode":"hidden"},
     "views": [
-      {"id":"discovery","label":"发现与加载","focus":["catalog","metadata","selection","effective-agent"],"note":"能力规模化后先发现 Metadata，再选择并按需加载，避免把全量 Tool / Skill 塞进 Context。"},
-      {"id":"tool-path","label":"Tool 适配链","focus":["backend","adapter","agent-tool","effective-agent"],"note":"Backend API / MCP Tool 经过 Capability Adapter 转成面向 Agent 的语义能力。"},
-      {"id":"skill-path","label":"Skill 渐进披露","focus":["skill-metadata","skill-detail","effective-agent"],"note":"Skill Metadata → SKILL.md → References / Scripts / Resources，按需展开程序性知识。"}
+      {"id":"discovery","label":"发现与加载","focus":["catalog","metadata","selection","effective-agent"],"note":"能力规模化后先发现元数据，再选择并按需加载，避免把全量工具和技能塞进上下文。"},
+      {"id":"tool-path","label":"工具适配链","focus":["backend","adapter","agent-tool","effective-agent"],"note":"后端 API / MCP 工具经过能力适配器转成面向智能体的语义能力。"},
+      {"id":"skill-path","label":"技能渐进披露","focus":["skill-metadata","skill-detail","effective-agent"],"note":"技能元数据 → SKILL.md → 参考资料 / 脚本 / 资源，按需展开程序性知识。"}
     ]
   },
   "components": [
-    {"id":"catalog","type":"database","label":"Capability Catalog / Taxonomy","sublabel":"Domain → Resource → Semantic Capability","tag":"能力资产的统一索引","pos":[440,35],"size":[320,82],"sources":[{"path":"architecture/agent-platform.md","label":"Capability Catalog / Taxonomy"}]},
-    {"id":"metadata","type":"messagebus","label":"Capability Discovery","sublabel":"What · When · When NOT · Boundary · Neighbor","tag":"先看元数据","pos":[440,160],"size":[320,82],"sources":[{"path":"architecture/agent-platform.md","label":"Discovery != Loading"}]},
-    {"id":"selection","type":"cloud","label":"Select for Current Task","sublabel":"Goal · Context · Permission · Budget · Risk","tag":"只选当前真正需要的能力","pos":[440,285],"size":[320,82],"sources":[{"path":"architecture/agent-platform.md","label":"动态组装 Agent"}]},
-    {"id":"backend","type":"external","label":"Backend API / MCP Tool","sublabel":"connectivity implementation","pos":[55,445],"size":[250,72],"sources":[{"path":"architecture/agent-platform.md","label":"Backend API / MCP Tool"}]},
-    {"id":"adapter","type":"backend","label":"Capability Adapter","sublabel":"语义聚合 · 参数约束 · 结果整形 · Guidance","pos":[55,570],"size":[250,78],"sources":[{"path":"architecture/agent-platform.md","label":"Capability Adapter"}]},
-    {"id":"agent-tool","type":"security","label":"Agent-facing Tool","sublabel":"Action Capability","tag":"能做什么动作","pos":[55,695],"size":[250,72],"sources":[{"path":"architecture/agent-platform.md","label":"Tool"}]},
-    {"id":"skill-metadata","type":"database","label":"Skill Metadata","sublabel":"名称 · 适用场景 · 边界","pos":[895,445],"size":[250,72],"sources":[{"path":"architecture/agent-platform.md","label":"Skill Progressive Disclosure"}]},
-    {"id":"skill-detail","type":"cloud","label":"SKILL.md + Resources","sublabel":"References · Scripts · Procedure","tag":"程序性知识","pos":[895,570],"size":[250,78],"sources":[{"path":"architecture/agent-platform.md","label":"SKILL.md"}]},
-    {"id":"effective-agent","type":"messagebus","label":"Effective Agent","sublabel":"Base Agent + Selected Skills + Selected Tools + Knowledge + Task Context","tag":"运行时动态组装","pos":[420,650],"size":[360,86],"sources":[{"path":"architecture/agent-platform.md","label":"Effective Agent"}]}
+    {"id":"catalog","type":"database","label":"能力目录 / 分类体系","sublabel":"领域 → 资源 → 语义能力","tag":"能力资产的统一索引","pos":[440,35],"size":[320,82],"sources":[{"path":"architecture/agent-platform.md","label":"能力目录 / 分类体系"}]},
+    {"id":"metadata","type":"messagebus","label":"能力发现","sublabel":"能力是什么 · 何时使用 · 禁用场景 · 边界 · 相邻能力","tag":"先看元数据","pos":[440,160],"size":[320,82],"sources":[{"path":"architecture/agent-platform.md","label":"能力发现与加载分离"}]},
+    {"id":"selection","type":"cloud","label":"按当前任务选择能力","sublabel":"目标 · 上下文 · 权限 · 预算 · 风险","tag":"只选当前真正需要的能力","pos":[440,285],"size":[320,82],"sources":[{"path":"architecture/agent-platform.md","label":"动态组装智能体"}]},
+    {"id":"backend","type":"external","label":"后端 API / MCP 工具","sublabel":"连接实现","pos":[55,445],"size":[250,72],"sources":[{"path":"architecture/agent-platform.md","label":"后端 API / MCP 工具"}]},
+    {"id":"adapter","type":"backend","label":"能力适配器","sublabel":"语义聚合 · 参数约束 · 结果整形 · 使用指导","pos":[55,570],"size":[250,78],"sources":[{"path":"architecture/agent-platform.md","label":"能力适配器"}]},
+    {"id":"agent-tool","type":"security","label":"面向智能体的工具","sublabel":"行动能力","tag":"能做什么动作","pos":[55,695],"size":[250,72],"sources":[{"path":"architecture/agent-platform.md","label":"工具"}]},
+    {"id":"skill-metadata","type":"database","label":"技能元数据","sublabel":"名称 · 适用场景 · 边界","pos":[895,445],"size":[250,72],"sources":[{"path":"architecture/agent-platform.md","label":"技能渐进披露"}]},
+    {"id":"skill-detail","type":"cloud","label":"SKILL.md + 资源","sublabel":"参考资料 · 脚本 · 操作步骤","tag":"程序性知识","pos":[895,570],"size":[250,78],"sources":[{"path":"architecture/agent-platform.md","label":"SKILL.md"}]},
+    {"id":"effective-agent","type":"messagebus","label":"动态组装智能体","sublabel":"基础智能体 + 已选技能 + 已选工具 + 知识 + 任务上下文","tag":"运行时动态组装","pos":[420,650],"size":[360,86],"sources":[{"path":"architecture/agent-platform.md","label":"动态组装智能体"}]}
   ],
   "connections": [
     {"id":"catalog-discovery","from":"catalog","to":"metadata","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
@@ -35,11 +35,11 @@
     {"id":"backend-adapter","from":"backend","to":"adapter","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
     {"id":"adapter-tool","from":"adapter","to":"agent-tool","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
     {"id":"skill-metadata-detail","from":"skill-metadata","to":"skill-detail","variant":"dashed","fromSide":"bottom","toSide":"top","route":"straight"},
-    {"id":"selection-agent","from":"selection","to":"effective-agent","label":"assemble","labelAt":[600,405],"variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"}
+    {"id":"selection-agent","from":"selection","to":"effective-agent","label":"组装","labelAt":[600,405],"variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"}
   ],
   "cards": [
-    {"dot":"cyan","title":"四个边界","items":["Tool：能做什么动作","Skill：这类任务通常怎么做","MCP：如何连接外部系统","Harness：当前任务现在怎么推进"]},
-    {"dot":"violet","title":"Agentic Boundary","items":["确定性 mechanics 下沉到 Capability","不确定决策留给 Harness","API atomicity 不等于 Agent Capability Granularity"]},
-    {"dot":"emerald","title":"能力应独立资产化","items":["可版本化 · 可发现 · 可组合 · 可治理","Discovery 与 Loading 分离","Agent uses capabilities; Agent does not own capabilities"]}
+    {"dot":"cyan","title":"四个边界","items":["工具：能做什么动作","技能：这类任务通常怎么做","MCP：如何连接外部系统","执行框架：当前任务现在怎么推进"]},
+    {"dot":"violet","title":"智能体边界","items":["确定性机制下沉到能力","不确定决策留给执行框架","API 粒度不等于智能体能力粒度"]},
+    {"dot":"emerald","title":"能力应独立资产化","items":["可版本化 · 可发现 · 可组合 · 可治理","能力发现与加载分离","智能体使用能力，但不拥有能力"]}
   ]
 }
