@@ -1,0 +1,49 @@
+{
+  "allowedEnglish": [
+    "LLM",
+    "MCP",
+    "API",
+    "SaaS",
+    "PTC",
+    "HITL",
+    "Token",
+    "SKILL.md"
+  ],
+  "forbiddenEnglish": [
+    { "term": "Agent Work Environment", "recommended": "智能体工作环境" },
+    { "term": "Capability Contract", "recommended": "能力契约" },
+    { "term": "Capability Catalog", "recommended": "能力目录" },
+    { "term": "Capability Discovery", "recommended": "能力发现" },
+    { "term": "Capability Adapter", "recommended": "能力适配器" },
+    { "term": "Capability Proxy", "recommended": "能力代理" },
+    { "term": "Acceptance Criteria", "recommended": "验收标准" },
+    { "term": "Quality Criteria", "recommended": "质量标准" },
+    { "term": "Evaluation Contract", "recommended": "评估契约" },
+    { "term": "Evidence Requirement", "recommended": "证据要求" },
+    { "term": "Observation Projection", "recommended": "观察投影" },
+    { "term": "Control Plane", "recommended": "控制面" },
+    { "term": "Data Plane", "recommended": "数据面" },
+    { "term": "Action Plane", "recommended": "动作面" },
+    { "term": "Source of Truth", "recommended": "事实源" },
+    { "term": "Working Set", "recommended": "工作集" },
+    { "term": "Observability", "recommended": "可观测性" },
+    { "term": "Verification", "recommended": "验证" },
+    { "term": "Evaluation", "recommended": "评估" },
+    { "term": "Governance", "recommended": "治理" },
+    { "term": "Versioning", "recommended": "版本管理" },
+    { "term": "Registry", "recommended": "注册表" },
+    { "term": "Reachability", "recommended": "可达范围" },
+    { "term": "Workspace", "recommended": "工作空间" },
+    { "term": "Context", "recommended": "上下文" },
+    { "term": "Memory", "recommended": "记忆" },
+    { "term": "Runtime", "recommended": "运行时" },
+    { "term": "Harness", "recommended": "执行框架" }
+  ],
+  "forbiddenChinese": [
+    { "term": "接受标准", "recommended": "验收标准" },
+    { "term": "真相源", "recommended": "事实源" },
+    { "term": "能力目录册", "recommended": "能力目录" },
+    { "term": "线束", "recommended": "执行框架" }
+  ],
+  "fileAllowlist": {}
+}
