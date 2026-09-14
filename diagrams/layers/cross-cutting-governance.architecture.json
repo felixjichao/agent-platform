@@ -2,7 +2,7 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "横切系统：Context · Eval · Observability · Security",
+    "title": "横切系统：上下文 · 评估 · 可观测性 · 安全治理",
     "subtitle": "这些能力不是独立层，而是贯穿能力定义、执行、验证与真实动作的系统约束",
     "locale": "zh-CN",
     "output": "public/diagrams/layers/cross-cutting-governance.architecture.html",
@@ -13,33 +13,33 @@
     "repository": {"url":"https://github.com/felixjichao/agent-platform","provider":"github","revision":"4bec0f4b40811259f93e1955e87b05c27cca1bba"},
     "legend": {"mode":"hidden"},
     "views": [
-      {"id":"context-eval","label":"Context / Eval","focus":["context","execution-core","evaluation"],"note":"Context 决定模型当前看到什么；Evaluation 决定如何证明能力与结果。"},
-      {"id":"trace-security","label":"Trace / Security","focus":["observability","execution-core","security"],"note":"Trace 让执行事实可见；Security 限制 Principal、Capability、Resource、Data Flow 与 Reachability。"},
-      {"id":"asset-governance","label":"版本与预算","focus":["registry","execution-core","budget"],"note":"Harness、Capability、Eval、Environment 都必须版本化；预算与并发限制贯穿执行生命周期。"}
+      {"id":"context-eval","label":"上下文 / 评估","focus":["context","execution-core","evaluation"],"note":"上下文决定模型当前看到什么；评估决定如何证明能力与结果。"},
+      {"id":"trace-security","label":"追踪 / 安全","focus":["observability","execution-core","security"],"note":"追踪让执行事实可见；安全治理限制主体、能力、资源、数据流与可达范围。"},
+      {"id":"asset-governance","label":"版本与预算","focus":["registry","execution-core","budget"],"note":"执行框架、能力、评估、环境都必须版本化；预算与并发限制贯穿执行生命周期。"}
     ]
   },
   "components": [
-    {"id":"contract","type":"security","label":"Capability Contract","sublabel":"Acceptance · Quality · Eval · Evidence","pos":[440,35],"size":[320,72],"sources":[{"path":"architecture/agent-platform.md","label":"L6 能力契约"}]},
-    {"id":"execution-core","type":"messagebus","label":"Execution System","sublabel":"L5 Capability · L4 Harness · L3 Runtime · L2 Environment","tag":"动态、长期、非确定执行","pos":[400,315],"size":[400,92],"sources":[{"path":"architecture/agent-platform.md","label":"横切系统"}]},
-    {"id":"world","type":"external","label":"Real-world Outcome","sublabel":"Artifact · Resource State · Side Effects","pos":[440,650],"size":[320,76],"sources":[{"path":"architecture/agent-platform.md","label":"真实世界"}]},
-    {"id":"context","type":"database","label":"Context / Memory","sublabel":"Working Set · Projection · Recall · Compaction","tag":"模型当前看到什么","pos":[55,165],"size":[290,78],"sources":[{"path":"architecture/agent-platform.md","label":"Context / Memory"}]},
-    {"id":"observability","type":"messagebus","label":"Observability / Trace","sublabel":"Event · Trace · Metric · Replay · Causation","tag":"系统实际发生了什么","pos":[55,465],"size":[290,78],"sources":[{"path":"architecture/agent-platform.md","label":"Observability / Trace"}]},
-    {"id":"evaluation","type":"cloud","label":"Evaluation / Verification","sublabel":"Trial · Outcome · Evidence · Grader · Oracle","tag":"如何证明成功","pos":[855,165],"size":[290,78],"sources":[{"path":"architecture/agent-platform.md","label":"Evaluation"}]},
-    {"id":"security","type":"security","label":"Security / Governance","sublabel":"Identity · Authority · Trust · Reachability · Data Flow","tag":"能触达多大的世界","pos":[855,465],"size":[290,78],"sources":[{"path":"architecture/agent-platform.md","label":"Security / Governance"}]},
-    {"id":"registry","type":"database","label":"Registry / Versioning","sublabel":"Harness · Capability · Eval · Environment Revision","pos":[55,650],"size":[290,76],"sources":[{"path":"architecture/agent-platform.md","label":"Registry / Versioning"}]},
-    {"id":"budget","type":"external","label":"Budget / Cost","sublabel":"Token · Compute · Tool Calls · Parallelism · Runtime","pos":[855,650],"size":[290,76],"sources":[{"path":"architecture/agent-platform.md","label":"Budget / Cost"}]}
+    {"id":"contract","type":"security","label":"能力契约","sublabel":"验收 · 质量 · 评估 · 证据","pos":[440,35],"size":[320,72],"sources":[{"path":"architecture/agent-platform.md","label":"L6 能力契约"}]},
+    {"id":"execution-core","type":"messagebus","label":"执行系统","sublabel":"L5 能力 · L4 执行框架 · L3 运行时 · L2 工作环境","tag":"动态、长期、非确定执行","pos":[400,315],"size":[400,92],"sources":[{"path":"architecture/agent-platform.md","label":"横切系统"}]},
+    {"id":"world","type":"external","label":"真实世界结果","sublabel":"制品 · 资源状态 · 副作用","pos":[440,650],"size":[320,76],"sources":[{"path":"architecture/agent-platform.md","label":"真实世界"}]},
+    {"id":"context","type":"database","label":"上下文 / 记忆","sublabel":"工作集 · 投影 · 召回 · 压缩","tag":"模型当前看到什么","pos":[55,165],"size":[290,78],"sources":[{"path":"architecture/agent-platform.md","label":"上下文 / 记忆"}]},
+    {"id":"observability","type":"messagebus","label":"可观测性 / 追踪","sublabel":"事件 · 追踪 · 指标 · 重放 · 因果关系","tag":"系统实际发生了什么","pos":[55,465],"size":[290,78],"sources":[{"path":"architecture/agent-platform.md","label":"可观测性 / 追踪"}]},
+    {"id":"evaluation","type":"cloud","label":"评估 / 验证","sublabel":"试验 · 结果 · 证据 · 评分器 · 判定器","tag":"如何证明成功","pos":[855,165],"size":[290,78],"sources":[{"path":"architecture/agent-platform.md","label":"评估"}]},
+    {"id":"security","type":"security","label":"安全 / 治理","sublabel":"身份 · 权限 · 信任 · 可达范围 · 数据流","tag":"能触达多大的世界","pos":[855,465],"size":[290,78],"sources":[{"path":"architecture/agent-platform.md","label":"安全 / 治理"}]},
+    {"id":"registry","type":"database","label":"注册表 / 版本管理","sublabel":"执行框架 · 能力 · 评估 · 环境版本","pos":[55,650],"size":[290,76],"sources":[{"path":"architecture/agent-platform.md","label":"注册表 / 版本管理"}]},
+    {"id":"budget","type":"external","label":"预算 / 成本","sublabel":"Token · 计算资源 · 工具调用 · 并行度 · 运行时长","pos":[855,650],"size":[290,76],"sources":[{"path":"architecture/agent-platform.md","label":"预算 / 成本"}]}
   ],
   "connections": [
     {"id":"contract-execution","from":"contract","to":"execution-core","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
     {"id":"execution-world","from":"execution-core","to":"world","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
-    {"id":"context-execution","from":"context","to":"execution-core","label":"projection","variant":"dashed","fromSide":"right","toSide":"left","route":"orthogonal-h","via":[[365,204],[365,361]]},
-    {"id":"observability-execution","from":"execution-core","to":"observability","label":"facts / trace","variant":"dashed","fromSide":"left","toSide":"right","route":"orthogonal-h","via":[[365,361],[365,504]]},
-    {"id":"evaluation-execution","from":"evaluation","to":"execution-core","label":"criteria / grader","variant":"dashed","fromSide":"left","toSide":"right","route":"orthogonal-h","via":[[835,204],[835,361]]},
-    {"id":"security-execution","from":"security","to":"execution-core","label":"policy / scope","variant":"security","fromSide":"left","toSide":"right","route":"orthogonal-h","via":[[835,504],[835,361]]}
+    {"id":"context-execution","from":"context","to":"execution-core","label":"投影","variant":"dashed","fromSide":"right","toSide":"left","route":"orthogonal-h","via":[[365,204],[365,361]]},
+    {"id":"observability-execution","from":"execution-core","to":"observability","label":"执行事实 / 追踪","variant":"dashed","fromSide":"left","toSide":"right","route":"orthogonal-h","via":[[365,361],[365,504]]},
+    {"id":"evaluation-execution","from":"evaluation","to":"execution-core","label":"标准 / 评分器","variant":"dashed","fromSide":"left","toSide":"right","route":"orthogonal-h","via":[[835,204],[835,361]]},
+    {"id":"security-execution","from":"security","to":"execution-core","label":"策略 / 范围","variant":"security","fromSide":"left","toSide":"right","route":"orthogonal-h","via":[[835,504],[835,361]]}
   ],
   "cards": [
-    {"dot":"cyan","title":"Context 是投影","items":["Session ≠ State ≠ Context","Context contains a map, not the whole world","Compaction 改变模型看到什么，不改变执行事实"]},
-    {"dot":"violet","title":"Eval 是能力规格","items":["Harness = How to implement","Eval = How to prove","Trace 与 Outcome 分离，Criterion / Evidence / Grader 分离"]},
-    {"dot":"emerald","title":"治理贯穿全链路","items":["身份、委托、权限、数据流与 Reachability 共同决定可达世界","版本化让实验和回归可复现","Cost per Successful Outcome 比单次 token 成本更重要"]}
+    {"dot":"cyan","title":"上下文是投影","items":["会话 ≠ 状态 ≠ 上下文","上下文包含工作地图，而不是整个世界","压缩改变模型看到什么，不改变执行事实"]},
+    {"dot":"violet","title":"评估是能力规格","items":["执行框架说明如何实现","评估体系说明如何证明","追踪与结果分离，判定标准 / 证据 / 评分器分离"]},
+    {"dot":"emerald","title":"治理贯穿全链路","items":["身份、委派、权限、数据流与可达范围共同决定可达世界","版本化让实验和回归可复现","成功结果单位成本比单次 Token 成本更重要"]}
   ]
 }
