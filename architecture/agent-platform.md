@@ -1,10 +1,10 @@
 # 智能体平台总体架构
 
-本文档是 Agent Platform 当前的规范性架构文档（Canonical Architecture Document）。文章目录保存研究过程和依据；本文件只保留已经形成的稳定架构结论，并通过 Git 历史记录这些结论如何逐步演进。
+本文档是 Agent Platform 当前的规范性架构文档。文章目录保存研究过程和依据；本文件只保留已经形成的稳定架构结论，并通过 Git 历史记录这些结论如何逐步演进。
 
 ## 1. 总体架构主张
 
-Agent Platform 的目标，不是为每一种 Agent 产品形态实现一套独立框架，而是为**动态组装、非确定、长期运行、可并行、可编程的智能执行过程**提供一套稳定的生产系统边界。
+Agent Platform 的目标，不是为每一种智能体产品形态实现一套独立框架，而是为**动态组装、非确定、长期运行、可并行、可编程的智能执行过程**提供一套稳定的生产系统边界。
 
 平台最终需要把这样的执行过程约束在：
 
@@ -19,60 +19,60 @@ Agent Platform 的目标，不是为每一种 Agent 产品形态实现一套独�
    ↓
 动态组装能力
    ↓
-选择执行策略 / Harness
+选择执行策略 / 执行框架
    ↓
-统一 Runtime 记录真实执行
+统一运行时记录真实执行
    ↓
-Agent Work Environment 执行动作、处理数据、提供反馈
+智能体工作环境执行动作、处理数据、提供反馈
    ↓
 真实世界
 ```
 
-同时，Context / Memory、Eval / Trace、安全与治理贯穿整个软件栈。
+同时，上下文 / 记忆、评估 / 追踪、安全与治理贯穿整个软件栈。
 
-## 2. Agent Software Stack
+## 2. 智能体软件栈
 
 ```text
 L7 业务 / 产品
-   Goal · Project · Business Task · Requirement
+   目标 · 项目 · 业务任务 · 需求
 
 L6 能力契约
-   Capability Definition
-   Acceptance Criteria · Quality Criteria · Evaluation Contract
+   能力定义
+   验收标准 · 质量标准 · 评估契约
 
 L5 能力工程
-   Capability Catalog · Taxonomy · Discovery
-   Skill · Tool · Capability Adapter · MCP Binding
+   能力目录 · 分类体系 · 能力发现
+   技能 · 工具 · 能力适配器 · MCP 绑定
 
 L4 执行策略
-   Direct · Workflow · Agent Loop · PTC · Multi-Agent
-   Harness · Planning · Delegation · Context Strategy · Evaluator
+   直接执行 · 工作流 · 智能体循环 · PTC · 多智能体
+   执行框架 · 规划 · 委派 · 上下文策略 · 评估器
 
 L3 统一运行时
-   Work · Session · Run · Event · State
-   Action · Result · Observation · Artifact
-   Delegation · Recovery
+   工作 · 会话 · 运行 · 事件 · 状态
+   动作 · 结果 · 观察 · 制品
+   委派 · 恢复
 
-L2 Agent Work Environment
-   Workspace · Shared Resources · Programmatic Execution
-   Work Discovery · Ownership / Lease
-   Observation Projection · Verification / Oracle
-   Capability Proxy · Sandbox / Isolation
+L2 智能体工作环境
+   工作空间 · 共享资源 · 程序化执行
+   工作发现 · 所有权 / 租约
+   观察投影 · 验证 / 判定器
+   能力代理 · 沙箱 / 隔离
 
 L1 基础设施 / 真实世界
-   API · MCP Server · SaaS · DB · Browser
-   Files · Compute · Network · Devices
+   API · MCP Server · SaaS · 数据库 · 浏览器
+   文件 · 计算 · 网络 · 设备
 ```
 
 横切系统：
 
 ```text
-Context / Memory
-Observability / Trace
-Evaluation
-Security / Governance
-Registry / Versioning
-Budget / Cost
+上下文 / 记忆
+可观测性 / 追踪
+评估
+安全 / 治理
+注册表 / 版本管理
+预算 / 成本
 ```
 
 ## 3. 每一层回答什么问题
@@ -81,75 +81,75 @@ Budget / Cost
 
 负责：
 
-- Goal；
-- Project；
-- Business Task；
+- 目标；
+- 项目；
+- 业务任务；
 - 用户价值；
 - 业务约束和责任。
 
-对话、科研助手、知识库、Coding、Workflow 产品等都属于应用形态，不等于执行范式。
+对话、科研助手、知识库、编程助手、工作流产品等都属于应用形态，不等于执行范式。
 
 ### L6 能力契约：什么叫“具备这项能力”？
 
 负责定义：
 
 ```text
-Capability
-├── Goal / Requirement
-├── Acceptance Criteria
-├── Quality Criteria
-├── Evaluation Contract
-└── Evidence Requirement
+能力
+├── 目标 / 需求
+├── 验收标准
+├── 质量标准
+├── 评估契约
+└── 证据要求
 ```
 
-Harness 描述“怎么实现”，Eval 描述“怎么证明”。
+执行框架描述“怎么实现”，评估描述“怎么证明”。
 
-### L5 能力工程：Agent 能学什么、能做什么？
+### L5 能力工程：智能体能学什么、能做什么？
 
 负责组织：
 
-- Skill：程序性知识；
-- Tool：行动能力；
-- MCP / API Binding：连接实现；
-- Capability Discovery；
-- Capability Adapter；
-- Capability Revision / Eval。
+- 技能（Skill）：程序性知识；
+- 工具（Tool）：行动能力；
+- MCP / API 绑定：连接实现；
+- 能力发现；
+- 能力适配器；
+- 能力修订版本 / 评估。
 
 ### L4 执行策略：当前任务怎么推进？
 
 负责：
 
-- Direct；
-- Workflow；
-- Agent Loop；
+- 直接执行；
+- 工作流；
+- 智能体循环；
 - PTC；
-- Multi-Agent；
-- Planning；
-- Delegation；
-- Context Strategy；
-- Evaluation Strategy；
-- Completion / Escalation Strategy。
+- 多智能体；
+- 规划；
+- 委派；
+- 上下文策略；
+- 评估策略；
+- 完成策略 / 升级策略。
 
-这些策略主要由 Harness 承载。
+这些策略主要由执行框架（Harness）承载。
 
 ### L3 统一运行时：实际上发生了什么？
 
-负责记录和管理执行事实、状态、生命周期、恢复和因果关系，不负责把某一种 Harness 策略固化为系统唯一执行方式。
+负责记录和管理执行事实、状态、生命周期、恢复和因果关系，不负责把某一种执行框架策略固化为系统唯一执行方式。
 
-### L2 Agent Work Environment：Agent 能观察和作用于什么世界？
+### L2 智能体工作环境：智能体能观察和作用于什么世界？
 
 负责：
 
-- Workspace；
+- 工作空间；
 - 数据与动作执行；
-- Work Discovery；
-- Shared State；
-- Ownership；
-- Observation；
-- Verification；
-- Sandbox / Isolation；
-- Capability Proxy；
-- Programmatic Execution。
+- 工作发现；
+- 共享状态；
+- 所有权；
+- 观察；
+- 验证；
+- 沙箱 / 隔离；
+- 能力代理；
+- 程序化执行。
 
 ### L1 基础设施 / 真实世界：真正的资源在哪里？
 
@@ -160,162 +160,164 @@ Harness 描述“怎么实现”，Eval 描述“怎么证明”。
 ### 4.1 应用形态不等于执行范式
 
 ```text
-Application Forms
-Chat · Research · Knowledge Base · Coding · Industry Apps
+应用形态
+对话 · 科研 · 知识库 · 编程助手 · 行业应用
 
-Execution Paradigms
-Direct · Workflow · Agent · PTC · Multi-Agent
+执行范式
+直接执行 · 工作流 · 智能体 · PTC · 多智能体
 ```
 
 同一种产品可以使用不同执行策略，同一种执行策略也可以服务多个产品。
 
-### 4.2 Workflow 与 Agent 的真正区别是执行控制权
+### 4.2 工作流与智能体的真正区别是执行控制权
 
 ```text
-Workflow
+工作流
 → 下一步主要由预定义代码 / 图决定
 
-Agent
-→ 下一步主要由模型基于 Context 动态决定
+智能体
+→ 下一步主要由模型基于上下文动态决定
 ```
 
 因此：
 
-> **Static Workflow → Dynamic Workflow / Plan → Agent Loop 是连续谱。**
+> **静态工作流 → 动态工作流 / 计划 → 智能体循环，是一条连续谱。**
 
-Workflow Graph 是输入表达；Agent Graph 更接近运行时结果。
+工作流图是输入表达；智能体图更接近运行时结果。
 
-### 4.3 Runtime 稳定，Harness 可替换
+### 4.3 运行时稳定，执行框架可替换
 
-Harness 编码了“当前模型还做不到什么”的假设。
+执行框架编码了“当前模型还做不到什么”的假设。
 
 这些假设会随着模型升级而过时，所以：
 
-> **Runtime should be stable; Harness should be replaceable and removable.**
+> **运行时应保持稳定；执行框架应可替换、可简化，甚至可以被移除。**
 
-Planner、Evaluator、Initializer、Context Reset、Todo、Completion Strategy 等默认属于 Harness，而不是 Runtime Core。
+规划器、评估器、初始化器、上下文重置、待办、完成策略等默认属于执行框架，而不是运行时核心。
 
-### 4.4 长期工作连续性不依赖 Agent 连续性
+### 4.4 长期工作连续性不依赖智能体连续性
 
-> **Agent 可以忘记、退出或被替换；Work 必须记住。**
+> **智能体可以忘记、退出或被替换；工作必须记住。**
 
-长任务依赖 Durable Work State、Workspace、Event、Artifact、Handoff 和 Recovery，而不是一个 Session 永久不结束。
+长任务依赖持久工作状态、工作空间、事件、制品、交接和恢复，而不是一个会话永久不结束。
 
-### 4.5 LLM 应是 Control Plane，而不是 Data Plane
+### 4.5 LLM 应是控制面，而不是数据面
 
-模型适合做高价值、不确定决策；数据搬运、循环、join、过滤、聚合和稳定 mechanics 尽量进入执行环境。
-
-```text
-Agent / Harness
-= Execution Control Plane
-
-Agent Work Environment
-= Data + Action Plane
-```
-
-### 4.6 Execution、Verification、Acceptance、Publish 分离
+模型适合做高价值、不确定决策；数据搬运、循环、关联、过滤、聚合和稳定机制尽量进入执行环境。
 
 ```text
-Executed
-≠ Verified
-≠ Accepted
-≠ Published / Deployed
+智能体 / 执行框架
+= 执行控制面
+
+智能体工作环境
+= 数据面 + 动作面
 ```
 
-Agent 认为完成，不代表系统验证通过；验证通过，也不自动等于业务接受或允许生产发布。
+### 4.6 执行、验证、验收、发布相互分离
+
+```text
+已执行
+≠ 已验证
+≠ 已验收
+≠ 已发布 / 已部署
+```
+
+智能体认为完成，不代表系统验证通过；验证通过，也不自动等于业务接受或允许生产发布。
 
 ## 5. 核心领域模型
 
-### 5.1 Work
+以下中文名称对应正式代码模型 `Work / Session / Run / Event / Action / Result / Observation / Artifact`；正文优先使用中文，Schema、事件名和代码类型保持英文。
 
-Work 是长期目标和共享工作世界的载体：
+### 5.1 工作（Work）
+
+工作是长期目标和共享工作世界的载体：
 
 ```text
-Work / Project
-├── Goal
-├── Capability / Acceptance Contract
-├── Shared Resources
-├── Work Frontier
-├── Artifacts
-├── Environment / Workspace
-├── Long-term Progress
-└── Sessions
+工作 / 项目
+├── 目标
+├── 能力 / 验收契约
+├── 共享资源
+├── 工作前沿
+├── 制品
+├── 环境 / 工作空间
+├── 长期进度
+└── 会话
 ```
 
-多个 Agent、多个 Session、多个 Harness Revision 可以围绕同一个 Work 工作。
+多个智能体、多个会话、多个执行框架修订版本可以围绕同一个工作协作。
 
-### 5.2 Session
+### 5.2 会话（Session）
 
-Session 表示：
+会话表示：
 
-> **一个 Agent 与一个 Work 之间相对连续的认知 / 执行关系。**
+> **一个智能体与一个工作之间相对连续的认知 / 执行关系。**
 
-Session 不是 Chat History，也不是 Context Window。
+会话不是聊天历史，也不是上下文窗口。
 
-同一个 Work 可以：
+同一个工作可以：
 
-- 顺序经历多个 Session；
-- 并行存在多个 Session；
-- Agent 更换后继续存在。
+- 顺序经历多个会话；
+- 并行存在多个会话；
+- 智能体更换后继续存在。
 
-### 5.3 Run
+### 5.3 运行（Run）
 
-Run 表示：
+运行表示：
 
-> **Runtime 被触发后，在一个 Session 内发生的一次连续执行片段。**
+> **运行时被触发后，在一个会话内发生的一次连续执行片段。**
 
-常见新 Run 触发：
+常见的新运行触发：
 
-- User Message；
-- Human Approval / Input；
-- Timer / Webhook；
-- External Event；
-- Child Session Completion。
+- 用户消息；
+- 人工批准 / 输入；
+- 定时器 / Webhook；
+- 外部事件；
+- 子会话完成。
 
-基础设施内部恢复通常仍属于同一个 Run，例如 worker restart、tool retry。
+基础设施内部恢复通常仍属于同一个运行，例如 worker restart、tool retry。
 
-### 5.4 Event
+### 5.4 事件（Event）
 
-Event 是已经发生的事实，是持久执行历史的重要基础。
+事件是已经发生的事实，是持久执行历史的重要基础。
 
-典型类别：
+典型类别如下。事件类型是代码标识，因此保持英文：
 
 ```text
-Trigger
+触发器
 ├── UserMessageReceived
 ├── ExternalEventReceived
 └── TimerTriggered
 
-Run
+运行
 ├── RunStarted
 ├── RunPaused
 ├── RunCompleted
 └── RunFailed
 
-Action
+动作
 ├── ActionRequested
 ├── ActionStarted
 ├── ActionSucceeded
 └── ActionFailed
 
-Human
+人工交互
 ├── ApprovalRequested
 ├── ApprovalGranted
 ├── ApprovalRejected
 └── HumanInputReceived
 
-Artifact
+制品
 ├── ArtifactCreated
 └── ArtifactUpdated
 
-Recovery
+恢复
 ├── RecoveryStarted
 └── RecoveryCompleted
 ```
 
-Planning Event 默认不是 Runtime Core，因为 Plan 属于 Harness Strategy。
+规划事件默认不属于运行时核心，因为计划属于执行框架策略。
 
-推荐 Event Envelope：
+推荐事件信封（Event Envelope）：
 
 ```text
 event_id
@@ -332,464 +334,464 @@ correlation_id
 payload
 ```
 
-### 5.5 Command / Event / State
+### 5.5 命令、事件、状态
 
 ```text
-Command
+命令
 → 希望发生什么
 
-Event
+事件
 → 实际发生了什么
 
-State
+状态
 → 根据事实得到的当前视图
 ```
 
 推荐：
 
 ```text
-Action / Result
-      ↓
-     Event
-      ↓ append
- Event Log
-      ↓ project
-    State
+动作 / 结果
+    ↓
+   事件
+    ↓ 追加
+ 事件日志
+    ↓ 投影
+   状态
 ```
 
-State 可以被重建；Event Log 承担持久事实来源。Snapshot 是恢复优化，不是真理来源。
+状态可以被重建；事件日志承担持久事实源。快照是恢复优化，不是事实源。
 
-### 5.6 Action
+### 5.6 动作（Action）
 
-Action 是 Runtime 向 Execution Environment 发出的受治理执行请求。
+动作是运行时向执行环境发出的受治理执行请求。
 
-来源可能是 Workflow、Harness、Program、Human 或系统自动机制。
+来源可能是工作流、执行框架、程序、人或系统自动机制。
 
-### 5.7 Result
+### 5.7 结果（Result）
 
-Result 是 Action 的真实执行结果，属于执行事实。
+结果是动作的真实执行结果，属于执行事实。
 
-### 5.8 Observation
+### 5.8 观察（Observation）
 
-Observation 是从 Result、Resource 或 Environment 中构建出的 Agent-facing Projection：
+观察是从结果、资源或环境中构建出的面向模型投影：
 
 ```text
-Action
-  ↓
-Raw Result
-  ↓
-Filter / Transform / Aggregate / Redact / Persist
-  ↓
-Observation
-  ↓
-Context
+动作
+ ↓
+原始结果
+ ↓
+过滤 / 转换 / 聚合 / 脱敏 / 持久化
+ ↓
+观察
+ ↓
+上下文
 ```
 
-> **Result = execution fact；Observation = model-facing projection。**
+> **结果是执行事实；观察是面向模型的投影。**
 
-### 5.9 Artifact
+### 5.9 制品（Artifact）
 
-Artifact 是正式结果 / 交付物，具有版本、评审、发布或引用语义。
+制品是正式结果 / 交付物，具有版本、评审、发布或引用语义。
 
-它与 Note 的区别：Note 是 Agent 当前主观认知；Artifact 是正式工作产物。
+它与笔记的区别：笔记是智能体当前主观认知；制品是正式工作产物。
 
-## 6. Context、Memory、Workspace
+## 6. 上下文、记忆、工作空间
 
-### 6.1 Session != State != Context
+### 6.1 会话 ≠ 状态 ≠ 上下文
 
 ```text
-Session
+会话
 → 持久执行历史
 
-State
+状态
 → 当前运行视图
 
-Context
-→ 当前模型 Working Set
+上下文
+→ 当前模型工作集
 ```
 
-Context 是投影，可以丢弃和重建。
+上下文是投影，可以丢弃和重建。
 
-### 6.2 Context Builder
+### 6.2 上下文构建器
 
 ```text
-Session
-State
-Memory
-Notes
-Artifacts
-Workspace
-Skills
-Capabilities
-External Resources
-       ↓
- Context Builder
-       ↓
-    Context
+会话
+状态
+记忆
+笔记
+制品
+工作空间
+技能
+能力
+外部资源
+    ↓
+上下文构建器
+    ↓
+  上下文
 ```
 
-Context Builder 属于 Harness / Context Strategy。
+上下文构建器属于执行框架中的上下文策略。
 
-### 6.3 Context 是 Working Set
+### 6.3 上下文是工作集
 
-> **Context contains a map, not the whole world.**
+> **上下文包含的是地图，而不是整个世界。**
 
 稳定内容适合前置：
 
-- System / Policy；
-- Agent Definition；
-- Capability Metadata。
+- 系统规则 / 策略；
+- 智能体定义；
+- 能力元数据。
 
 阶段性稳定：
 
-- Goal；
-- Checkpoint；
-- Summary；
-- 当前 Plan。
+- 目标；
+- 检查点；
+- 摘要；
+- 当前计划。
 
 动态内容：
 
-- recent history；
-- Observation；
-- JIT Knowledge；
-- Tool / Skill detail。
+- 最近历史；
+- 观察；
+- 即时知识；
+- 工具 / 技能细节。
 
-### 6.4 Compaction
+### 6.4 上下文压缩
 
 ```text
-Session append facts
-        ↓
-Context Strategy
-        ↓
-select / summarize / compact
-        ↓
-Context
+会话追加事实
+      ↓
+上下文策略
+      ↓
+选择 / 摘要 / 压缩
+      ↓
+上下文
 ```
 
-Compaction 改变模型看到什么，不改变真实发生过什么。
+压缩改变模型看到什么，不改变真实发生过什么。
 
-### 6.5 Notes / Todo
+### 6.5 笔记 / 待办
 
-Agent 当前主观工作认知，包括计划、待办、假设和临时结论。
+智能体当前主观工作认知，包括计划、待办、假设和临时结论。
 
-它可以被修改，也可能是错的，因此不是 Source of Truth。
+它可以被修改，也可能是错的，因此不是事实源。
 
-### 6.6 Memory
+### 6.6 记忆（Memory）
 
 可以区分：
 
-- Working Memory → Notes / Todo；
-- Episodic Memory → 过去任务 / Session 经验；
-- Semantic Memory → 稳定知识、规则、偏好。
+- 工作记忆 → 笔记 / 待办；
+- 情景记忆 → 过去任务 / 会话经验；
+- 语义记忆 → 稳定知识、规则、偏好。
 
-长期 Memory 推荐 Promotion Pipeline：
+长期记忆推荐采用晋升流程：
 
 ```text
-Session / Observation
-      ↓
-Candidate Memory
-      ↓
-Validation / Provenance / Trust
-      ↓
-Long-term Memory
+会话 / 观察
+     ↓
+候选记忆
+     ↓
+验证 / 来源 / 信任
+     ↓
+长期记忆
 ```
 
 原则：
 
-> **Write freely, promote carefully.**
+> **可以自由写入候选，但必须谨慎晋升为长期记忆。**
 
-Recall 不能只用 Vector Top-K，还应考虑 Goal、State、Scope、Recency、Importance、Confidence、Trust / Provenance。
+召回不能只用向量 Top-K，还应考虑目标、状态、范围、时效性、重要性、置信度、信任与来源。
 
-### 6.7 Workspace
+### 6.7 工作空间（Workspace）
 
-Workspace 是 Work 的外部持久工作状态：
+工作空间是工作的外部持久工作状态：
 
-- files；
-- code；
-- intermediate data；
-- checkpoints；
-- generated programs；
-- progress。
+- 文件；
+- 代码；
+- 中间数据；
+- 检查点；
+- 生成程序；
+- 进度。
 
-Workspace 不等于 Memory，也不属于单个 Context。
+工作空间不等于记忆，也不属于单个上下文。
 
-## 7. Capability Engineering
+## 7. 能力工程
 
-### 7.1 Capability 分类
+### 7.1 能力分类
 
 ```text
-Capability
-├── Procedural Capability
-│   └── Skill
+能力
+├── 程序性能力
+│   └── 技能
 │
-└── Action Capability
-    └── Tool
+└── 行动能力
+    └── 工具
 ```
 
-### 7.2 Tool、Skill、MCP、Harness
+### 7.2 工具、技能、MCP、执行框架
 
 ```text
-Tool
+工具
 → 能做什么动作
 
-Skill
+技能
 → 这类任务通常应该怎么做
 
 MCP
 → 如何连接外部系统
 
-Harness
+执行框架
 → 当前任务现在怎么推进
 ```
 
-### 7.3 Capability Adapter
+### 7.3 能力适配器
 
 ```text
-Backend API / MCP Tool
+后端 API / MCP 工具
         ↓
-Capability Adapter
+能力适配器
         ↓
-Agent-facing Tool
+面向智能体的工具
 ```
 
-API atomicity 不等于 Agent Capability Granularity。
+API 原子性不等于面向智能体的能力粒度。
 
-### 7.4 Agentic Boundary
+### 7.4 智能体决策边界
 
-> **Deterministic mechanics 下沉到 Capability；uncertain decisions 留给 Harness。**
+> **确定性机制下沉到能力；不确定决策留给执行框架。**
 
-Tool 太原子会产生大量无意义编排；Tool 太大则会把真正需要 Agent 判断的策略藏进黑盒 Workflow。
+工具太原子会产生大量无意义编排；工具太大则会把真正需要智能体判断的策略藏进黑盒工作流。
 
-### 7.5 Capability Catalog / Taxonomy
+### 7.5 能力目录与分类体系
 
 ```text
-Domain
-  ↓
-Resource
-  ↓
-Semantic Capability
-  ↓
-Concrete Skill / Tool
+领域
+ ↓
+资源
+ ↓
+语义能力
+ ↓
+具体技能 / 工具
 ```
 
-每个能力要明确 What、When、When NOT、Boundary / Neighbor。
+每个能力要明确“做什么”“什么时候用”“什么时候不用”以及边界和相邻能力。
 
-### 7.6 Discovery != Loading
+### 7.6 能力发现 ≠ 能力加载
 
 能力规模化后：
 
 ```text
-Capability Discovery
-      ↓
-Metadata
-      ↓
-Select
-      ↓
-Skill / Tool Detail Loading
+能力发现
+   ↓
+元数据
+   ↓
+选择
+   ↓
+技能 / 工具细节加载
 ```
 
-不要永久把全量 Tool / Skill 定义放入 Context。
+不要永久把全量工具 / 技能定义放入上下文。
 
-### 7.7 Skill Progressive Disclosure
+### 7.7 技能渐进披露
 
 ```text
-Skill Metadata
-      ↓
+技能元数据
+    ↓
 SKILL.md
-      ↓
-References / Scripts / Resources
+    ↓
+参考资料 / 脚本 / 资源
 ```
 
-Skill 是可发现、可导航、按需加载的程序性知识。
+技能是可发现、可导航、按需加载的程序性知识。
 
-### 7.8 Skill Script 与 Tool
+### 7.8 技能脚本与工具
 
-Skill-local Script 服务于某个 Skill 的稳定局部实现；Tool 是平台级、可治理、可复用的行动能力。
+技能内部脚本服务于某个技能的稳定局部实现；工具是平台级、可治理、可复用的行动能力。
 
-不是每个 Script 都需要注册成全局 Tool。
+不是每个脚本都需要注册成全局工具。
 
 ### 7.9 MCP 的位置
 
-> **MCP 是 Connectivity Standard，不是 Capability Design Standard。**
+> **MCP 是连接标准，不是能力设计标准。**
 
 推荐：
 
 ```text
-Skill
-  ↓ requires
-Semantic Capability
-  ↓ binds
-Tool
-  ↓ implemented via
-MCP / API / Local Script
+技能
+ ↓ 依赖
+语义能力
+ ↓ 绑定
+工具
+ ↓ 通过以下方式实现
+MCP / API / 本地脚本
 ```
 
-### 7.10 Tool Contract
+### 7.10 工具契约
 
 ```text
-Tool Contract
-├── Identity
-├── Applicability
-├── Semantics
-├── Input / Output Schema
-├── Usage Guidance
-├── Side Effects
-└── Permission / Risk
+工具契约
+├── 身份
+├── 适用范围
+├── 语义
+├── 输入 / 输出 Schema
+├── 使用指导
+├── 副作用
+└── 权限 / 风险
 ```
 
-Schema 描述机器允许什么；Guidance 帮助 Agent 正确选择和使用。
+Schema 描述机器允许什么；使用指导帮助智能体正确选择和使用。
 
-### 7.11 动态组装 Agent
+### 7.11 动态组装智能体
 
 ```text
-Base Agent
-+ Selected Skills
-+ Selected Tools
-+ Retrieved Knowledge
-+ Task Context
-        ↓
-Effective Agent
+基础智能体
++ 选中的技能
++ 选中的工具
++ 召回的知识
++ 任务上下文
+       ↓
+实际工作的智能体
 ```
 
-> **Agent uses capabilities; Agent does not own capabilities.**
+> **智能体使用能力，但不拥有能力。**
 
 能力资产应独立、可版本化、可发现、可组合、可治理。
 
-### 7.12 Eval-driven Capability Engineering
+### 7.12 评估驱动的能力工程
 
-Tool 和 Skill 都从真实 Capability Gap 出发，通过 Trial / Trace / Eval 迭代。
+工具和技能都从真实能力缺口出发，通过试验、追踪、评估持续迭代。
 
-Tool-use Smells：wrong-tool switching、重复 retry、oversized result、invalid params 等。
+工具使用异味包括：错误工具切换、重复重试、结果过大、参数无效等。
 
-Skill Failure：Discovery、False Activation、Navigation、Instruction、Over-contexting、Procedure Failure。
+技能失败包括：发现失败、错误激活、导航失败、指令失败、上下文过载、过程失败。
 
-## 8. Execution Strategy
+## 8. 执行策略
 
-### 8.1 Direct
+### 8.1 直接执行
 
-模型直接做一次决策或直接调用少量 Tool。
+模型直接做一次决策或直接调用少量工具。
 
-### 8.2 Workflow
+### 8.2 工作流
 
 代码拥有主要执行控制权。
 
 基础控制原语：
 
-- Sequence；
-- Branch；
-- Fork / Join；
-- Loop；
-- Dynamic Expansion。
+- 顺序；
+- 分支；
+- 分叉 / 汇合；
+- 循环；
+- 动态展开。
 
-### 8.3 Agent Loop
+### 8.3 智能体循环
 
-模型持续根据 Context 和 Observation 决定下一 Action。
+模型持续根据上下文和观察决定下一动作。
 
 ### 8.4 PTC
 
-PTC（Programmatic Tool Calling）是 Tool Orchestration Mode，不是 Tool Type。
+PTC（Programmatic Tool Calling，程序化工具调用）是工具编排模式，不是工具类型。
 
 ```text
-Model
-  ↓ generate program
-Program
-  ├── Tool A
-  ├── Tool B
-  ├── loop
-  ├── filter
-  └── aggregate
-       ↓
-Observation
-       ↓
-Model
+模型
+ ↓ 生成程序
+程序
+ ├── 工具 A
+ ├── 工具 B
+ ├── 循环
+ ├── 过滤
+ └── 聚合
+      ↓
+观察
+ ↓
+模型
 ```
 
-一个 Reasoning Step 可以对应许多 Environment Actions。
+一个推理步骤可以对应许多环境动作。
 
-### 8.5 Multi-Agent
+### 8.5 多智能体
 
-使用 Multi-Agent 取决于：
+使用多智能体取决于：
 
 ```text
-Value
-≈ Parallelizability
- + Context Independence
- + Result Mergeability
- - Dependency Density
- - Coordination Cost
+价值
+≈ 可并行性
+ + 上下文独立性
+ + 结果可合并性
+ - 依赖密度
+ - 协调成本
 ```
 
 复杂任务本身不是理由。
 
-## 9. Multi-Agent Architecture
+## 9. 多智能体架构
 
-### 9.1 Lead Agent
+### 9.1 主智能体（Lead Agent）
 
-> **Lead Agent = Orchestrator + Global Context Owner。**
+> **主智能体 = 编排者 + 全局上下文负责人。**
 
 负责全局目标、工作拆解、委托、覆盖度、冲突和最终综合。
 
-### 9.2 Agent-as-Tool vs Child Session
+### 9.2 智能体即工具 vs 子会话
 
-Agent-as-Tool：聚焦短调用，是 Parent Session 中一次 Action。
+智能体即工具：聚焦短调用，是父会话中的一次动作。
 
-Autonomous Child Agent：独立目标、多轮 Context、Artifact、Recovery，需要 Child Session。
+自治子智能体：拥有独立目标、多轮上下文、制品和恢复能力，需要独立子会话。
 
-### 9.3 Dynamic Team Formation
+### 9.3 动态团队形成
 
 ```text
-Goal
-+ Capabilities
-+ Knowledge
-+ Permissions
-+ Budget
-+ Risk
-      ↓
-Harness
-      ↓
-Single / Workflow / Multi-Agent / Hybrid
+目标
++ 能力
++ 知识
++ 权限
++ 预算
++ 风险
+   ↓
+执行框架
+   ↓
+单智能体 / 工作流 / 多智能体 / 混合模式
 ```
 
-Agent Team 本身可以是运行时结果。
+智能体团队本身可以是运行时结果。
 
-### 9.4 Work Frontier
+### 9.4 工作前沿
 
-Work Frontier 是当前独立、可领取、可验证的 Work Item 集合。
+工作前沿是当前独立、可领取、可验证的工作项集合。
 
-> **Effective Parallelism ≈ Independent Work Fronts。**
+> **有效并行度约等于独立工作前沿的数量。**
 
-Multi-Agent 的关键是 Work Scheduler，而不是 Agent Scheduler。
+多智能体的关键是工作调度器，而不是智能体调度器。
 
-### 9.5 Shared State + Local Isolation
+### 9.5 共享状态 + 局部隔离
 
-Shared-world 协作需要：
+共享世界协作需要：
 
-- Shared Resource；
-- Local Workspace；
-- resource identity / version；
-- ownership / lease；
-- snapshot / change；
-- conflict handling。
+- 共享资源；
+- 本地工作空间；
+- 资源身份 / 版本；
+- 所有权 / 租约；
+- 快照 / 变化；
+- 冲突处理。
 
-协作可以通过环境状态发生，不必全部依赖 Agent-to-Agent message。
+协作可以通过环境状态发生，不必全部依赖智能体之间直接传消息。
 
-### 9.6 Local Recovery + Global Reconciliation
+### 9.6 局部恢复 + 全局协调
 
-Child 局部失败优先局部恢复；结果回到 Parent 重新协调全局计划。
+子任务局部失败优先局部恢复；结果回到父级重新协调全局计划。
 
 ### 9.7 两层并发
 
-- Delegation Concurrency；
-- Action / Tool Concurrency。
+- 委派并发；
+- 动作 / 工具并发。
 
 两层拥有独立预算和背压策略。
 
-### 9.8 Trust-aware Agent Handoff
+### 9.8 信任感知的智能体交接
 
-Agent-to-Agent Result 不应该只是一段文本：
+智能体之间的结果不应该只是一段文本：
 
 ```text
-Agent Message / Delegation Result
+智能体消息 / 委派结果
 ├── semantic_type
 ├── content
 ├── provenance
@@ -798,351 +800,351 @@ Agent Message / Delegation Result
 └── trust_label
 ```
 
-Transformation 不自动提升 Trust。
+信息经过转换不会自动提升信任等级。
 
-## 10. Agent Work Environment
-
-```text
-Agent Work Environment
-├── Shared Resources
-├── Local Workspace
-├── Programmatic Execution Runtime
-├── Work Discovery
-├── Ownership / Lease
-├── Observation Projection
-├── Verification
-├── Feedback / Oracle
-├── Capability Proxy
-├── Sandbox / Isolation
-└── Telemetry Channel
-```
-
-### 10.1 Environment Engineering
-
-Raw Result 需要转换成高信号 Observation，而不是把原始日志和 API Response 全部塞给模型。
-
-### 10.2 Programmatic Execution Runtime
+## 10. 智能体工作环境
 
 ```text
-Programmatic Execution Runtime
-├── Sandbox / Isolation
-├── Workspace
-├── Capability Proxy
-├── Permission Policy
-├── Data Flow Policy
-├── Resource Budget
-├── Secrets Isolation
-├── Action Trace
-├── Kill / Timeout
-└── Recovery
+智能体工作环境
+├── 共享资源
+├── 本地工作空间
+├── 程序化执行运行时
+├── 工作发现
+├── 所有权 / 租约
+├── 观察投影
+├── 验证
+├── 反馈 / 判定器
+├── 能力代理
+├── 沙箱 / 隔离
+└── 遥测通道
 ```
 
-允许执行代码不等于允许调用任意业务 Capability。
+### 10.1 环境工程
 
-### 10.3 Program Budget
+原始结果需要转换成高信号观察，而不是把原始日志和 API 响应全部塞给模型。
 
-治理：max_tool_calls、max_runtime、max_cost、max_parallelism、CPU / Memory、data read / write 等。
-
-### 10.4 Generated Code Lifecycle
+### 10.2 程序化执行运行时
 
 ```text
-Ephemeral Code
-→ Run scoped
-
-Workspace Code
-→ Work scoped
-
-Promoted Capability
-→ Cross-Work platform asset
+程序化执行运行时
+├── 沙箱 / 隔离
+├── 工作空间
+├── 能力代理
+├── 权限策略
+├── 数据流策略
+├── 资源预算
+├── 凭据隔离
+├── 动作追踪
+├── 终止 / 超时
+└── 恢复
 ```
 
-晋升为共享 Capability 前必须经过 Eval、安全检查、评审和版本化。
+允许执行代码不等于允许调用任意业务能力。
 
-## 11. Data Plane
+### 10.3 程序预算
+
+治理项包括：`max_tool_calls`、`max_runtime`、`max_cost`、`max_parallelism`、CPU / 内存、数据读 / 写等。
+
+### 10.4 生成代码生命周期
+
+```text
+临时代码
+→ 运行范围
+
+工作空间代码
+→ 工作范围
+
+晋升后的能力
+→ 跨工作的平台资产
+```
+
+晋升为共享能力前必须经过评估、安全检查、评审和版本管理。
+
+## 11. 数据面
 
 ### 11.1 数据可见性
 
 ```text
-Model-visible Data
-Execution-only Data
-Persistent Resource
+模型可见数据
+仅执行环境可见数据
+持久资源
 ```
 
-Agent 系统可以被允许处理某些数据，而模型不被允许直接看到这些数据。
+智能体系统可以被允许处理某些数据，而模型不被允许直接看到这些数据。
 
-### 11.2 Data Flow Policy
+### 11.2 数据流策略
 
 ```text
-Source
-+ Data Classification
-+ Destination
-+ Capability
-+ Principal / Tenant
-+ Purpose / Work Context
+来源
++ 数据分类
++ 目的地
++ 能力
++ 主体 / 租户
++ 用途 / 工作上下文
       ↓
-Allow / Deny / Redact
+允许 / 拒绝 / 脱敏
 ```
 
-Capability Permission 与 Data Flow Permission 不是同一个维度。
+能力权限与数据流权限不是同一个维度。
 
-## 12. Evaluation Architecture
+## 12. 评估架构
 
-### 12.1 Trial 是基本单位
+### 12.1 试验（Trial）是基本单位
 
 ```text
-Eval Suite
-   └── Task
-        └── Trial
-             ├── Harness Revision
-             ├── Capability Revisions
-             ├── Environment Revision
-             ├── Transcript / Trace
-             ├── Outcome
-             └── Grader Results
+评估套件
+   └── 任务
+        └── 试验
+             ├── 执行框架修订版本
+             ├── 能力修订版本
+             ├── 环境修订版本
+             ├── 过程记录 / 追踪
+             ├── 最终结果
+             └── 评分结果
 ```
 
-### 12.2 Transcript / Trace 与 Outcome
+### 12.2 过程记录 / 追踪与最终结果
 
-Trace 描述过程发生了什么；Outcome 描述执行后真实世界和结果是什么。
+追踪描述过程发生了什么；最终结果描述执行后真实世界和结果是什么。
 
 二者必须分离。
 
-### 12.3 Evaluation Contract
+### 12.3 评估契约
 
 ```text
-Evaluation Contract
-├── Criterion
-├── Evidence Source
-├── Grader
-├── Threshold / Criticality
-└── Aggregation
+评估契约
+├── 评估标准
+├── 证据来源
+├── 评分器
+├── 阈值 / 关键程度
+└── 聚合方式
 ```
 
-### 12.4 Grader
+### 12.4 评分器
 
-- Deterministic；
-- LLM Judge；
-- Human。
+- 确定性评分器；
+- LLM 评分器；
+- 人工评分。
 
-Criterion、Evidence 和 Grader 分开建模。
+评估标准、证据和评分器分开建模。
 
 ### 12.5 非确定性
 
-- pass@k：至少一次成功，更接近 Capability / Search Potential；
-- pass^k：全部成功，更接近 Reliability。
+- pass@k：至少一次成功，更接近能力上限 / 搜索潜力；
+- pass^k：全部成功，更接近可靠性。
 
-### 12.6 Capability Eval 与 Regression Eval
+### 12.6 能力评估与回归评估
 
-Capability Eval 探索能力边界；成功案例逐渐晋升到 Regression Suite，守住已有能力。
+能力评估探索能力边界；成功案例逐渐晋升到回归套件，守住已有能力。
 
-### 12.7 Eval Infrastructure 与 Eval Content
+### 12.7 评估基础设施与评估内容
 
-平台负责 Runner、Environment、Trace、Grader SDK、Statistics、Versioning。
+平台负责运行器、环境、追踪、评分器 SDK、统计、版本管理。
 
-Domain / Capability Owner 负责 Tasks、Criteria、Rubrics、Reference Solutions、Failure Cases、Domain Graders。
+领域 / 能力负责人负责任务、标准、评分规则、参考解法、失败案例、领域评分器。
 
-> **Eval Infrastructure 是平台能力；Eval Content 是 Capability Asset。**
+> **评估基础设施是平台能力；评估内容是能力资产。**
 
-### 12.8 Eval 是 Capability Specification
-
-```text
-Harness
-→ How to implement
-
-Eval
-→ How to prove
-```
-
-## 13. Verification Architecture
-
-### 13.1 Verification Ladder
+### 12.8 评估是能力规格
 
 ```text
-Local Checks
-   ↓
-Regression
-   ↓
-Representative Workloads
-   ↓
-Integration
-   ↓
-Production-like Verification
+执行框架
+→ 如何实现
+
+评估
+→ 如何证明
 ```
 
-### 13.2 Differential Oracle
+## 13. 验证架构
 
-Verifier 应尽量告诉 Agent“差在哪里、下一步如何定位”，而不仅是 pass / fail。
+### 13.1 验证阶梯
 
-### 13.3 Steward / Guardian
+```text
+本地检查
+   ↓
+回归验证
+   ↓
+代表性工作负载
+   ↓
+集成验证
+   ↓
+类生产环境验证
+```
 
-维护跨 Work Item 的长期质量维度，例如回归、架构约束、技术债和共享资源健康。
+### 13.2 差异判定器
 
-### 13.4 Cost per Successful Outcome
+验证器应尽量告诉智能体“差在哪里、下一步如何定位”，而不仅是通过 / 失败。
 
-最终成本指标关注“一个成功 Outcome 需要多少总资源”，而不是单次 token / request 价格。
+### 13.3 质量守护者
 
-## 14. Security / Governance
+维护跨工作项的长期质量维度，例如回归、架构约束、技术债和共享资源健康。
+
+### 13.4 单次成功结果成本
+
+最终成本指标关注“一个成功结果需要多少总资源”，而不是单次 token / request 价格。
+
+## 14. 安全与治理
 
 安全目标可以理解为：
 
 ```text
-Deployment Risk
-≈ Failure Probability × Blast Radius
+部署风险
+≈ 失败概率 × 影响半径
 ```
 
-Model / Classifier / HITL 主要降低 Failure Probability；Containment 负责限制最大 Blast Radius。
+模型 / 分类器 / HITL 主要降低失败概率；隔离控制负责限制最大影响半径。
 
 ### 14.1 三类风险来源
 
 ```text
-User Misuse
-Model Misbehavior
-External Attack / Prompt Injection
+用户误用
+模型错误行为
+外部攻击 / 提示词注入
 ```
 
-因此需要 Defense in Depth：
+因此需要纵深防御：
 
 ```text
-Behavioral Security
-Content Security
-Environment Security
+行为安全
+内容安全
+环境安全
 ```
 
-### 14.2 Context Ingress Boundary
+### 14.2 上下文入口边界
 
-外部内容进入 Context 前经过：
+外部内容进入上下文前经过：
 
 ```text
-Raw Content
+原始内容
    ↓
-Provenance
-Trust Classification
-Prompt Injection Detection
-Data Inspection
-Redaction / Sanitization
-Policy
+来源信息
+信任分类
+提示词注入检测
+数据检查
+脱敏 / 清洗
+策略
    ↓
-Observation
+观察
    ↓
-Context
+上下文
 ```
 
-可信 Tool 不等于可信 Tool Output。
+可信工具不等于可信工具输出。
 
-### 14.3 Trust Lifecycle
+### 14.3 信任生命周期
 
 ```text
-Discovered
+已发现
   ↓
-Untrusted
+不可信
   ↓
-Trusted for Read
+可信读取
   ↓
-Trusted for Instruction
+可信指令
   ↓
-Trusted for Execution
+可信执行
 ```
 
-Locality 不等于 Trust。
+本地性不等于可信。
 
-对于 Agent，“读”本身可能影响行为，因此 Trust Boundary 需要覆盖 Parse、Load 和 Interpretation。
+对于智能体，“读”本身可能影响行为，因此信任边界需要覆盖解析、加载和解释。
 
-### 14.4 Trust Propagation
+### 14.4 信任传播
 
-Trust 跟着数据 Provenance 传播，而不是因为信息经过内部 Agent 就自动升级。
+信任跟随数据来源传播，而不是因为信息经过内部智能体就自动升级。
 
 ```text
-Transformation
-≠ Trust Elevation
+信息转换
+≠ 信任提升
 ```
 
-### 14.5 Agent Identity
+### 14.5 智能体身份
 
 推荐身份链：
 
 ```text
-Human Principal
-      ↓ delegates
-Agent Principal
-      ↓ narrows
-Execution Principal
-      ↓ uses
-Scoped Credential
+人类主体
+   ↓ 委派
+智能体主体
+   ↓ 收窄权限
+执行主体
+   ↓ 使用
+范围受限的凭据
 ```
 
 区分：
 
 ```text
-Identity   → 我是谁
-Delegation → 我代表谁
-Authority  → 我能做什么
-Credential → 我如何证明权限
+身份 → 我是谁
+委派 → 我代表谁
+权限 → 我能做什么
+凭据 → 我如何证明权限
 ```
 
-### 14.6 Authorization Model
+### 14.6 授权模型
 
 核心授权单元：
 
 ```text
-Principal
-× Delegation Chain
-× Capability
-× Resource
-× Scope
-× Duration
-× Work Context
+主体
+× 委派链
+× 能力
+× 资源
+× 范围
+× 时长
+× 工作上下文
 ```
 
-Delegation 传 Goal，不默认复制 Authority。
+委派传递目标，不默认复制权限。
 
-### 14.7 Just-in-Time Capability Grant
+### 14.7 即时能力授权
 
-权限按 Work / Stage 动态收缩：
+权限按工作 / 阶段动态收缩：
 
 ```text
-Task Need
+任务需要
   ↓
-Capability Request
+能力请求
   ↓
-Policy
+策略
   ↓
-Temporary Scoped Grant
+临时范围授权
   ↓
-Execution
+执行
   ↓
-Revoke / Narrow
+撤销 / 收窄
 ```
 
-Least Privilege 进一步扩展为：
+最小权限进一步扩展为：
 
 ```text
-Least Privilege
-× Least Duration
-× Least Scope
+最小权限
+× 最短时长
+× 最小范围
 ```
 
-### 14.8 Containment = Reachability Control
+### 14.8 隔离控制 = 可达范围控制
 
-Containment 不只是 `sandbox=true`，而是控制当前 Agent 可触达的世界：
+隔离控制不只是 `sandbox=true`，而是控制当前智能体可触达的世界：
 
 ```text
-Agent Reachability
-├── Filesystem
-├── Network
-├── Credentials
-├── Capabilities
-├── Data
-├── Memory
-├── Other Agents
-└── External Systems
+智能体可达范围
+├── 文件系统
+├── 网络
+├── 凭据
+├── 能力
+├── 数据
+├── 记忆
+├── 其他智能体
+└── 外部系统
 ```
 
-目标是让每个 Work / Run / Child 的 Reachability Graph 尽可能小。
+目标是让每个工作 / 运行 / 子智能体的可达图尽可能小。
 
-### 14.9 Containment Profile
+### 14.9 隔离配置
 
 ```text
-Containment Profile
+隔离配置
 ├── isolation_mode
 ├── filesystem_scope
 ├── network_scope
@@ -1153,265 +1155,265 @@ Containment Profile
 └── user_oversight_level
 ```
 
-隔离强度需要匹配 Risk、Autonomy 和 User Oversight Capability。
+隔离强度需要匹配风险、自主程度和用户监督能力。
 
-### 14.10 Egress Governance
+### 14.10 出站治理
 
-Domain Allowlist 不够：一个域名可能承载大量不同 Capability 和 Tenant。
-
-```text
-Egress Governance
-├── Destination
-├── Protocol
-├── Capability
-├── Credential
-├── Tenant / Principal
-├── Data Classification
-└── Provenance
-```
-
-> **Allowed Domain 本质上是一组 Capability Grant，而不是简单 Destination Filter。**
-
-### 14.11 Memory Governance
-
-长期 Memory 写入近似于修改未来 Agent 的启动 Context，因此需要：
-
-- provenance；
-- trust；
-- promotion；
-- validation；
-- startup scan；
-- trust-aware recall。
-
-不可信内容被 Agent 总结后，不能自动变成高可信 Memory。
-
-### 14.12 User Intent 与 Capability Boundary
-
-来自 User 的 Instruction 也可能由攻击者诱导产生。
+域名白名单不够：一个域名可能承载大量不同能力和租户。
 
 ```text
-Instruction Source
-≠ Intent Origin
+出站治理
+├── 目的地
+├── 协议
+├── 能力
+├── 凭据
+├── 租户 / 主体
+├── 数据分类
+└── 来源信息
 ```
 
-User Intent 定义目标，但系统 Capability Boundary 独立存在。
+> **允许访问某个域，本质上是一组能力授权，而不是简单的目的地过滤。**
+
+### 14.11 记忆治理
+
+长期记忆写入近似于修改未来智能体的启动上下文，因此需要：
+
+- 来源信息；
+- 信任；
+- 晋升；
+- 验证；
+- 启动扫描；
+- 信任感知召回。
+
+不可信内容被智能体总结后，不能自动变成高可信记忆。
+
+### 14.12 用户意图与能力边界
+
+来自用户的指令也可能由攻击者诱导产生。
+
+```text
+指令来源
+≠ 意图来源
+```
+
+用户意图定义目标，但系统能力边界独立存在。
 
 HITL 不应该承担用户根本无法理解的底层安全决策。
 
-### 14.13 Containment 与 Observability
+### 14.13 隔离与可观测性
 
-强 Isolation 可能降低 Host Visibility，因此需要 Out-of-band Telemetry Channel。
+强隔离可能降低宿主机可见性，因此需要带外遥测通道。
 
 ```text
-Governance
-= Policy
-+ Enforcement
-+ Observability
+治理
+= 策略
++ 执行约束
++ 可观测性
 ```
 
-### 14.14 Battle-tested Primitives
+### 14.14 经验证的基础原语
 
-Agent-specific 创新优先放在 Governance / Policy Composition；Isolation / Enforcement 尽量复用成熟基础设施：
+智能体特有创新优先放在治理 / 策略组合；隔离 / 约束执行尽量复用成熟基础设施：
 
 - Hypervisor；
-- OS Sandbox；
+- OS 沙箱；
 - seccomp / namespace；
-- filesystem ACL；
+- 文件系统 ACL；
 - firewall / proxy；
-- IAM / scoped credential；
-- resource limit。
+- IAM / 范围受限凭据；
+- 资源限制。
 
-> **Governance 决定边界画在哪里；Infrastructure 保证 Agent 越不过这条边界。**
+> **治理决定边界画在哪里；成熟基础设施保证智能体越不过这条边界。**
 
-## 15. Observability / Trace
+## 15. 可观测性与追踪
 
-### 15.1 Agent Trace
+### 15.1 智能体追踪
 
-用于理解 Agent 为什么这么做：
+用于理解智能体为什么这么做：
 
-- model step；
-- tool selection；
-- delegation；
-- evaluation；
-- outcome。
+- 模型步骤；
+- 工具选择；
+- 委派；
+- 评估；
+- 最终结果。
 
-### 15.2 Runtime Trace
+### 15.2 运行时追踪
 
-围绕 Work / Session / Run / Event / Action 记录完整执行关系。
+围绕工作、会话、运行、事件、动作记录完整执行关系。
 
-### 15.3 Security Trace
+### 15.3 安全追踪
 
-来自更接近 Enforcement 的位置：
+来自更接近约束执行的位置：
 
-- process spawn；
-- filesystem access；
-- network egress；
-- credential use；
-- policy decision；
-- sandbox violation。
+- 进程启动；
+- 文件系统访问；
+- 网络出站；
+- 凭据使用；
+- 策略决策；
+- 沙箱违规。
 
-Agent Trace 与 Security Trace 可以通过 work_id、session_id、run_id、action_id、correlation_id 关联，但不应完全依赖同一个采集机制。
+智能体追踪与安全追踪可以通过 `work_id`、`session_id`、`run_id`、`action_id`、`correlation_id` 关联，但不应完全依赖同一个采集机制。
 
-### 15.4 PTC Trace
+### 15.4 PTC 追踪
 
 层级关系：
 
 ```text
-Reasoning Step
+推理步骤
   ↓
-Program
-  ├── Action A
-  ├── Action B
-  ├── Action C
-  └── Policy Decisions
+程序
+  ├── 动作 A
+  ├── 动作 B
+  ├── 动作 C
+  └── 策略决策
 ```
 
 不能只记录 `CodeExecutionSucceeded`。
 
-## 16. Recovery / Escalation
+## 16. 恢复与升级
 
-### Recovery
+### 恢复
 
 解决当前能力范围内的暂时故障：
 
 - worker restart；
-- Harness crash；
-- temporary tool failure；
-- retryable action failure。
+- 执行框架崩溃；
+- 临时工具故障；
+- 可重试动作失败。
 
-### Escalation
+### 升级
 
 解决能力边界：
 
 - 更强模型；
-- Specialist Capability；
-- Human Decision；
-- 新 Tool；
-- Scope Reduction。
+- 专项能力；
+- 人工决策；
+- 新工具；
+- 缩小范围。
 
-> **Recovery 解决暂时失败；Escalation 解决能力上限。**
+> **恢复解决暂时失败；升级解决能力上限。**
 
-## 17. Harness Engineering
+## 17. 执行框架工程
 
-Harness 是持续实验对象：
+执行框架是持续实验对象：
 
 ```text
-Harness Revision
+执行框架修订版本
       ↓
-     Trial
+     试验
       ↓
-Trace + Outcome
+追踪 + 最终结果
       ↓
-     Eval
+     评估
       ↓
-Failure Analysis
+   失败分析
       ↓
-Harness Revision
+执行框架修订版本
 ```
 
-Harness Revision、Skill Revision、Tool Revision、Grader Revision 都应该被版本化。
+执行框架修订版本、技能修订版本、工具修订版本、评分器修订版本都应该被版本化。
 
-Harness 发布不等于正在执行 Session 自动迁移。
+执行框架发布不等于正在执行的会话自动迁移。
 
-## 18. Capability Lifecycle
+## 18. 能力生命周期
 
 系统中的可复用能力应该经过明确生命周期：
 
 ```text
-Capability Gap
+能力缺口
    ↓
-Candidate
+候选
    ↓
-Prototype
+原型
    ↓
-Capability Eval
+能力评估
    ↓
-Security / Governance Review
+安全 / 治理评审
    ↓
-Publish Revision
+发布修订版本
    ↓
-Regression Eval
+回归评估
    ↓
-Production Feedback
+生产反馈
    ↓
-Revise / Deprecate
+修订 / 废弃
 ```
 
 对于生成代码：
 
 ```text
-Ephemeral Code
-→ Workspace Code
-→ Candidate Capability
-→ Eval / Review
-→ Skill / Tool / Other Reusable Capability
+临时代码
+→ 工作空间代码
+→ 候选能力
+→ 评估 / 评审
+→ 技能 / 工具 / 其他可复用能力
 ```
 
-Agent 可以提出 Candidate，但不能在活跃生产 Session 中无治理地自发布。
+智能体可以提出候选能力，但不能在活跃生产会话中无治理地自行发布。
 
-## 19. Human Governance Plane
+## 19. 人类治理面
 
-随着 Agent 自主性增强，人类角色从：
+随着智能体自主性增强，人类角色从：
 
 ```text
-逐步指导 Execution Path
+逐步指导执行路径
 ```
 
 转向：
 
 ```text
-Governance Plane
-├── Goal
-├── Capability / Acceptance
-├── Risk Boundary
-├── Budget
-├── Escalation
-├── Production Acceptance
-└── Publish / Deploy Decision
+治理面
+├── 目标
+├── 能力 / 验收
+├── 风险边界
+├── 预算
+├── 升级
+├── 生产验收
+└── 发布 / 部署决策
 ```
 
-HITL 仍然重要，但它应主要承担人类有能力做出的语义决策，而不是替代 Sandbox、Credential Isolation、Egress Policy 等系统硬边界。
+HITL 仍然重要，但它应主要承担人类有能力做出的语义决策，而不是替代沙箱、凭据隔离、出站策略等系统硬边界。
 
 ## 20. 核心架构不变量
 
 1. **应用形态不等于执行范式。**
-2. **Workflow 与 Agent 的核心区别是执行控制权归属。**
-3. **Runtime 管理执行事实，Harness 管理执行策略，Business Layer 管理工作意图。**
-4. **Runtime 应稳定，Harness 应可替换、可简化甚至消失。**
-5. **Work 是长期连续性的载体；Agent、Session、Context 都可以被替换或重建。**
-6. **Work、Session、Run 分别表示长期工作、Agent 与 Work 的连续关系、一次触发后的连续执行片段。**
-7. **Event 是事实，State 是投影，Snapshot 是优化。**
-8. **Context 是 Working Set 和 Query Projection，不是 Source of Truth。**
-9. **Compaction 改变模型看到什么，不改变真实历史。**
-10. **Notes 是主观工作认知，Memory 是跨时间保留信息，Workspace 是外部工作状态，Artifact 是正式产物。**
-11. **Tool 是行动能力，Skill 是程序性知识，MCP 是连接标准，Harness 是当前执行策略。**
-12. **Agent 可以由 Base Agent + Skill + Tool + Knowledge + Task Context 动态组装。**
-13. **Capability Discovery 与 Loading 必须分离。**
-14. **Deterministic mechanics 下沉到 Capability，uncertain decisions 留给 Harness。**
-15. **Result 是执行事实，Observation 是模型面对的投影。**
-16. **LLM 应是 Control Plane，而不是 Data Plane。**
-17. **PTC 是 Execution Strategy，不是 Tool Type；一个 Reasoning Step 可以展开多个受治理 Action。**
-18. **Code Permission 不等于 Business Capability Permission。**
-19. **Multi-Agent 的关键不是 Agent 数量，而是 Work Frontier 和共享 Work Environment。**
-20. **Lead Agent 负责全局编排和 Global Context；Child Session 负责局部自治工作。**
-21. **Delegation 传递 Goal，不默认复制 Authority。**
-22. **Trial 是 Agent Eval 的基本单位；Transcript / Trace 与 Outcome 分离。**
-23. **Outcome 是事实，Eval Score 是 Measurement Projection。**
-24. **Eval 是可执行 Capability Specification：Harness 说明怎么实现，Eval 说明怎么证明。**
-25. **Capability Eval 探索能力边界，Regression Eval 守住已获得能力。**
-26. **Execution、Verification、Acceptance 和 Publish / Deploy 状态必须分离。**
-27. **Agent Security 同时治理 Context Ingress、Trust Propagation、Execution Boundary 和 Egress。**
-28. **可信 Capability 不代表可信 Observation。**
-29. **Trust 跟随 Provenance，不因经过内部 Agent 或 Agent Summary 自动升级。**
-30. **User Intent 可以定义目标，但不能自动扩大 Capability Boundary。**
-31. **Agent 应成为可独立授权、审计和撤销的 Principal，同时保留 Human Delegation Chain。**
-32. **Containment 的本质是 Reachability Control：让 Agent 可达世界保持任务所需最小范围。**
-33. **Least Privilege 还要结合 Least Duration 与 Least Scope。**
-34. **Probabilistic Defense 降低失败概率，Deterministic Containment 限制最大后果。**
-35. **Governance 定义边界；成熟 Infrastructure 执行边界。**
-36. **Governance = Policy + Enforcement + Observability。**
-37. **Human 应逐渐从 Execution Path 移向 Goal、Risk、Acceptance 和 Escalation 所在的 Governance Plane。**
+2. **工作流与智能体的核心区别是执行控制权归属。**
+3. **运行时管理执行事实，执行框架管理执行策略，业务层管理工作意图。**
+4. **运行时应稳定，执行框架应可替换、可简化甚至消失。**
+5. **工作是长期连续性的载体；智能体、会话、上下文都可以被替换或重建。**
+6. **工作、会话、运行分别表示长期工作、智能体与工作的连续关系、一次触发后的连续执行片段。**
+7. **事件是事实，状态是投影，快照是优化。**
+8. **上下文是工作集和查询投影，不是事实源。**
+9. **上下文压缩改变模型看到什么，不改变真实历史。**
+10. **笔记是主观工作认知，记忆是跨时间保留信息，工作空间是外部工作状态，制品是正式产物。**
+11. **工具是行动能力，技能是程序性知识，MCP 是连接标准，执行框架是当前执行策略。**
+12. **智能体可以由基础智能体 + 技能 + 工具 + 知识 + 任务上下文动态组装。**
+13. **能力发现与能力加载必须分离。**
+14. **确定性机制下沉到能力，不确定决策留给执行框架。**
+15. **结果是执行事实，观察是面向模型的投影。**
+16. **LLM 应是控制面，而不是数据面。**
+17. **PTC 是执行策略，不是工具类型；一个推理步骤可以展开多个受治理动作。**
+18. **代码执行权限不等于业务能力权限。**
+19. **多智能体的关键不是智能体数量，而是工作前沿和共享工作环境。**
+20. **主智能体负责全局编排和全局上下文；子会话负责局部自治工作。**
+21. **委派传递目标，不默认复制权限。**
+22. **试验是智能体评估的基本单位；过程记录 / 追踪与最终结果分离。**
+23. **最终结果是事实，评估分数是测量投影。**
+24. **评估是可执行的能力规格：执行框架说明怎么实现，评估说明怎么证明。**
+25. **能力评估探索能力边界，回归评估守住已获得能力。**
+26. **执行、验证、验收和发布 / 部署状态必须分离。**
+27. **智能体安全同时治理上下文入口、信任传播、执行边界和出站。**
+28. **可信能力不代表可信观察。**
+29. **信任跟随来源信息传播，不因经过内部智能体或智能体摘要自动升级。**
+30. **用户意图可以定义目标，但不能自动扩大能力边界。**
+31. **智能体应成为可独立授权、审计和撤销的主体，同时保留人类委派链。**
+32. **隔离控制的本质是可达范围控制：让智能体可达世界保持任务所需最小范围。**
+33. **最小权限还要结合最短时长与最小范围。**
+34. **概率型防御降低失败概率，确定性隔离限制最大后果。**
+35. **治理定义边界；成熟基础设施执行边界。**
+36. **治理 = 策略 + 约束执行 + 可观测性。**
+37. **人类应逐渐从执行路径移向目标、风险、验收和升级所在的治理面。**
 
 ## 21. 一句话总结
 
-> **Agent Platform 的核心，不是“跑一个 Agent Loop”，而是把一个动态组装、非确定、长期、并行、可编程的智能执行过程，约束在持久、可恢复、可验证、可观测、可治理、能够持续演进的生产系统中。**
+> **Agent Platform 的核心，不是“跑一个智能体循环”，而是把一个动态组装、非确定、长期、并行、可编程的智能执行过程，约束在持久、可恢复、可验证、可观测、可治理、能够持续演进的生产系统中。**
