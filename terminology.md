@@ -212,3 +212,19 @@
 2. 再同步规范性架构文档与相关架构图。
 3. 最后按需更新研究文章中的表述。
 4. 不直接修改 `public/diagrams/**` 生成文件；应修改 `.architecture.json` 图源并通过现有渲染流程生成。
+
+## 11. 自动术语门禁
+
+仓库通过 `npm run check:terminology` 检查当前架构正文和 Archify 图源中的高频术语一致性，并在 Docs CI 中自动执行。
+
+自动检查的范围和边界：
+
+- 扫描 `architecture/**/*.md` 与 `diagrams/**/*.architecture.json`。
+- Markdown 中忽略 fenced code block 和行内代码，避免把事件类型、字段名、命令等工程标识误判为正文。
+- 允许首次采用“中文（English）”形式进行概念对码。
+- 架构图只检查 `title`、`subtitle`、`label`、`sublabel`、`tag`、`note`、卡片和连接文字等用户可见字段；不检查 `id`、`type`、`from`、`to`、`sources` 等内部结构字段。
+- `LLM`、`MCP`、`API`、`SaaS`、`PTC`、`HITL` 等标准缩写进入允许列表。
+
+`terminology-rules.json` 是本术语表的**机器可执行子集**，用于承载需要自动阻断的高频英文回退、废弃中文译法和显式豁免。术语语义仍以本文件为唯一基准；新增规则时应先更新本术语表，再同步机器规则。
+
+确有特殊场景需要保留某个受检查术语时，应在 `terminology-rules.json` 的 `fileAllowlist` 中按文件显式豁免，而不是放宽全局规则。

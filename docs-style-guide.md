@@ -125,3 +125,11 @@ Work 可以包含多个 Session，每个 Session 可以包含多个 Run。
 - 是否误翻译了协议、代码标识或 Schema 字段。
 - 正文和相关架构图是否使用同一术语。
 - 如果修改 `README.md`，是否按仓库规则同步检查并更新 `index.md`。
+
+提交前执行：
+
+```bash
+npm run check:terminology
+```
+
+该检查扫描当前架构正文和 Archify 图源中的用户可见文本。确有合理例外时，应使用 `terminology-rules.json` 中的显式文件级豁免，而不是删除或放宽全局术语规则。
