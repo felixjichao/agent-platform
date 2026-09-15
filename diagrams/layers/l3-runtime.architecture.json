@@ -3,47 +3,55 @@
   "diagram_type": "architecture",
   "meta": {
     "title": "L3 统一运行时",
-    "subtitle": "运行时管事实：让长期、非确定执行拥有稳定的领域模型与恢复边界",
+    "subtitle": "把非确定执行变成有身份、有生命周期、可恢复、可治理的运行时事实",
     "locale": "zh-CN",
     "output": "public/diagrams/layers/l3-runtime.architecture.html",
     "animation": "trace",
     "visual_preset": "editorial",
     "quality_profile": "showcase",
-    "viewBox": [1180, 760],
+    "viewBox": [1280, 900],
     "repository": {"url":"https://github.com/felixjichao/agent-platform","provider":"github","revision":"4bec0f4b40811259f93e1955e87b05c27cca1bba"},
     "legend": {"mode":"hidden"},
     "views": [
-      {"id":"domain-model","label":"领域模型","focus":["work","session","run","event-log","state"],"note":"工作单元承载长期目标，会话承载相对连续关系，运行是一次连续执行片段，事件是事实，状态是投影。"},
-      {"id":"action-observation","label":"动作 → 观察","focus":["run","action","result","observation"],"note":"动作是受治理请求；结果是执行事实；观察是面向模型的投影。"},
-      {"id":"durability","label":"持久与恢复","focus":["work","event-log","state","recovery","artifact"],"note":"智能体可以退出或被替换；工作单元、事件、制品与恢复状态必须持续存在。"}
+      {"id":"lifecycle","label":"执行生命周期","focus":["work","session","run","action","attempt","attempt-result","outcome"],"note":"工作单元承载长期连续性；运行管理一次逻辑执行周期；动作与执行尝试分离。"},
+      {"id":"facts-recovery","label":"事实与恢复","focus":["run","event-log","projection-state","checkpoint"],"note":"事件回答发生过什么，运行时投影状态回答现在是什么，执行检查点回答中断后如何继续。"},
+      {"id":"reliable-action","label":"可靠动作","focus":["action","attempt","attempt-result","outcome","environment","observation"],"note":"执行尝试失败不等于动作失败；结果未知先核对外部状态，再决定是否重试。"}
     ]
   },
   "components": [
-    {"id":"work","type":"external","label":"工作单元（Work）","sublabel":"目标 · 验收 · 共享资源 · 长期进展","tag":"长期连续性的载体","pos":[440,35],"size":[300,78],"sources":[{"path":"architecture/agent-platform.md","label":"工作单元（Work）"}]},
-    {"id":"session","type":"cloud","label":"会话（Session）","sublabel":"智能体 ↔ 工作单元的相对连续认知 / 执行关系","tag":"不是聊天历史","pos":[440,145],"size":[300,78],"sources":[{"path":"architecture/agent-platform.md","label":"会话（Session）"}]},
-    {"id":"run","type":"backend","label":"运行（Run）","sublabel":"一次连续执行片段","tag":"消息 / 审批 / 定时器 / 事件触发","pos":[440,255],"size":[300,78],"sources":[{"path":"architecture/agent-platform.md","label":"运行（Run）"}]},
-    {"id":"event-log","type":"messagebus","label":"事件日志","sublabel":"追加式执行事实 · 因果关系 · 关联关系","tag":"事实源","pos":[440,390],"size":[300,82],"sources":[{"path":"architecture/agent-platform.md","label":"事件（Event）"}]},
-    {"id":"state","type":"database","label":"状态投影","sublabel":"由事件重建的当前运行视图","tag":"可丢弃、可重建","pos":[440,535],"size":[300,78],"sources":[{"path":"architecture/agent-platform.md","label":"命令 / 事件 / 状态"}]},
-    {"id":"action","type":"security","label":"动作（Action）","sublabel":"受治理的执行请求","pos":[815,258],"size":[270,72],"sources":[{"path":"architecture/agent-platform.md","label":"动作（Action）"}]},
-    {"id":"result","type":"external","label":"结果（Result）","sublabel":"真实执行结果 / 执行事实","pos":[815,390],"size":[270,72],"sources":[{"path":"architecture/agent-platform.md","label":"结果（Result）"}]},
-    {"id":"observation","type":"cloud","label":"观察（Observation）","sublabel":"过滤 · 转换 · 聚合 · 脱敏","tag":"面向模型的投影","pos":[815,535],"size":[270,78],"sources":[{"path":"architecture/agent-platform.md","label":"观察（Observation）"}]},
-    {"id":"recovery","type":"backend","label":"恢复","sublabel":"重启 · 重试 · 续跑 · 协调","pos":[90,258],"size":[270,72],"sources":[{"path":"architecture/agent-platform.md","label":"恢复"}]},
-    {"id":"artifact","type":"database","label":"制品（Artifact）","sublabel":"版本化正式交付物 / 可引用结果","pos":[90,392],"size":[270,78],"sources":[{"path":"architecture/agent-platform.md","label":"制品（Artifact）"}]}
+    {"id":"work","type":"external","label":"工作单元（Work）","sublabel":"目标 · 任务 · 资源 · 制品 · 治理 · 验收","tag":"长期连续性","pos":[55,35],"size":[280,76],"sources":[{"path":"architecture/agent-platform.md","label":"工作单元（Work）"}]},
+    {"id":"session","type":"cloud","label":"会话（Session）","sublabel":"智能体 ↔ 工作单元的连续关系","tag":"不是聊天历史","pos":[55,145],"size":[280,76],"sources":[{"path":"architecture/agent-platform.md","label":"会话（Session）"}]},
+    {"id":"run","type":"backend","label":"运行（Run）","sublabel":"启动 · 挂起 · 恢复 · 终止","tag":"逻辑执行周期","pos":[55,255],"size":[280,80],"sources":[{"path":"architecture/agent-platform.md","label":"运行（Run）"}]},
+
+    {"id":"action","type":"security","label":"动作（Action）","sublabel":"可治理的逻辑执行意图","tag":"不是工具调用","pos":[390,255],"size":[245,80],"sources":[{"path":"architecture/agent-platform.md","label":"动作（Action）"}]},
+    {"id":"attempt","type":"backend","label":"执行尝试","sublabel":"一次真实执行 · 可重试","tag":"同一动作可多次尝试","pos":[690,255],"size":[245,80],"sources":[{"path":"architecture/agent-platform.md","label":"执行尝试"}]},
+    {"id":"attempt-result","type":"external","label":"执行尝试结果","sublabel":"成功响应 · 错误 · 超时","tag":"不等于最终动作效果","pos":[990,255],"size":[245,80],"sources":[{"path":"architecture/agent-platform.md","label":"执行尝试结果"}]},
+    {"id":"outcome","type":"cloud","label":"动作判定结果","sublabel":"成功 · 失败 · 结果未知","tag":"必要时先做结果核对","pos":[990,405],"size":[245,82],"sources":[{"path":"architecture/agent-platform.md","label":"动作判定结果"}]},
+    {"id":"observation","type":"database","label":"观察（Observation）","sublabel":"过滤 · 转换 · 聚合 · 脱敏","tag":"面向模型的投影","pos":[990,565],"size":[245,82],"sources":[{"path":"architecture/agent-platform.md","label":"观察（Observation）"}]},
+
+    {"id":"event-log","type":"messagebus","label":"事件日志","sublabel":"追加式执行事实 · 因果关系 · 关联关系","tag":"执行事实源","pos":[55,430],"size":[280,82],"sources":[{"path":"architecture/agent-platform.md","label":"事件（Event）"}]},
+    {"id":"projection-state","type":"database","label":"运行时投影状态","sublabel":"从执行事实得到的当前视图","tag":"可重建","pos":[55,565],"size":[280,80],"sources":[{"path":"architecture/agent-platform.md","label":"运行时投影状态"}]},
+    {"id":"checkpoint","type":"database","label":"执行检查点","sublabel":"执行位置 · 等待条件 · 待处理引用","tag":"用于恢复，不是事实源","pos":[390,430],"size":[245,82],"sources":[{"path":"architecture/agent-platform.md","label":"执行检查点"}]},
+    {"id":"environment","type":"backend","label":"L2 智能体工作环境","sublabel":"Worker · 沙箱 · MCP · 远程任务 · 外部资源","tag":"具体执行机制","pos":[690,565],"size":[245,82],"sources":[{"path":"architecture/agent-platform.md","label":"L2 智能体工作环境"}]}
   ],
   "connections": [
     {"id":"work-session","from":"work","to":"session","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
     {"id":"session-run","from":"session","to":"run","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
-    {"id":"run-events","from":"run","to":"event-log","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
-    {"id":"events-state","from":"event-log","to":"state","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
-    {"id":"run-action","from":"run","to":"action","label":"请求","variant":"security","fromSide":"right","toSide":"left","route":"straight"},
-    {"id":"action-result","from":"action","to":"result","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
-    {"id":"result-observation","from":"result","to":"observation","variant":"dashed","fromSide":"bottom","toSide":"top","route":"straight"},
-    {"id":"recovery-run","from":"recovery","to":"run","label":"恢复执行","variant":"dashed","fromSide":"right","toSide":"left","route":"straight"},
-    {"id":"events-artifact","from":"event-log","to":"artifact","label":"物化","variant":"dashed","fromSide":"left","toSide":"right","route":"straight"}
+
+    {"id":"run-action","from":"run","to":"action","variant":"emphasis","fromSide":"right","toSide":"left","route":"straight"},
+    {"id":"action-attempt","from":"action","to":"attempt","variant":"emphasis","fromSide":"right","toSide":"left","route":"straight"},
+    {"id":"attempt-result","from":"attempt","to":"attempt-result","variant":"emphasis","fromSide":"right","toSide":"left","route":"straight"},
+    {"id":"result-outcome","from":"attempt-result","to":"outcome","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"outcome-observation","from":"outcome","to":"observation","variant":"dashed","fromSide":"bottom","toSide":"top","route":"straight"},
+
+    {"id":"run-events","from":"run","to":"event-log","variant":"dashed","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"events-state","from":"event-log","to":"projection-state","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"run-checkpoint","from":"run","to":"checkpoint","variant":"dashed","fromSide":"bottom","toSide":"top","route":"orthogonal-v","via":[[195,380],[512.5,380]]},
+    {"id":"action-environment","from":"action","to":"environment","variant":"security","fromSide":"bottom","toSide":"top","route":"orthogonal-v","via":[[512.5,360],[812.5,360]]}
   ],
   "cards": [
-    {"dot":"cyan","title":"三个时间尺度","items":["工作单元：长期目标与共享世界","会话：智能体与工作单元的相对连续关系","运行：一次触发后的连续执行片段"]},
-    {"dot":"violet","title":"事实与投影","items":["命令：希望发生什么","事件 / 结果：实际发生了什么","状态 / 观察：从事实构建出的视图"]},
-    {"dot":"emerald","title":"稳定边界","items":["运行时不固化规划器等执行框架策略","事件日志承担事实源；快照只是恢复优化","智能体可以忘记；工作单元必须记住"]}
+    {"dot":"cyan","title":"生命周期边界","items":["工作单元：长期工作连续性","会话：智能体与工作单元的连续关系","运行：可以挂起和恢复的逻辑执行周期"]},
+    {"dot":"violet","title":"事实、视图、恢复","items":["事件：发生过什么","运行时投影状态：现在是什么","执行检查点：中断以后怎么继续"]},
+    {"dot":"emerald","title":"可靠动作","items":["动作 ≠ 执行尝试","超时 ≠ 副作用未发生","结果未知先核对；重试复用同一幂等身份"]}
   ]
 }
