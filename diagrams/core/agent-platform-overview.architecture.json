@@ -27,7 +27,7 @@
     {"id":"contract","type":"security","label":"L6 能力契约","sublabel":"验收标准 · 质量标准 · 评估契约","tag":"什么叫真正具备这项能力？","pos":[450,125],"size":[500,68],"sources":[{"path":"architecture/agent-platform.md","label":"L6 能力契约"}]},
     {"id":"capability","type":"cloud","label":"L5 能力工程","sublabel":"技能 · 工具 · 能力目录 · 能力发现 · MCP","tag":"智能体可以学什么、做什么？","pos":[450,220],"size":[500,68],"sources":[{"path":"architecture/agent-platform.md","label":"L5 能力工程"}]},
     {"id":"strategy","type":"backend","label":"L4 执行策略 / 执行框架","sublabel":"直接执行 · 工作流 · 智能体循环 · PTC · 多智能体","tag":"当前任务怎么推进？","pos":[450,315],"size":[500,68],"sources":[{"path":"architecture/agent-platform.md","label":"L4 执行策略"}]},
-    {"id":"runtime","type":"messagebus","label":"L3 统一运行时","sublabel":"工作 · 会话 · 运行 · 事件 · 状态 · 动作 · 观察 · 制品","tag":"实际发生了什么？","pos":[450,410],"size":[500,76],"sources":[{"path":"architecture/agent-platform.md","label":"L3 统一运行时"}]},
+    {"id":"runtime","type":"messagebus","label":"L3 统一运行时","sublabel":"工作单元 · 会话 · 运行 · 事件 · 状态 · 动作 · 观察 · 制品","tag":"实际发生了什么？","pos":[450,410],"size":[500,76],"sources":[{"path":"architecture/agent-platform.md","label":"L3 统一运行时"}]},
     {"id":"environment","type":"backend","label":"L2 智能体工作环境","sublabel":"工作空间 · 执行 · 验证 · 能力代理 · 沙箱","tag":"智能体能观察和作用于什么世界？","pos":[450,513],"size":[500,76],"sources":[{"path":"architecture/agent-platform.md","label":"L2 工作环境"}]},
     {"id":"world","type":"external","label":"L1 基础设施 / 真实世界","sublabel":"API · SaaS · 数据库 · 浏览器 · 文件 · 计算 · 网络 · 设备","tag":"真正的资源在哪里？","pos":[450,616],"size":[500,68],"sources":[{"path":"architecture/agent-platform.md","label":"L1 基础设施"}]},
     {"id":"context","type":"database","label":"上下文 / 记忆","sublabel":"工作集 · 投影 · 召回 · 压缩","tag":"模型当前看到什么？","pos":[70,280],"size":[260,76],"sources":[{"path":"architecture/agent-platform.md","label":"上下文 / 记忆"}]},
@@ -51,7 +51,7 @@
     {"id":"governance-environment","from":"governance","to":"environment","label":"可达范围","variant":"security","fromSide":"left","toSide":"right","route":"orthogonal-h"}
   ],
   "cards": [
-    {"dot":"cyan","title":"核心边界","items":["运行时管事实；执行框架管策略","工作承载长期连续性，而不是智能体","事件是事实；状态与上下文是投影"]},
+    {"dot":"cyan","title":"核心边界","items":["运行时管事实；执行框架管策略","工作单元承载长期连续性，而不是智能体","事件是事实；状态与上下文是投影"]},
     {"dot":"violet","title":"执行模型","items":["应用形态不等于执行范式","LLM 更适合作为控制面，而不是数据面","智能体工作环境承载动作面与数据面"]},
     {"dot":"emerald","title":"平台目标","items":["持久 · 可恢复 · 可验证 · 可观测","可治理 · 可版本化 · 可持续演进","智能体平台 = 智能执行基础设施"]}
   ]

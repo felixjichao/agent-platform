@@ -47,7 +47,7 @@ aside: false
   <a class="diagram-card" href="./l3-runtime">
     <span class="diagram-card__eyebrow">L3 · 执行事实</span>
     <strong>统一运行时</strong>
-    <p>工作、会话、运行、事件、状态如何组成持久、可恢复的执行事实。</p>
+    <p>工作单元、会话、运行、事件、状态如何组成持久、可恢复的执行事实。</p>
   </a>
   <a class="diagram-card" href="./l2-work-environment">
     <span class="diagram-card__eyebrow">L2 · 数据面 + 动作面</span>

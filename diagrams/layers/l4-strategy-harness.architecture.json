@@ -31,7 +31,7 @@
     {"id":"agent-loop","type":"cloud","label":"智能体循环","sublabel":"模型动态决定下一动作","pos":[499,455],"size":[200,72],"sources":[{"path":"architecture/agent-platform.md","label":"智能体循环"}]},
     {"id":"ptc","type":"messagebus","label":"PTC","sublabel":"程序化工具编排","pos":[731,455],"size":[200,72],"sources":[{"path":"architecture/agent-platform.md","label":"PTC"}]},
     {"id":"multi-agent","type":"security","label":"多智能体","sublabel":"独立工作前沿并行","pos":[963,455],"size":[200,72],"sources":[{"path":"architecture/agent-platform.md","label":"多智能体"}]},
-    {"id":"runtime","type":"messagebus","label":"L3 统一运行时","sublabel":"工作 · 会话 · 运行 · 事件 · 动作 · 控制权转移","tag":"记录实际发生了什么","pos":[535,620],"size":[360,82],"sources":[{"path":"architecture/agent-platform.md","label":"L3 统一运行时"}]}
+    {"id":"runtime","type":"messagebus","label":"L3 统一运行时","sublabel":"工作单元 · 会话 · 运行 · 事件 · 动作 · 控制权转移","tag":"记录实际发生了什么","pos":[535,620],"size":[360,82],"sources":[{"path":"architecture/agent-platform.md","label":"L3 统一运行时"}]}
   ],
   "boundaries": [
     {"kind":"region","label":"执行范式 · 可组合而非互斥","wraps":["direct","workflow","agent-loop","ptc","multi-agent"],"pad":20}

@@ -40,6 +40,7 @@
     { "term": "Harness", "recommended": "执行框架" }
   ],
   "forbiddenChinese": [
+    { "term": "工作（Work）", "recommended": "工作单元（Work）" },
     { "term": "接受标准", "recommended": "验收标准" },
     { "term": "真相源", "recommended": "事实源" },
     { "term": "能力目录册", "recommended": "能力目录" },
