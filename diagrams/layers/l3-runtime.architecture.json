@@ -13,14 +13,14 @@
     "repository": {"url":"https://github.com/felixjichao/agent-platform","provider":"github","revision":"4bec0f4b40811259f93e1955e87b05c27cca1bba"},
     "legend": {"mode":"hidden"},
     "views": [
-      {"id":"domain-model","label":"领域模型","focus":["work","session","run","event-log","state"],"note":"工作承载长期目标，会话承载相对连续关系，运行是一次连续执行片段，事件是事实，状态是投影。"},
+      {"id":"domain-model","label":"领域模型","focus":["work","session","run","event-log","state"],"note":"工作单元承载长期目标，会话承载相对连续关系，运行是一次连续执行片段，事件是事实，状态是投影。"},
       {"id":"action-observation","label":"动作 → 观察","focus":["run","action","result","observation"],"note":"动作是受治理请求；结果是执行事实；观察是面向模型的投影。"},
-      {"id":"durability","label":"持久与恢复","focus":["work","event-log","state","recovery","artifact"],"note":"智能体可以退出或被替换；工作、事件、制品与恢复状态必须持续存在。"}
+      {"id":"durability","label":"持久与恢复","focus":["work","event-log","state","recovery","artifact"],"note":"智能体可以退出或被替换；工作单元、事件、制品与恢复状态必须持续存在。"}
     ]
   },
   "components": [
-    {"id":"work","type":"external","label":"工作（Work）/ 项目","sublabel":"目标 · 验收 · 共享资源 · 长期进展","tag":"长期连续性的载体","pos":[440,35],"size":[300,78],"sources":[{"path":"architecture/agent-platform.md","label":"工作（Work）"}]},
-    {"id":"session","type":"cloud","label":"会话（Session）","sublabel":"智能体 ↔ 工作的相对连续认知 / 执行关系","tag":"不是聊天历史","pos":[440,145],"size":[300,78],"sources":[{"path":"architecture/agent-platform.md","label":"会话（Session）"}]},
+    {"id":"work","type":"external","label":"工作单元（Work）","sublabel":"目标 · 验收 · 共享资源 · 长期进展","tag":"长期连续性的载体","pos":[440,35],"size":[300,78],"sources":[{"path":"architecture/agent-platform.md","label":"工作单元（Work）"}]},
+    {"id":"session","type":"cloud","label":"会话（Session）","sublabel":"智能体 ↔ 工作单元的相对连续认知 / 执行关系","tag":"不是聊天历史","pos":[440,145],"size":[300,78],"sources":[{"path":"architecture/agent-platform.md","label":"会话（Session）"}]},
     {"id":"run","type":"backend","label":"运行（Run）","sublabel":"一次连续执行片段","tag":"消息 / 审批 / 定时器 / 事件触发","pos":[440,255],"size":[300,78],"sources":[{"path":"architecture/agent-platform.md","label":"运行（Run）"}]},
     {"id":"event-log","type":"messagebus","label":"事件日志","sublabel":"追加式执行事实 · 因果关系 · 关联关系","tag":"事实源","pos":[440,390],"size":[300,82],"sources":[{"path":"architecture/agent-platform.md","label":"事件（Event）"}]},
     {"id":"state","type":"database","label":"状态投影","sublabel":"由事件重建的当前运行视图","tag":"可丢弃、可重建","pos":[440,535],"size":[300,78],"sources":[{"path":"architecture/agent-platform.md","label":"命令 / 事件 / 状态"}]},
@@ -42,8 +42,8 @@
     {"id":"events-artifact","from":"event-log","to":"artifact","label":"物化","variant":"dashed","fromSide":"left","toSide":"right","route":"straight"}
   ],
   "cards": [
-    {"dot":"cyan","title":"三个时间尺度","items":["工作：长期目标与共享世界","会话：智能体与工作的相对连续关系","运行：一次触发后的连续执行片段"]},
+    {"dot":"cyan","title":"三个时间尺度","items":["工作单元：长期目标与共享世界","会话：智能体与工作单元的相对连续关系","运行：一次触发后的连续执行片段"]},
     {"dot":"violet","title":"事实与投影","items":["命令：希望发生什么","事件 / 结果：实际发生了什么","状态 / 观察：从事实构建出的视图"]},
-    {"dot":"emerald","title":"稳定边界","items":["运行时不固化规划器等执行框架策略","事件日志承担事实源；快照只是恢复优化","智能体可以忘记；工作必须记住"]}
+    {"dot":"emerald","title":"稳定边界","items":["运行时不固化规划器等执行框架策略","事件日志承担事实源；快照只是恢复优化","智能体可以忘记；工作单元必须记住"]}
   ]
 }
