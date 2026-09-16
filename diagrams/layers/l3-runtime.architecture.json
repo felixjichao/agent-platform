@@ -14,7 +14,7 @@
     "legend": {"mode":"hidden"},
     "views": [
       {"id":"lifecycle","label":"执行生命周期","focus":["work","session","run","action","attempt","attempt-result","outcome"],"note":"工作单元承载长期连续性；运行管理一次逻辑执行周期；动作与执行尝试分离。"},
-      {"id":"facts-recovery","label":"事实与恢复","focus":["run","event-log","projection-state","checkpoint"],"note":"事件回答发生过什么，运行时投影状态回答现在是什么，执行检查点回答中断后如何继续。"},
+      {"id":"facts-recovery","label":"事实与恢复","focus":["run","event-log","state-view","checkpoint"],"note":"事件回答发生过什么，状态视图回答现在是什么，执行检查点回答中断后如何继续。"},
       {"id":"reliable-action","label":"可靠动作","focus":["action","attempt","attempt-result","outcome","environment","observation"],"note":"执行尝试失败不等于动作失败；结果未知先核对外部状态，再决定是否重试。"}
     ]
   },
@@ -30,7 +30,7 @@
     {"id":"observation","type":"database","label":"观察（Observation）","sublabel":"过滤 · 转换 · 聚合 · 脱敏","tag":"面向模型的投影","pos":[990,565],"size":[245,82],"sources":[{"path":"architecture/agent-platform.md","label":"观察（Observation）"}]},
 
     {"id":"event-log","type":"messagebus","label":"事件日志","sublabel":"追加式执行事实 · 因果关系 · 关联关系","tag":"执行事实源","pos":[55,430],"size":[280,82],"sources":[{"path":"architecture/agent-platform.md","label":"事件（Event）"}]},
-    {"id":"projection-state","type":"database","label":"运行时投影状态","sublabel":"从执行事实得到的当前视图","tag":"可重建","pos":[55,565],"size":[280,80],"sources":[{"path":"architecture/agent-platform.md","label":"运行时投影状态"}]},
+    {"id":"state-view","type":"database","label":"状态视图","sublabel":"由执行事实投影出的当前视图","tag":"可重建","pos":[55,565],"size":[280,80],"sources":[{"path":"architecture/agent-platform.md","label":"状态视图"}]},
     {"id":"checkpoint","type":"database","label":"执行检查点","sublabel":"执行位置 · 等待条件 · 待处理引用","tag":"用于恢复，不是事实源","pos":[390,430],"size":[245,82],"sources":[{"path":"architecture/agent-platform.md","label":"执行检查点"}]},
     {"id":"environment","type":"backend","label":"L2 智能体工作环境","sublabel":"Worker · 沙箱 · MCP · 远程任务 · 外部资源","tag":"具体执行机制","pos":[690,565],"size":[245,82],"sources":[{"path":"architecture/agent-platform.md","label":"L2 智能体工作环境"}]}
   ],
@@ -45,13 +45,13 @@
     {"id":"outcome-observation","from":"outcome","to":"observation","variant":"dashed","fromSide":"bottom","toSide":"top","route":"straight"},
 
     {"id":"run-events","from":"run","to":"event-log","variant":"dashed","fromSide":"bottom","toSide":"top","route":"straight"},
-    {"id":"events-state","from":"event-log","to":"projection-state","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"events-state","from":"event-log","to":"state-view","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
     {"id":"run-checkpoint","from":"run","to":"checkpoint","variant":"dashed","fromSide":"bottom","toSide":"top","route":"orthogonal-v","via":[[195,380],[512.5,380]]},
     {"id":"action-environment","from":"action","to":"environment","variant":"security","fromSide":"bottom","toSide":"top","route":"orthogonal-v","via":[[512.5,360],[812.5,360]]}
   ],
   "cards": [
     {"dot":"cyan","title":"生命周期边界","items":["工作单元：长期工作连续性","会话：智能体与工作单元的连续关系","运行：可以挂起和恢复的逻辑执行周期"]},
-    {"dot":"violet","title":"事实、视图、恢复","items":["事件：发生过什么","运行时投影状态：现在是什么","执行检查点：中断以后怎么继续"]},
+    {"dot":"violet","title":"事实、视图、恢复","items":["事件：发生过什么","状态视图：现在是什么","执行检查点：中断以后怎么继续"]},
     {"dot":"emerald","title":"可靠动作","items":["动作 ≠ 执行尝试","超时 ≠ 副作用未发生","结果未知先核对；重试复用同一幂等身份"]}
   ]
 }

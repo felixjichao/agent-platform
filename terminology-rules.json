@@ -21,7 +21,7 @@
     { "term": "Evaluation Contract", "recommended": "评估契约" },
     { "term": "Evidence Requirement", "recommended": "证据要求" },
     { "term": "Observation Projection", "recommended": "观察投影" },
-    { "term": "Runtime Projection State", "recommended": "运行时投影状态" },
+    { "term": "State View", "recommended": "状态视图" },
     { "term": "Execution Checkpoint", "recommended": "执行检查点" },
     { "term": "Harness State", "recommended": "执行框架状态" },
     { "term": "Session History", "recommended": "会话历史" },
@@ -55,6 +55,7 @@
   ],
   "forbiddenChinese": [
     { "term": "工作（Work）", "recommended": "工作单元（Work）" },
+    { "term": "运行时投影状态", "recommended": "状态视图" },
     { "term": "接受标准", "recommended": "验收标准" },
     { "term": "真相源", "recommended": "事实源" },
     { "term": "能力目录册", "recommended": "能力目录" },
