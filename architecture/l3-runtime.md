@@ -10,7 +10,8 @@ aside: false
 <iframe class="architecture-frame" src="../diagrams/layers/l3-runtime.architecture.html?embed=1" title="L3 统一运行时架构图"></iframe>
 
 <div class="architecture-links">
-  <a href="../diagrams/layers/l3-runtime.architecture.html">打开独立交互图 ↗</a>
+  <a href="../diagrams/layers/l3-runtime.architecture.html">打开领域模型图 ↗</a>
+  <a href="../diagrams/layers/l3-runtime-kernel.architecture.html">打开运行时内核图 ↗</a>
   <a href="./agent-platform#_5-核心领域模型">阅读核心领域模型 →</a>
 </div>
 
@@ -263,7 +264,7 @@ L3 定义动作生命周期；L2 决定动作实际由同步调用、Worker、�
 → 外部执行世界现在是什么
 ```
 
-## 10. L3 不是一组 Manager，而是一个 Runtime Kernel
+## 10. L3 不是一组 Manager，而是一个运行时内核
 
 第一版运行时不需要为每个领域实体建立独立 Manager。核心责任可以压缩为三个逻辑组件：
 
