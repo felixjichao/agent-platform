@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "L3 运行时内核",
+    "subtitle": "统一执行语义，部署从单体持久化逐步演进到分布式协调",
+    "locale": "zh-CN",
+    "output": "public/diagrams/layers/l3-runtime-kernel.architecture.html",
+    "animation": "trace",
+    "visual_preset": "editorial",
+    "quality_profile": "showcase",
+    "viewBox": [1280, 860],
+    "repository": {"url":"https://github.com/felixjichao/agent-platform","provider":"github","revision":"b725cb68805f9e6b0fa06d6ef7b7114846596740"},
+    "legend": {"mode":"hidden"},
+    "views": [
+      {"id":"control","label":"控制链","focus":["harness","runtime-engine","action-coordinator","environment"],"note":"执行框架决定下一步；运行时把决策转成持久执行；工作环境真正作用于外部世界。"},
+      {"id":"durability","label":"持久执行","focus":["runtime-engine","action-coordinator","runtime-store"],"note":"运行生命周期和动作可靠性由运行时统一协调，领域状态转换持久化后才能跨进程恢复。"},
+      {"id":"deployment","label":"部署剖面","focus":["embedded","durable","distributed"],"note":"L3 语义保持一致；第一目标是持久恢复，分布式协调按规模和隔离需求增量引入。"}
+    ]
+  },
+  "components": [
+    {"id":"harness","type":"external","label":"L4 执行框架","sublabel":"规划 · 模型推理 · 决策策略","tag":"决定下一步做什么","pos":[45,70],"size":[235,82],"sources":[{"path":"architecture/l3-runtime.md","label":"执行框架与运行时之间只有稳定控制边界"}]},
+    {"id":"runtime-engine","type":"backend","label":"运行时引擎","sublabel":"触发器 · Run 生命周期 · 等待 · 恢复","tag":"推进执行生命周期","pos":[355,70],"size":[250,82],"sources":[{"path":"architecture/l3-runtime.md","label":"L3 不是一组 Manager，而是一个 Runtime Kernel"}]},
+    {"id":"action-coordinator","type":"security","label":"动作协调器","sublabel":"Action · Attempt · Outcome · 核对","tag":"保证动作可靠性","pos":[680,70],"size":[250,82],"sources":[{"path":"architecture/l3-runtime.md","label":"L3 不是一组 Manager，而是一个 Runtime Kernel"}]},
+    {"id":"environment","type":"cloud","label":"L2 智能体工作环境","sublabel":"执行器 · 沙箱 · Browser · MCP · 外部资源","tag":"真正作用于世界","pos":[1005,70],"size":[235,82],"sources":[{"path":"architecture/l3-runtime.md","label":"执行结果、动作判定结果、观察和上下文必须分层"}]},
+
+    {"id":"runtime-store","type":"database","label":"运行时存储","sublabel":"领域实体状态 · 事件日志 · 执行检查点","tag":"持久化一致性边界","pos":[435,270],"size":[370,92],"sources":[{"path":"architecture/l3-runtime.md","label":"L3 不是一组 Manager，而是一个 Runtime Kernel"}]},
+
+    {"id":"embedded","type":"backend","label":"嵌入式运行时","sublabel":"单进程 · Event Loop / Channel · SQLite","tag":"本地 Agent / CLI","pos":[65,510],"size":[310,105],"sources":[{"path":"architecture/l3-runtime.md","label":"第一目标是持久执行，而不是分布式 Worker"}]},
+    {"id":"durable","type":"database","label":"单节点持久化运行时","sublabel":"单活动实例 · PostgreSQL · 崩溃后恢复","tag":"第一版平台优先","pos":[485,510],"size":[310,105],"sources":[{"path":"architecture/l3-runtime.md","label":"第一目标是持久执行，而不是分布式 Worker"}]},
+    {"id":"distributed","type":"messagebus","label":"分布式运行时","sublabel":"多 Worker · 所有权迁移 · 租约 / 版本校验","tag":"按规模增量引入","pos":[905,510],"size":[310,105],"sources":[{"path":"architecture/l3-runtime.md","label":"第一目标是持久执行，而不是分布式 Worker"}]}
+  ],
+  "connections": [
+    {"id":"harness-engine","from":"harness","to":"runtime-engine","variant":"emphasis","fromSide":"right","toSide":"left","route":"straight","label":"决策"},
+    {"id":"engine-action","from":"runtime-engine","to":"action-coordinator","variant":"emphasis","fromSide":"right","toSide":"left","route":"straight","label":"动作"},
+    {"id":"action-environment","from":"action-coordinator","to":"environment","variant":"security","fromSide":"right","toSide":"left","route":"straight","label":"执行尝试"},
+    {"id":"environment-result","from":"environment","to":"action-coordinator","variant":"dashed","fromSide":"bottom","toSide":"bottom","route":"orthogonal-v","via":[[1122.5,205],[805,205]],"label":"结果 / 观察"},
+    {"id":"engine-store","from":"runtime-engine","to":"runtime-store","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"orthogonal-v","via":[[480,205],[620,205]],"label":"生命周期状态"},
+    {"id":"action-store","from":"action-coordinator","to":"runtime-store","variant":"dashed","fromSide":"bottom","toSide":"top","route":"orthogonal-v","via":[[805,230],[620,230]],"label":"动作事实"},
+    {"id":"embedded-durable","from":"embedded","to":"durable","variant":"emphasis","fromSide":"right","toSide":"left","route":"straight","label":"持久化增强"},
+    {"id":"durable-distributed","from":"durable","to":"distributed","variant":"emphasis","fromSide":"right","toSide":"left","route":"straight","label":"分布式协调"}
+  ],
+  "cards": [
+    {"dot":"cyan","title":"控制边界","items":["执行框架决定；运行时提交；工作环境执行","外部副作用、长期等待、终止边界必须交还运行时","运行单写者不等于动作串行"]},
+    {"dot":"violet","title":"持久执行","items":["进程生命周期 ≠ 运行生命周期","内存状态是执行缓存，不是恢复事实","状态转换与领域事件保持持久一致"]},
+    {"dot":"emerald","title":"取消与父子运行","items":["取消请求 ≠ 已取消","结构化子运行与独立子运行生命周期不同","运行终态 ≠ 外部世界已经完全核对"]}
+  ]
+}
