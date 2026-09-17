@@ -354,7 +354,7 @@ L2 工作环境
 → 控制哪些数据可以进入模型可见观察
 ```
 
-凭据也不应该暴露给 Harness。具体凭据解析与使用发生在 L2 执行边界，并受当前授权范围约束。
+凭据也不应该暴露给执行框架。具体凭据解析与使用发生在 L2 执行边界，并受当前授权范围约束。
 
 ## 14. 本地、持久化与分布式三个部署剖面
 
@@ -371,82 +371,80 @@ L2 工作环境
 └── 验证 = tests / lint / 文件检查
 ```
 
-特点：单写者、本地路径、无租约、无远程工作空间服务。
+特点：单写者、本地路径、无租约、无服务。
 
 ### 14.2 单节点持久化环境
 
 ```text
 运行时进程 / Pod
-      ↓
+    │
+    ▼
 持久工作空间
-      ↓
-本地或远程执行器 / 沙箱
+    │
+    ▼
+本地 / 远程执行器
 ```
 
-关键要求只是：
+关键变化不是“上云”，而是必须假设执行承载可能重启、迁移或被回收：
 
 ```text
 Sandbox dies
 → Workspace survives
 ```
 
-可以使用持久卷、网络盘或其他已有存储机制，不要求统一工作空间服务。
+因此工作空间需要独立持久化；执行器可以仍然位于同一进程，也可以访问远程沙箱或任务系统。
 
 ### 14.3 分布式 / 协作环境
 
-只有当多个 Worker / Agent 需要跨节点访问或并发修改同一工作世界时，才需要逐步增加：
+只有出现多 Worker、多 Agent、跨节点共享工作状态或并行修改共享资源时，才需要额外增加：
 
 ```text
-工作空间定位
-资源身份 / 版本
-所有权 / 租约
-冲突检测
-分支 / 合并
-Worker 路由
-执行领取 / 去重
-容量 / 背压
+Workspace locator
+Resource identity / version
+Ownership / Lease
+Conflict detection
+Branch / Merge
+Worker routing / placement
+Dispatch deduplication
+Capacity / backpressure
 ```
 
-这些是协作与分布式执行剖面的增强机制，不是 L2 Core 的先决条件。
+这些都不是 L2 Core 的先决条件，而是部署剖面的增强机制。
 
-> **先解决工作状态连续性，再解决多主体协作。**
+## 15. 第一版最小实现
 
-## 15. 第一版可以非常小
-
-一个可运行的本地 Agent Platform 完全可以是：
+第一版 Agent Platform 可以非常简单：
 
 ```text
 Python / Go Process
 │
-├── L3 Runtime
 ├── L4 Harness
+├── L3 Runtime
 └── L2 Work Environment
-    ├── Workspace: /work/project
-    ├── File / Shell Executor
-    ├── Observation Adapter
+    ├── Workspace = /work/project
+    ├── FileExecutor
+    ├── ShellExecutor
+    ├── ObservationAdapter
     └── Verifier
 ```
 
-它已经遵守完整的层次语义：
+也就是说：
 
 ```text
-Harness
-→ 决策
-
-Runtime
-→ Action / Attempt / Outcome
+Workspace
+→ directory
 
 Executor
-→ 真实执行
+→ function / subprocess
 
 Observation
-→ 世界投影
+→ struct / text + refs
 
 Verification
-→ 世界状态判定
+→ deterministic checks
 ```
 
-以后上云或分布式，只增加持久化、隔离、路由和协调机制，不改变这条核心执行链。
+这些已经足以实现完整的 L2 语义。之后可以逐步替换成持久卷、远程沙箱、浏览器服务、任务 Worker、能力代理或分布式工作空间，而不改变核心模型。
 
 ## 16. 核心不变量
 
