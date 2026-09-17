@@ -68,6 +68,25 @@ export default defineConfig({
   rewrites(id) {
     return id.replace(/^(articles\/[^/]+)\/README\.md$/, '$1/index.md')
   },
+  markdown: {
+    config(md) {
+      md.core.ruler.after('inline', 'architecture-static-links', (state) => {
+        const pending = [...state.tokens]
+
+        while (pending.length > 0) {
+          const token = pending.pop()
+          if (!token) continue
+          if (token.children) pending.push(...token.children)
+          if (token.type !== 'html_block' && token.type !== 'html_inline') continue
+
+          token.content = token.content.replace(
+            /<a href="([^"]+\.architecture\.html(?:[?#][^"]*)?)">/g,
+            '<a href="$1" target="_blank" rel="noopener noreferrer">'
+          )
+        }
+      })
+    }
+  },
   themeConfig: {
     nav: [
       { text: '首页', link: '/' },
