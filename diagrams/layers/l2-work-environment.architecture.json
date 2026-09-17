@@ -3,49 +3,53 @@
   "diagram_type": "architecture",
   "meta": {
     "title": "L2 智能体工作环境",
-    "subtitle": "把模型控制面与数据面 / 动作面分离，让智能体在受治理的世界中执行",
+    "subtitle": "用工作空间、执行器、观察和验证构成可持续、可治理的真实工作世界",
     "locale": "zh-CN",
     "output": "public/diagrams/layers/l2-work-environment.architecture.html",
     "animation": "trace",
     "visual_preset": "editorial",
     "quality_profile": "showcase",
-    "viewBox": [1200, 850],
-    "repository": {"url":"https://github.com/felixjichao/agent-platform","provider":"github","revision":"4bec0f4b40811259f93e1955e87b05c27cca1bba"},
+    "viewBox": [1280, 920],
+    "repository": {"url":"https://github.com/felixjichao/agent-platform","provider":"github","revision":"ca955ea9bb3c14e4ad41ae05ae4c4f548f592714"},
     "legend": {"mode":"hidden"},
     "views": [
-      {"id":"control-action-plane","label":"控制面 / 动作面","focus":["agent-harness","runtime","program-runtime","capability-proxy","real-world"],"note":"LLM / 执行框架负责高价值决策；智能体工作环境承担代码执行、数据处理与真实动作。"},
-      {"id":"workspace-execution","label":"持久工作环境","focus":["workspace","program-runtime","ownership","sandbox"],"note":"工作空间、所有权 / 租约、沙箱让长期与并行工作不依赖单个上下文。"},
-      {"id":"feedback-loop","label":"验证与反馈","focus":["verification","observation","telemetry","runtime"],"note":"原始结果必须经过验证和观察投影，才能形成高信号模型反馈。"}
+      {"id":"core-primitives","label":"四个核心语义","focus":["workspace","executor","observation","verification"],"note":"L2 Core 只固定工作空间、执行器、观察和验证；沙箱、能力代理和分布式协调都是机制增强。"},
+      {"id":"execution-loop","label":"执行闭环","focus":["agent-harness","runtime","executor","workspace","real-world","observation"],"note":"执行框架决策，运行时协调，执行器真实行动，观察把世界变化重新投影给智能体。"},
+      {"id":"verification-loop","label":"验证闭环","focus":["real-world","verification","observation"],"note":"验证针对明确世界状态产生证据；验证结果可以形成观察，但观察本身不等于验证。"},
+      {"id":"enforcement","label":"约束执行","focus":["enforcement","sandbox","capability-proxy","executor","real-world"],"note":"治理决定边界；L2 在最接近资源的位置落实文件、网络、凭据、数据与资源限制。"}
     ]
   },
   "components": [
-    {"id":"agent-harness","type":"cloud","label":"智能体 / 执行框架","sublabel":"推理 · 规划 · 策略","tag":"执行控制面","pos":[450,35],"size":[300,76],"sources":[{"path":"architecture/agent-platform.md","label":"LLM 应是控制面"}]},
-    {"id":"runtime","type":"messagebus","label":"L3 统一运行时","sublabel":"动作治理 · 事件 · 状态 · 恢复","pos":[450,145],"size":[300,76],"sources":[{"path":"architecture/agent-platform.md","label":"L3 统一运行时"}]},
-    {"id":"workspace","type":"database","label":"工作空间 / 共享资源","sublabel":"文件 · 代码 · 数据 · 检查点 · 进度","pos":[75,307],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"工作空间"}]},
-    {"id":"program-runtime","type":"backend","label":"程序化执行运行时","sublabel":"代码 · 循环 · 过滤 · 连接 · 聚合","tag":"数据面 + 动作面","pos":[460,305],"size":[280,82],"sources":[{"path":"architecture/agent-platform.md","label":"程序化执行运行时"}]},
-    {"id":"capability-proxy","type":"security","label":"能力代理","sublabel":"工具 / API / MCP · 范围化权限","tag":"受治理的真实动作出口","pos":[845,307],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"能力代理"}]},
-    {"id":"ownership","type":"messagebus","label":"工作发现 / 所有权","sublabel":"工作前沿 · 租约 · 共享状态 · 冲突","pos":[75,465],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"工作发现"}]},
-    {"id":"verification","type":"cloud","label":"验证 / 判定器","sublabel":"本地检查 · 差异反馈 · 证据","pos":[460,465],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"验证"}]},
-    {"id":"observation","type":"database","label":"观察投影","sublabel":"过滤 · 转换 · 脱敏 · 持久化","tag":"原始结果 → 高信号观察","pos":[845,465],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"观察投影"}]},
-    {"id":"sandbox","type":"security","label":"沙箱 / 隔离","sublabel":"权限 · 数据流 · 密钥 · 预算 · 终止 / 超时","pos":[75,615],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"沙箱 / 隔离"}]},
-    {"id":"telemetry","type":"messagebus","label":"遥测通道","sublabel":"动作追踪 · 日志 · 指标 · 资源使用","pos":[460,615],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"遥测通道"}]},
-    {"id":"real-world","type":"external","label":"L1 基础设施 / 真实世界","sublabel":"API · SaaS · 数据库 · 浏览器 · 文件 · 计算 · 网络","pos":[845,735],"size":[280,78],"sources":[{"path":"architecture/agent-platform.md","label":"L1 基础设施 / 真实世界"}]}
+    {"id":"agent-harness","type":"cloud","label":"L4 执行框架","sublabel":"决定做什么 · 何时验证 · 选择上下文","tag":"决策语义","pos":[490,25],"size":[300,78],"sources":[{"path":"architecture/l2-work-environment.md","label":"L2 回答什么问题"}]},
+    {"id":"runtime","type":"messagebus","label":"L3 统一运行时","sublabel":"动作 · 执行尝试 · 结果判定 · 生命周期","tag":"可靠执行语义","pos":[490,150],"size":[300,80],"sources":[{"path":"architecture/l2-work-environment.md","label":"L2 回答什么问题"}]},
+
+    {"id":"workspace","type":"database","label":"工作空间","sublabel":"可寻址 · 可持续读写 · 跨运行连续","tag":"工作状态连续性","pos":[60,315],"size":[270,86],"sources":[{"path":"architecture/l2-work-environment.md","label":"工作空间不是目录，但本地目录是完全合法的第一版实现"}]},
+    {"id":"executor","type":"backend","label":"执行器","sublabel":"接受执行尝试 · 真实执行 · 返回结果","tag":"动作执行 primitive","pos":[505,315],"size":[270,86],"sources":[{"path":"architecture/l2-work-environment.md","label":"执行器是 L2 的动作 primitive"}]},
+    {"id":"enforcement","type":"security","label":"约束执行","sublabel":"文件 · 网络 · 凭据 · 数据流 · 资源预算","tag":"策略判断 ≠ 安全保证","pos":[60,475],"size":[270,86],"sources":[{"path":"architecture/l2-work-environment.md","label":"安全与治理：上层决策，L2 执行边界"}]},
+    {"id":"verification","type":"cloud","label":"验证","sublabel":"目标状态 · 条件 · 结果 · 证据","tag":"面向系统的状态判定","pos":[950,475],"size":[270,86],"sources":[{"path":"architecture/l2-work-environment.md","label":"验证回答“世界状态是否满足明确条件”"}]},
+
+    {"id":"sandbox","type":"security","label":"沙箱 / 隔离","sublabel":"限制执行可达范围","tag":"可选执行承载","pos":[60,650],"size":[270,78],"sources":[{"path":"architecture/l2-work-environment.md","label":"沙箱是隔离机制，不是核心领域实体"}]},
+    {"id":"real-world","type":"external","label":"L1 基础设施 / 真实世界","sublabel":"文件 · API · SaaS · 数据库 · 浏览器 · 计算 · 网络","tag":"真实资源","pos":[505,650],"size":[270,86],"sources":[{"path":"architecture/l2-work-environment.md","label":"L2 回答什么问题"}]},
+    {"id":"observation","type":"database","label":"观察","sublabel":"选择 · 过滤 · 聚合 · 脱敏 · 引用","tag":"面向智能体的世界投影","pos":[950,650],"size":[270,86],"sources":[{"path":"architecture/l2-work-environment.md","label":"观察是环境投影，不是工具结果包装"}]},
+    {"id":"capability-proxy","type":"security","label":"能力代理","sublabel":"范围化凭据 · 资源范围 · 出站治理","tag":"受治理动作出口","pos":[60,790],"size":[270,78],"sources":[{"path":"architecture/l2-work-environment.md","label":"安全与治理：上层决策，L2 执行边界"}]}
   ],
   "boundaries": [
-    {"kind":"region","label":"智能体工作环境","wraps":["workspace","program-runtime","capability-proxy","ownership","verification","observation","sandbox","telemetry"],"pad":22}
+    {"kind":"region","label":"L2 智能体工作环境","wraps":["workspace","executor","observation","verification","enforcement","sandbox","capability-proxy"],"pad":24}
   ],
   "connections": [
-    {"id":"agent-runtime","from":"agent-harness","to":"runtime","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
-    {"id":"runtime-program","from":"runtime","to":"program-runtime","label":"受治理动作","variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight","labelAt":[600,270]},
-    {"id":"workspace-program","from":"workspace","to":"program-runtime","label":"读 / 写","variant":"dashed","fromSide":"right","toSide":"left","route":"straight"},
-    {"id":"program-capability","from":"program-runtime","to":"capability-proxy","label":"调用","variant":"security","fromSide":"right","toSide":"left","route":"straight"},
-    {"id":"capability-world","from":"capability-proxy","to":"real-world","variant":"emphasis","fromSide":"right","toSide":"right","route":"orthogonal-v","via":[[1160,346],[1160,774]]},
-    {"id":"verification-observation","from":"verification","to":"observation","label":"证据 / 反馈","variant":"dashed","fromSide":"right","toSide":"left","route":"straight"},
-    {"id":"ownership-workspace","from":"ownership","to":"workspace","label":"租约 / 状态","variant":"dashed","fromSide":"top","toSide":"bottom","route":"straight"}
+    {"id":"agent-runtime","from":"agent-harness","to":"runtime","label":"决策","labelAt":[640,125],"variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"runtime-executor","from":"runtime","to":"executor","label":"执行尝试","labelAt":[640,270],"variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"workspace-executor","from":"workspace","to":"executor","label":"读 / 写","labelAt":[418,342],"variant":"dashed","fromSide":"right","toSide":"left","route":"straight"},
+    {"id":"executor-world","from":"executor","to":"real-world","label":"真实动作","labelAt":[640,530],"variant":"emphasis","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"world-observation","from":"real-world","to":"observation","label":"世界状态","labelAt":[862,676],"variant":"dashed","fromSide":"right","toSide":"left","route":"straight"},
+    {"id":"verification-observation","from":"verification","to":"observation","label":"证据 / 结果","labelAt":[1085,606],"variant":"dashed","fromSide":"bottom","toSide":"top","route":"straight"},
+    {"id":"enforcement-executor","from":"enforcement","to":"executor","label":"执行边界","labelAt":[420,438],"variant":"security","fromSide":"right","toSide":"left","route":"orthogonal-v","via":[[420,518],[420,358]]},
+    {"id":"sandbox-enforcement","from":"sandbox","to":"enforcement","variant":"security","fromSide":"top","toSide":"bottom","route":"straight"},
+    {"id":"proxy-world","from":"capability-proxy","to":"real-world","variant":"security","fromSide":"right","toSide":"left","route":"orthogonal-v","via":[[410,829],[410,693]]}
   ],
   "cards": [
-    {"dot":"cyan","title":"环境工程","items":["上下文不是世界本身；工作空间才是外部持久工作状态","数据搬运、循环、过滤、聚合尽量放到执行环境","允许执行代码 ≠ 允许调用任意业务能力"]},
-    {"dot":"violet","title":"反馈闭环","items":["原始结果不直接等于观察","验证 / 判定器提供可定位的差异反馈","遥测服务可观测性、预算与恢复，而不是塞满模型上下文"]},
-    {"dot":"emerald","title":"安全边界","items":["能力权限与数据流权限分离","沙箱管隔离；能力代理管受治理动作出口","预算 / 超时 / 密钥 / 可达范围都属于环境约束"]}
+    {"dot":"cyan","title":"Core Primitive","items":["工作空间：工作状态连续性","执行器：一次真实执行","观察：面向智能体的世界投影","验证：面向系统的世界状态判定"]},
+    {"dot":"violet","title":"先简单，再增强","items":["本地：目录 + subprocess / 文件 API","持久化：沙箱退出，工作空间仍然存在","协作 / 分布式：按需增加定位、租约、版本、冲突与 Worker 协调"]},
+    {"dot":"emerald","title":"安全边界","items":["策略在上层决定，约束在最接近资源处执行","执行权限 ≠ 模型可见性","工作环境 ≠ 沙箱；沙箱只是隔离机制之一"]}
   ]
 }
