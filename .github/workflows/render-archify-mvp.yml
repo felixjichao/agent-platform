@@ -7,7 +7,7 @@ on:
       - 'architecture/**/*.md'
       - '.vitepress/**'
       - 'index.md'
-      - 'scripts/render-archify.sh'
+      - 'scripts/**'
       - 'package.json'
       - '.github/workflows/render-archify-mvp.yml'
 

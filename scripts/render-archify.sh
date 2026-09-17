@@ -3,6 +3,7 @@ set -uo pipefail
 
 ARCHIFY_BIN="${ARCHIFY_BIN:-/tmp/archify/archify/bin/archify.mjs}"
 ARCHIFY_QUALITY="${ARCHIFY_QUALITY:-showcase}"
+ARCHIFY_READABILITY_PATCH="${ARCHIFY_READABILITY_PATCH:-scripts/patch-archify-readability.mjs}"
 DIAGRAM_ROOT="${DIAGRAM_ROOT:-diagrams}"
 PUBLIC_DIAGRAM_ROOT="${PUBLIC_DIAGRAM_ROOT:-public/diagrams}"
 
@@ -10,6 +11,11 @@ mapfile -t sources < <(find "$DIAGRAM_ROOT" -type f -name '*.architecture.json' 
 if [ "${#sources[@]}" -eq 0 ]; then
   echo "No Archify architecture sources found."
   exit 0
+fi
+
+if ! node "$ARCHIFY_READABILITY_PATCH" "$ARCHIFY_BIN"; then
+  echo "::error::Unable to apply the Agent Platform Archify readability profile."
+  exit 1
 fi
 
 fetch_repository_evidence_revision() {
