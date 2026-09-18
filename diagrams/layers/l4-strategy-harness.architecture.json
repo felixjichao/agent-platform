@@ -13,7 +13,7 @@
     "repository": {
       "url": "https://github.com/felixjichao/agent-platform",
       "provider": "github",
-      "revision": "architecture/harden-l4-execution-strategy"
+      "revision": "d6b76dfd9b2f70f7f986c093bd10523ff4e8d1b8"
     },
     "legend": {"mode": "hidden"},
     "views": [
