@@ -9,174 +9,281 @@
     "animation": "trace",
     "visual_preset": "editorial",
     "quality_profile": "showcase",
-    "viewBox": [1280, 900],
+    "viewBox": [
+      1280,
+      900
+    ],
     "repository": {
       "url": "https://github.com/felixjichao/agent-platform",
       "provider": "github",
       "revision": "d6b76dfd9b2f70f7f986c093bd10523ff4e8d1b8"
     },
-    "legend": {"mode": "hidden"},
+    "legend": {
+      "mode": "hidden"
+    },
     "views": [
-      {"id":"core","label":"L4 核心语义","focus":["decision-context","harness","strategy-state","decision"],"note":"L4 Core 只固定执行框架、策略状态和决策；执行框架步骤与决策上下文是稳定契约边界。"},
-      {"id":"layer-boundary","label":"L4 / L3 / L2 边界","focus":["harness","decision","runtime","environment"],"note":"L4 负责选择，L3 负责推进执行生命周期，L2 负责让动作真正作用于世界。"},
-      {"id":"runtime-boundary","label":"运行时边界","focus":["decision","runtime","environment"],"note":"运行时边界由可靠执行语义决定，而不是由是否发生网络或外部 I/O 决定。"},
-      {"id":"strategy-state","label":"策略状态","focus":["strategy-state","harness"],"note":"策略状态为后续决策保持连续性，必须声明运行级或会话级等作用域，不能替代记忆、历史或工作状态。"}
+      {
+        "id": "core",
+        "label": "L4 核心语义",
+        "focus": [
+          "decision-context",
+          "harness",
+          "strategy-state",
+          "decision"
+        ],
+        "note": "L4 Core 只固定执行框架、策略状态和决策；执行框架步骤与决策上下文是稳定契约边界。"
+      },
+      {
+        "id": "layer-boundary",
+        "label": "L4 / L3 / L2 边界",
+        "focus": [
+          "harness",
+          "decision",
+          "runtime",
+          "environment"
+        ],
+        "note": "L4 负责选择，L3 负责推进执行生命周期，L2 负责让动作真正作用于世界。"
+      },
+      {
+        "id": "runtime-boundary",
+        "label": "运行时边界",
+        "focus": [
+          "decision",
+          "runtime",
+          "environment"
+        ],
+        "note": "运行时边界由可靠执行语义决定，而不是由是否发生网络或外部 I/O 决定。"
+      },
+      {
+        "id": "strategy-state",
+        "label": "策略状态",
+        "focus": [
+          "strategy-state",
+          "harness"
+        ],
+        "note": "策略状态为后续决策保持连续性，必须声明运行级或会话级等作用域，不能替代记忆、历史或工作状态。"
+      }
     ]
   },
   "components": [
     {
-      "id":"decision-context",
-      "type":"external",
-      "label":"决策上下文",
-      "sublabel":"作用域 · 唤醒原因 · 观察 · 能力 · 约束 · 引用",
-      "tag":"面向决策的输入投影",
-      "pos":[465,45],
-      "size":[350,82],
-      "sources":[{"path":"architecture/l4-strategy-harness.md","label":"决策上下文是输入投影，不是运行时状态"}]
+      "id": "decision-context",
+      "type": "external",
+      "label": "决策上下文",
+      "sublabel": "作用域 · 唤醒原因 · 观察 · 能力 · 约束 · 引用",
+      "tag": "面向决策的输入投影",
+      "pos": [
+        465,
+        45
+      ],
+      "size": [
+        350,
+        82
+      ],
+      "sources": [
+        {
+          "path": "architecture/l4-strategy-harness.md",
+          "label": "决策上下文是输入投影，不是运行时状态"
+        }
+      ]
     },
     {
-      "id":"strategy-state",
-      "type":"database",
-      "label":"策略状态",
-      "sublabel":"计划游标 · 待办 · 模式 · 聚合状态",
-      "tag":"运行级 / 会话级作用域",
-      "pos":[70,205],
-      "size":[300,86],
-      "sources":[{"path":"architecture/l4-strategy-harness.md","label":"策略状态"}]
+      "id": "strategy-state",
+      "type": "database",
+      "label": "策略状态",
+      "sublabel": "计划游标 · 待办 · 模式 · 聚合状态",
+      "tag": "运行级 / 会话级作用域",
+      "pos": [
+        70,
+        202
+      ],
+      "size": [
+        300,
+        86
+      ],
+      "sources": [
+        {
+          "path": "architecture/l4-strategy-harness.md",
+          "label": "策略状态"
+        }
+      ]
     },
     {
-      "id":"harness",
-      "type":"backend",
-      "label":"执行框架",
-      "sublabel":"规划 · 路由 · 上下文 · 模型 · 反思 · 策略切换",
-      "tag":"一次完整策略求值",
-      "pos":[465,195],
-      "size":[350,100],
-      "sources":[{"path":"architecture/l4-strategy-harness.md","label":"执行框架"}]
+      "id": "harness",
+      "type": "backend",
+      "label": "执行框架",
+      "sublabel": "规划 · 路由 · 上下文 · 模型 · 反思 · 策略切换",
+      "tag": "一次完整策略求值",
+      "pos": [
+        465,
+        195
+      ],
+      "size": [
+        350,
+        100
+      ],
+      "sources": [
+        {
+          "path": "architecture/l4-strategy-harness.md",
+          "label": "执行框架"
+        }
+      ]
     },
     {
-      "id":"decision",
-      "type":"messagebus",
-      "label":"决策",
-      "sublabel":"Execute · Wait · Complete · Fail",
-      "tag":"意图 ≠ 执行事实",
-      "pos":[465,365],
-      "size":[350,86],
-      "sources":[{"path":"architecture/l4-strategy-harness.md","label":"决策"}]
+      "id": "decision",
+      "type": "messagebus",
+      "label": "决策",
+      "sublabel": "Execute · Wait · Complete · Fail",
+      "tag": "意图 ≠ 执行事实",
+      "pos": [
+        465,
+        365
+      ],
+      "size": [
+        350,
+        86
+      ],
+      "sources": [
+        {
+          "path": "architecture/l4-strategy-harness.md",
+          "label": "决策"
+        }
+      ]
     },
     {
-      "id":"runtime",
-      "type":"messagebus",
-      "label":"L3 统一运行时",
-      "sublabel":"动作 · 等待 · 恢复 · 取消 · 子运行 · 完成",
-      "tag":"执行生命周期控制",
-      "pos":[465,535],
-      "size":[350,90],
-      "sources":[{"path":"architecture/l3-runtime.md","label":"执行框架与运行时之间只有稳定控制边界"}]
+      "id": "runtime",
+      "type": "messagebus",
+      "label": "L3 统一运行时",
+      "sublabel": "动作 · 等待 · 恢复 · 取消 · 子运行 · 完成",
+      "tag": "执行生命周期控制",
+      "pos": [
+        465,
+        535
+      ],
+      "size": [
+        350,
+        90
+      ],
+      "sources": [
+        {
+          "path": "architecture/l3-runtime.md",
+          "label": "执行框架与运行时之间只有稳定控制边界"
+        }
+      ]
     },
     {
-      "id":"environment",
-      "type":"cloud",
-      "label":"L2 智能体工作环境",
-      "sublabel":"执行器 · 工作空间 · 观察 · 验证",
-      "tag":"真实执行与世界反馈",
-      "pos":[465,705],
-      "size":[350,90],
-      "sources":[{"path":"architecture/l2-work-environment.md","label":"L2 回答什么问题"}]
+      "id": "environment",
+      "type": "cloud",
+      "label": "L2 智能体工作环境",
+      "sublabel": "执行器 · 工作空间 · 观察 · 验证",
+      "tag": "真实执行与世界反馈",
+      "pos": [
+        465,
+        705
+      ],
+      "size": [
+        350,
+        90
+      ],
+      "sources": [
+        {
+          "path": "architecture/l2-work-environment.md",
+          "label": "L2 回答什么问题"
+        }
+      ]
     }
   ],
   "boundaries": [
     {
-      "kind":"region",
-      "label":"L4 策略控制",
-      "wraps":["strategy-state","harness","decision"],
-      "pad":24
+      "kind": "region",
+      "label": "L4 策略控制",
+      "wraps": [
+        "strategy-state",
+        "harness",
+        "decision"
+      ],
+      "pad": 24
     }
   ],
   "connections": [
     {
-      "id":"context-harness",
-      "from":"decision-context",
-      "to":"harness",
-      "label":"决策输入",
-      "variant":"emphasis",
-      "fromSide":"bottom",
-      "toSide":"top",
-      "route":"straight"
+      "id": "context-harness",
+      "from": "decision-context",
+      "to": "harness",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight"
     },
     {
-      "id":"state-harness",
-      "from":"strategy-state",
-      "to":"harness",
-      "label":"策略连续性",
-      "variant":"dashed",
-      "fromSide":"right",
-      "toSide":"left",
-      "route":"straight"
+      "id": "state-harness",
+      "from": "strategy-state",
+      "to": "harness",
+      "variant": "dashed",
+      "fromSide": "right",
+      "toSide": "left",
+      "route": "straight"
     },
     {
-      "id":"harness-decision",
-      "from":"harness",
-      "to":"decision",
-      "label":"下一步意图",
-      "variant":"emphasis",
-      "fromSide":"bottom",
-      "toSide":"top",
-      "route":"straight"
+      "id": "harness-decision",
+      "from": "harness",
+      "to": "decision",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight"
     },
     {
-      "id":"decision-runtime",
-      "from":"decision",
-      "to":"runtime",
-      "label":"校验 · 授权 · 物化 · 提交",
-      "variant":"emphasis",
-      "fromSide":"bottom",
-      "toSide":"top",
-      "route":"straight"
+      "id": "decision-runtime",
+      "from": "decision",
+      "to": "runtime",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight"
     },
     {
-      "id":"runtime-environment",
-      "from":"runtime",
-      "to":"environment",
-      "label":"执行尝试",
-      "variant":"emphasis",
-      "fromSide":"bottom",
-      "toSide":"top",
-      "route":"straight"
+      "id": "runtime-environment",
+      "from": "runtime",
+      "to": "environment",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight"
     }
   ],
   "cards": [
     {
-      "dot":"cyan",
-      "title":"三个核心语义",
-      "items":[
+      "dot": "cyan",
+      "title": "三个核心语义",
+      "items": [
         "执行框架：一个具体执行策略实现",
         "策略状态：保持后续决策连续性",
         "决策：提交给运行时的下一步执行意图"
       ]
     },
     {
-      "dot":"violet",
-      "title":"策略模式不是 Core",
-      "items":[
+      "dot": "violet",
+      "title": "策略模式不是 Core",
+      "items": [
         "工作流 / 智能体循环 / PTC / 多智能体",
         "Plan / Todo / Graph / Reflection / 上下文策略",
         "模型调用与内部 specialist 切换可以留在策略求值内部"
       ]
     },
     {
-      "dot":"emerald",
-      "title":"什么时候跨入运行时",
-      "items":[
+      "dot": "emerald",
+      "title": "什么时候跨入运行时",
+      "items": [
         "需要独立可靠生命周期、持久等待或恢复",
         "需要取消、结果核对、审批或授权",
         "创建独立子运行、结束运行或跨越权限边界"
       ]
     },
     {
-      "dot":"amber",
-      "title":"控制权必须按行为区分",
-      "items":[
+      "dot": "amber",
+      "title": "控制权必须按行为区分",
+      "items": [
         "策略控制转移 → L4",
         "执行生命周期转移 → L3",
         "权限变化 → 治理 + L3 / L2"
