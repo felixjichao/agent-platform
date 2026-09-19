@@ -245,6 +245,22 @@
     {
       "term": "Execution Lifecycle Control",
       "recommended": "执行生命周期控制"
+    },
+    {
+      "term": "Capability View",
+      "recommended": "能力视图"
+    },
+    {
+      "term": "Capability Resolution",
+      "recommended": "能力解析"
+    },
+    {
+      "term": "Capability Binding",
+      "recommended": "能力绑定"
+    },
+    {
+      "term": "Tool Interface",
+      "recommended": "工具接口"
     }
   ],
   "forbiddenChinese": [
