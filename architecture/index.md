@@ -78,3 +78,5 @@ aside: false
 ## 设计审查
 
 - [L4 / L3 / L2 执行契约审查](./reviews/l4-l3-l2-contract-review)：六项跨层问题、修订取舍与实现验收场景。
+
+- [L4 / L3 / L2 生命周期一致性审查](./reviews/l4-l3-l2-lifecycle-audit)：按提交边界核对并发顺序、崩溃恢复与终止条件。
