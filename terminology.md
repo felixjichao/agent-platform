@@ -75,7 +75,10 @@
 | Requirement | 需求 | 直接使用中文 |
 | Capability | 能力 | 直接使用中文 |
 | Capability Contract | 能力契约 | 直接使用中文 |
-| Capability Definition | 能力定义 | 直接使用中文 |
+| Capability Definition | 能力定义 | 描述一个稳定工作能力的语义边界；不等于具体工具、API 或执行实现 |
+| Capability View | 能力视图 | L5 向 L4 提供的当前可选择能力投影；是决策输入，不是授权事实 |
+| Capability Resolution | 能力解析 | 将已选择的能力映射到当前兼容、可用实现的过程；不拥有动作生命周期 |
+| Capability Binding | 能力绑定 | 能力与具体语义实现之间的映射 / 解析结果；与单次执行尝试使用的执行器区分 |
 | Acceptance Criteria | 验收标准 | 不使用“接受标准” |
 | Quality Criteria | 质量标准 | 直接使用中文 |
 | Evaluation Contract | 评估契约 | 表示如何证明能力成立 |
@@ -84,11 +87,12 @@
 | Capability Catalog | 能力目录 | 不使用“能力目录册” |
 | Taxonomy | 分类体系 | 在能力语境中使用“能力分类体系” |
 | Discovery | 发现 | 在能力语境中使用“能力发现” |
-| Capability Adapter | 能力适配器 | 直接使用中文 |
+| Capability Adapter | 能力适配器 | 将 Provider / API / MCP 等具体接口与结果语义适配为平台能力所需的执行契约；提供机制但不拥有可靠执行生命周期 |
 | Capability Proxy | 能力代理 | 工作环境中的受治理动作出口；可负责范围化凭据、资源范围、数据流和出站约束，不要求物理上是独立服务 |
-| Skill | 技能 | 首次可写“技能（Skill）” |
-| Tool | 工具 | 首次可写“工具（Tool）” |
-| Binding | 绑定 | 如“MCP 绑定” |
+| Skill | 技能 | 可发现、可按需加载的程序性知识包；可包含说明、参考资料、脚本和静态资源，但不自动获得执行权限或可靠执行生命周期 |
+| Tool | 工具 | 面向执行框架 / 模型暴露能力的一种可调用接口；工具调用不等于运行时动作 |
+| Tool Interface | 工具接口 | 能力面向执行框架 / 模型的调用表面；不等同于能力本身或能力绑定 |
+| Binding | 绑定 | 泛称实现映射；能力语境优先使用“能力绑定” |
 
 ## 4. 执行策略术语
 
