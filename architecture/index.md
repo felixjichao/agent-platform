@@ -42,7 +42,7 @@ aside: false
   <a class="diagram-card" href="./l4-strategy-harness">
     <span class="diagram-card__eyebrow">L4 · 执行控制</span>
     <strong>执行策略 / 执行框架</strong>
-    <p>直接执行、工作流、智能体循环、PTC、多智能体如何动态选择；执行框架负责策略。</p>
+    <p>执行框架负责策略控制，统一产生下一步决策；运行时负责稳定的执行生命周期。</p>
   </a>
   <a class="diagram-card" href="./l3-runtime">
     <span class="diagram-card__eyebrow">L3 · 执行事实</span>

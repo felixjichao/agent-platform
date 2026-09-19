@@ -10,68 +10,268 @@
     "SKILL.md"
   ],
   "forbiddenEnglish": [
-    { "term": "Agent Work Environment", "recommended": "智能体工作环境" },
-    { "term": "Capability Contract", "recommended": "能力契约" },
-    { "term": "Capability Catalog", "recommended": "能力目录" },
-    { "term": "Capability Discovery", "recommended": "能力发现" },
-    { "term": "Capability Adapter", "recommended": "能力适配器" },
-    { "term": "Capability Proxy", "recommended": "能力代理" },
-    { "term": "Acceptance Criteria", "recommended": "验收标准" },
-    { "term": "Quality Criteria", "recommended": "质量标准" },
-    { "term": "Evaluation Contract", "recommended": "评估契约" },
-    { "term": "Evidence Requirement", "recommended": "证据要求" },
-    { "term": "Observation Projection", "recommended": "观察投影" },
-    { "term": "State View", "recommended": "状态视图" },
-    { "term": "Execution Checkpoint", "recommended": "执行检查点" },
-    { "term": "Harness State", "recommended": "执行框架状态" },
-    { "term": "Session History", "recommended": "会话历史" },
-    { "term": "Work Environment State", "recommended": "工作环境状态" },
-    { "term": "Execution Attempt", "recommended": "执行尝试" },
-    { "term": "Attempt Result", "recommended": "执行尝试结果" },
-    { "term": "Outcome Resolution", "recommended": "结果判定" },
-    { "term": "Action Outcome", "recommended": "动作判定结果" },
-    { "term": "Outcome Unknown", "recommended": "结果未知" },
-    { "term": "Reconciliation", "recommended": "结果核对" },
-    { "term": "Idempotency Key", "recommended": "幂等键" },
-    { "term": "Idempotency", "recommended": "幂等性" },
-    { "term": "Compensation", "recommended": "补偿" },
-    { "term": "Cancellation Request", "recommended": "取消请求" },
-    { "term": "Structured Child Run", "recommended": "结构化子运行" },
-    { "term": "Detached Child Run", "recommended": "独立子运行" },
-    { "term": "Runtime Engine", "recommended": "运行时引擎" },
-    { "term": "Action Coordinator", "recommended": "动作协调器" },
-    { "term": "Runtime Store", "recommended": "运行时存储" },
-    { "term": "Embedded Runtime", "recommended": "嵌入式运行时" },
-    { "term": "Single-node Durable Runtime", "recommended": "单节点持久化运行时" },
-    { "term": "Distributed Runtime", "recommended": "分布式运行时" },
-    { "term": "Executor", "recommended": "执行器" },
-    { "term": "Sandbox", "recommended": "沙箱" },
-    { "term": "Policy Enforcement", "recommended": "约束执行" },
-    { "term": "Control Plane", "recommended": "控制面" },
-    { "term": "Data Plane", "recommended": "数据面" },
-    { "term": "Action Plane", "recommended": "动作面" },
-    { "term": "Source of Truth", "recommended": "事实源" },
-    { "term": "Working Set", "recommended": "工作集" },
-    { "term": "Observability", "recommended": "可观测性" },
-    { "term": "Verification", "recommended": "验证" },
-    { "term": "Evaluation", "recommended": "评估" },
-    { "term": "Governance", "recommended": "治理" },
-    { "term": "Versioning", "recommended": "版本管理" },
-    { "term": "Registry", "recommended": "注册表" },
-    { "term": "Reachability", "recommended": "可达范围" },
-    { "term": "Workspace", "recommended": "工作空间" },
-    { "term": "Context", "recommended": "上下文" },
-    { "term": "Memory", "recommended": "记忆" },
-    { "term": "Runtime", "recommended": "运行时" },
-    { "term": "Harness", "recommended": "执行框架" }
+    {
+      "term": "Agent Work Environment",
+      "recommended": "智能体工作环境"
+    },
+    {
+      "term": "Capability Contract",
+      "recommended": "能力契约"
+    },
+    {
+      "term": "Capability Catalog",
+      "recommended": "能力目录"
+    },
+    {
+      "term": "Capability Discovery",
+      "recommended": "能力发现"
+    },
+    {
+      "term": "Capability Adapter",
+      "recommended": "能力适配器"
+    },
+    {
+      "term": "Capability Proxy",
+      "recommended": "能力代理"
+    },
+    {
+      "term": "Acceptance Criteria",
+      "recommended": "验收标准"
+    },
+    {
+      "term": "Quality Criteria",
+      "recommended": "质量标准"
+    },
+    {
+      "term": "Evaluation Contract",
+      "recommended": "评估契约"
+    },
+    {
+      "term": "Evidence Requirement",
+      "recommended": "证据要求"
+    },
+    {
+      "term": "Observation Projection",
+      "recommended": "观察投影"
+    },
+    {
+      "term": "State View",
+      "recommended": "状态视图"
+    },
+    {
+      "term": "Execution Checkpoint",
+      "recommended": "执行检查点"
+    },
+    {
+      "term": "Session History",
+      "recommended": "会话历史"
+    },
+    {
+      "term": "Work Environment State",
+      "recommended": "工作环境状态"
+    },
+    {
+      "term": "Execution Attempt",
+      "recommended": "执行尝试"
+    },
+    {
+      "term": "Attempt Result",
+      "recommended": "执行尝试结果"
+    },
+    {
+      "term": "Outcome Resolution",
+      "recommended": "结果判定"
+    },
+    {
+      "term": "Action Outcome",
+      "recommended": "动作判定结果"
+    },
+    {
+      "term": "Outcome Unknown",
+      "recommended": "结果未知"
+    },
+    {
+      "term": "Reconciliation",
+      "recommended": "结果核对"
+    },
+    {
+      "term": "Idempotency Key",
+      "recommended": "幂等键"
+    },
+    {
+      "term": "Idempotency",
+      "recommended": "幂等性"
+    },
+    {
+      "term": "Compensation",
+      "recommended": "补偿"
+    },
+    {
+      "term": "Cancellation Request",
+      "recommended": "取消请求"
+    },
+    {
+      "term": "Structured Child Run",
+      "recommended": "结构化子运行"
+    },
+    {
+      "term": "Detached Child Run",
+      "recommended": "独立子运行"
+    },
+    {
+      "term": "Runtime Engine",
+      "recommended": "运行时引擎"
+    },
+    {
+      "term": "Action Coordinator",
+      "recommended": "动作协调器"
+    },
+    {
+      "term": "Runtime Store",
+      "recommended": "运行时存储"
+    },
+    {
+      "term": "Embedded Runtime",
+      "recommended": "嵌入式运行时"
+    },
+    {
+      "term": "Single-node Durable Runtime",
+      "recommended": "单节点持久化运行时"
+    },
+    {
+      "term": "Distributed Runtime",
+      "recommended": "分布式运行时"
+    },
+    {
+      "term": "Executor",
+      "recommended": "执行器"
+    },
+    {
+      "term": "Sandbox",
+      "recommended": "沙箱"
+    },
+    {
+      "term": "Policy Enforcement",
+      "recommended": "约束执行"
+    },
+    {
+      "term": "Control Plane",
+      "recommended": "控制面"
+    },
+    {
+      "term": "Data Plane",
+      "recommended": "数据面"
+    },
+    {
+      "term": "Action Plane",
+      "recommended": "动作面"
+    },
+    {
+      "term": "Source of Truth",
+      "recommended": "事实源"
+    },
+    {
+      "term": "Working Set",
+      "recommended": "工作集"
+    },
+    {
+      "term": "Observability",
+      "recommended": "可观测性"
+    },
+    {
+      "term": "Verification",
+      "recommended": "验证"
+    },
+    {
+      "term": "Evaluation",
+      "recommended": "评估"
+    },
+    {
+      "term": "Governance",
+      "recommended": "治理"
+    },
+    {
+      "term": "Versioning",
+      "recommended": "版本管理"
+    },
+    {
+      "term": "Registry",
+      "recommended": "注册表"
+    },
+    {
+      "term": "Reachability",
+      "recommended": "可达范围"
+    },
+    {
+      "term": "Workspace",
+      "recommended": "工作空间"
+    },
+    {
+      "term": "Context",
+      "recommended": "上下文"
+    },
+    {
+      "term": "Memory",
+      "recommended": "记忆"
+    },
+    {
+      "term": "Runtime",
+      "recommended": "运行时"
+    },
+    {
+      "term": "Harness",
+      "recommended": "执行框架"
+    },
+    {
+      "term": "Strategy State",
+      "recommended": "策略状态"
+    },
+    {
+      "term": "Harness Decision",
+      "recommended": "执行框架决策"
+    },
+    {
+      "term": "Decision Context",
+      "recommended": "决策上下文"
+    },
+    {
+      "term": "Harness Step",
+      "recommended": "执行框架步骤"
+    },
+    {
+      "term": "Strategy Control",
+      "recommended": "策略控制"
+    },
+    {
+      "term": "Execution Lifecycle Control",
+      "recommended": "执行生命周期控制"
+    }
   ],
   "forbiddenChinese": [
-    { "term": "工作（Work）", "recommended": "工作单元（Work）" },
-    { "term": "运行时投影状态", "recommended": "状态视图" },
-    { "term": "接受标准", "recommended": "验收标准" },
-    { "term": "真相源", "recommended": "事实源" },
-    { "term": "能力目录册", "recommended": "能力目录" },
-    { "term": "线束", "recommended": "执行框架" }
+    {
+      "term": "工作（Work）",
+      "recommended": "工作单元（Work）"
+    },
+    {
+      "term": "运行时投影状态",
+      "recommended": "状态视图"
+    },
+    {
+      "term": "接受标准",
+      "recommended": "验收标准"
+    },
+    {
+      "term": "真相源",
+      "recommended": "事实源"
+    },
+    {
+      "term": "能力目录册",
+      "recommended": "能力目录"
+    },
+    {
+      "term": "线束",
+      "recommended": "执行框架"
+    }
   ],
   "fileAllowlist": {}
 }
