@@ -133,7 +133,7 @@
       "id": "decision",
       "type": "messagebus",
       "label": "决策",
-      "sublabel": "Execute · Wait · Complete · Fail",
+      "sublabel": "执行 · 取消 · 等待 · 完成 · 失败",
       "tag": "意图 ≠ 执行事实",
       "pos": [
         465,

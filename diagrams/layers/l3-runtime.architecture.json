@@ -24,9 +24,9 @@
     {"id":"run","type":"backend","label":"运行（Run）","sublabel":"启动 · 挂起 · 恢复 · 终止","tag":"逻辑执行周期","pos":[55,255],"size":[280,80],"sources":[{"path":"architecture/agent-platform.md","label":"运行（Run）"}]},
 
     {"id":"action","type":"security","label":"动作（Action）","sublabel":"可治理的逻辑执行意图","tag":"不是工具调用","pos":[390,255],"size":[245,80],"sources":[{"path":"architecture/agent-platform.md","label":"动作（Action）"}]},
-    {"id":"attempt","type":"backend","label":"执行尝试","sublabel":"一次真实执行 · 可重试","tag":"同一动作可多次尝试","pos":[690,255],"size":[245,80],"sources":[{"path":"architecture/agent-platform.md","label":"执行尝试"}]},
+    {"id":"attempt","type":"backend","label":"执行尝试","sublabel":"持久身份 · 准备后派发","tag":"动作可有零到多次尝试","pos":[690,255],"size":[245,80],"sources":[{"path":"architecture/agent-platform.md","label":"执行尝试"}]},
     {"id":"attempt-result","type":"external","label":"执行尝试结果","sublabel":"成功响应 · 错误 · 超时","tag":"不等于最终动作效果","pos":[990,255],"size":[245,80],"sources":[{"path":"architecture/agent-platform.md","label":"执行尝试结果"}]},
-    {"id":"outcome","type":"cloud","label":"动作判定结果","sublabel":"成功 · 失败 · 结果未知","tag":"必要时先做结果核对","pos":[990,405],"size":[245,82],"sources":[{"path":"architecture/agent-platform.md","label":"动作判定结果"}]},
+    {"id":"outcome","type":"cloud","label":"动作判定结果","sublabel":"待定 · 未知 · 成功 · 失败 · 取消","tag":"当前判定 · 历史追加","pos":[990,405],"size":[245,82],"sources":[{"path":"architecture/agent-platform.md","label":"动作判定结果"}]},
     {"id":"observation","type":"database","label":"观察（Observation）","sublabel":"过滤 · 转换 · 聚合 · 脱敏","tag":"面向模型的投影","pos":[990,565],"size":[245,82],"sources":[{"path":"architecture/agent-platform.md","label":"观察（Observation）"}]},
 
     {"id":"event-log","type":"messagebus","label":"事件日志","sublabel":"追加式执行事实 · 因果关系 · 关联关系","tag":"执行事实源","pos":[55,430],"size":[280,82],"sources":[{"path":"architecture/agent-platform.md","label":"事件（Event）"}]},
@@ -52,6 +52,6 @@
   "cards": [
     {"dot":"cyan","title":"生命周期边界","items":["工作单元：长期工作连续性","会话：智能体与工作单元的连续关系","运行：可以挂起和恢复的逻辑执行周期"]},
     {"dot":"violet","title":"事实、视图、恢复","items":["事件：发生过什么","状态视图：现在是什么","执行检查点：中断以后怎么继续"]},
-    {"dot":"emerald","title":"可靠动作","items":["动作 ≠ 执行尝试","超时 ≠ 副作用未发生","结果未知先核对；重试复用同一幂等身份"]}
+    {"dot":"emerald","title":"可靠动作","items":["动作可有零次尝试；拒绝也有判定结果","超时 ≠ 副作用未发生","结果未知先核对；重试复用同一幂等身份"]}
   ]
 }

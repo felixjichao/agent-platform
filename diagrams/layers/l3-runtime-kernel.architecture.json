@@ -41,7 +41,7 @@
     {"id":"durable-distributed","from":"durable","to":"distributed","variant":"emphasis","fromSide":"right","toSide":"left","route":"straight","label":"分布式协调"}
   ],
   "cards": [
-    {"dot":"cyan","title":"控制边界","items":["执行框架决定；运行时提交；工作环境执行","外部副作用、长期等待、终止边界必须交还运行时","运行单写者不等于动作串行"]},
+    {"dot":"cyan","title":"控制边界","items":["执行框架决定；运行时提交；工作环境执行","外部副作用、长期等待、终止边界必须交还运行时","会话策略串行；动作可并行；派发先持久化"]},
     {"dot":"violet","title":"持久执行","items":["进程生命周期 ≠ 运行生命周期","内存状态是执行缓存，不是恢复事实","状态转换与领域事件保持持久一致"]},
     {"dot":"emerald","title":"取消与父子运行","items":["取消请求 ≠ 已取消","结构化子运行与独立子运行生命周期不同","运行终态 ≠ 外部世界已经完全核对"]}
   ]
