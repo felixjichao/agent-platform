@@ -1745,7 +1745,509 @@ INVALID_QUERY
 
 Agent Retrieval 的优化目标同时包括“找到正确的信息”和“不要在已经足够决策时继续搜索”。
 
-### 6.17 上下文工程核心不变量
+### 6.17 Memory 是知识生命周期，不是历史副本
+
+Memory 解决的不是“如何把历史保存下来”，而是：
+
+> **什么信息值得跨时间复用，什么时候晋升、合并、失效和重新验证。**
+
+推荐生命周期：
+
+```text
+Raw Experience
+    ↓
+Candidate Memory
+    ↓
+Validate / Scope / Trust
+    ↓
+Promote
+    ↓
+Long-term Memory
+    ↓
+Retrieve
+    ↓
+Context
+```
+
+Event Log 和 Memory 必须保持不同语义：
+
+```text
+Event Log
+→ 发生过什么；保存权威执行历史
+
+Memory
+→ 哪些经验 / 知识值得未来复用
+```
+
+Memory 是派生知识，不应覆盖原始事实来源。
+
+#### 6.17.1 Working / Episodic / Semantic
+
+```text
+Working Memory
+→ 当前计划、待办、假设、临时结论
+
+Episodic Memory
+→ 过去某次任务 / 会话中发生过什么
+
+Semantic Memory
+→ 脱离具体一次事件后形成的稳定知识
+```
+
+Working Memory 生命周期短，通常由 Notes / Todo / Strategy State 承载；Episodic Memory 保留经历语义；Semantic Memory 则是对多个事实 / 经历的抽象和合成。
+
+#### 6.17.2 Memory Write 比 Retrieval 更难
+
+不能把所有 Tool Result / Observation 自动写入长期 Memory，否则：
+
+```text
+Memory ≈ History
+```
+
+推荐晋升流程：
+
+```text
+Observation / Episode
+        ↓
+Candidate Memory
+        ↓
+future utility
+stability
+frequency
+authority
+scope
+cost to rediscover
+        ↓
+Validation
+        ↓
+Promotion
+```
+
+模型可以提出 Candidate Memory，但长期知识的晋升应由 Memory System / Policy 做确定性校验与治理。
+
+#### 6.17.3 Memory 必须有 Scope
+
+Memory 至少需要明确作用域：
+
+```text
+Run
+Session
+Work
+Project
+User
+Team
+Organization
+Global
+```
+
+同一个事实在不同 Scope 下可能完全不同。Scope 越大、寿命越长、未来召回频率越高，晋升门槛应越高。
+
+#### 6.17.4 Memory 必须有时间与版本语义
+
+长期 Memory 不能只有 `key / value`。建议至少携带：
+
+```text
+source
+created_at
+observed_at
+valid_from
+valid_until
+version
+supersedes
+scope
+trust
+```
+
+例如：
+
+```text
+old:
+deployment = Jenkins
+
+new:
+deployment = GitHub Actions
+supersedes = old
+```
+
+旧知识保留历史，但当前投影应只把最新有效版本当作当前事实。
+
+#### 6.17.5 Episodic → Semantic
+
+Semantic Memory 通常来自多个 Episode 的模式抽取：
+
+```text
+Episode 1
+Episode 2
+Episode 3
+    ↓
+Pattern Extraction
+    ↓
+Candidate Semantic Memory
+    ↓
+Validation
+    ↓
+Promotion
+```
+
+这是一种有损抽象，因此同样需要 source / provenance，避免模型合成出的错误知识长期污染后续任务。
+
+#### 6.17.6 Memory Conflict 与 Freshness
+
+当多个 Memory 冲突时，应先依据：
+
+```text
+scope
+source
+version
+time
+authority
+trust
+```
+
+进行确定性消解。
+
+如果能够确定当前版本，则 Context 只投影最新有效知识；如果无法确定，例如文档与 CI 配置互相冲突，则应把冲突暴露给模型，而不是 Memory System 自行做业务语义裁决。
+
+#### 6.17.7 Memory Retrieval ≠ Context Injection
+
+```text
+Memory Store
+   ↓
+Retrieve Candidates
+   ↓
+Freshness / Conflict / Scope Check
+   ↓
+Context Selection
+   ↓
+Model Context
+```
+
+检索出的 Memory 不应未经筛选直接进入 Prompt。Memory 是 Context Source，而不是 Context 本身。
+
+#### 6.17.8 Memory Trust
+
+信息经过模型摘要或抽取不会自动提高可信度：
+
+```text
+Untrusted Source
+    ↓
+LLM Summary
+    ↓
+仍然是 Untrusted-derived Memory
+```
+
+长期记忆写入近似于修改未来 Agent 的决策上下文，因此需要保留来源和信任传播。
+
+#### 6.17.9 Memory 需要失效与整合
+
+Memory Store 不能只支持 append，还应支持：
+
+```text
+invalidate
+supersede
+expire
+merge
+consolidate
+demote
+```
+
+例如：
+
+```text
+Memory A: uses pytest
+Memory B: tests executed with pytest
+Memory C: pytest is the test framework
+        ↓
+Consolidate
+        ↓
+Semantic Memory:
+test_framework = pytest
+```
+
+长期 Memory 实际上是一个持续维护的版本化知识系统。
+
+#### 6.17.10 Memory Eval
+
+至少需要评估：
+
+- Write Precision：写进去的信息是否值得长期保存；
+- Write Recall：关键长期知识是否遗漏；
+- Retrieval Recall：需要时是否能够取回；
+- Freshness：是否召回已经过期的信息；
+- Conflict Accuracy：冲突是否正确保留 / 消解；
+- Faithfulness：Memory 是否忠实于来源；
+- Utility：是否减少未来重新探索成本；
+- Negative Transfer：错误 / 无关 Memory 是否降低后续决策质量。
+
+Memory 风险可以粗略理解为：
+
+```text
+Memory Risk
+≈ Error Probability
+× Persistence
+× Retrieval Frequency
+× Scope
+```
+
+因此长期、广作用域、高频召回的 Memory 需要更严格的晋升与验证。
+
+### 6.18 Context Assembly 是决策输入的编译过程
+
+Select、Retrieve、Compress、Reference 解决“哪些信息进入 Context”；Assembly 解决：
+
+> **这些信息以什么语义结构、权威层级和顺序交给模型。**
+
+推荐不要在业务代码中到处拼字符串，而是先构造稳定的决策上下文表示，再由模型适配层渲染：
+
+```text
+Policy
+Goal
+Runtime State
+Memory
+Workspace
+Observation
+Resources
+Capabilities
+    ↓
+Context Builder
+    ↓
+Decision Context
+    ↓
+Model-specific Renderer
+    ↓
+Model
+```
+
+#### 6.18.1 语义分区优先于字符串拼接
+
+一个基础 Context Skeleton 可以是：
+
+```text
+System / Policy
+Task / Goal
+Current State
+Working Plan / Notes
+Relevant Memory
+Recent Observations
+Retrieved Resources
+Available Capabilities
+Current Input
+```
+
+关键不在于固定顺序，而在于信息具有明确的：
+
+```text
+semantic role
+authority
+trust
+freshness
+lifecycle
+```
+
+模型不应该自行猜测某段文本究竟是 Policy、历史事实、旧 Memory 还是当前用户要求。
+
+#### 6.18.2 Goal 与 Plan 必须分离
+
+```text
+Goal
+→ 相对稳定，描述为什么做、最终要完成什么
+
+Plan
+→ 当前策略，可以被修正或推翻
+```
+
+推荐至少保留：
+
+```text
+Original Goal
+Current Subgoal
+Completion Criteria
+```
+
+这样可以降低长任务中的 Goal Drift。
+
+#### 6.18.3 Current State 与 History 必须分离
+
+历史：
+
+```text
+timeout 30 → 60 → 90
+```
+
+当前模型更需要：
+
+```text
+Current State:
+timeout = 90
+
+Recent Changes:
+30 → 60 → 90
+
+History:
+event://...
+```
+
+> **History 用于解释当前状态；Current State 用于当前决策。**
+
+#### 6.18.4 Observation 应保持在热工作集
+
+Observation 是刚刚发生、下一步可能直接依赖的信息，例如测试失败、Tool Result、环境变化。
+
+它不应被埋在长历史中。当前状态、最近 Observation 和最新输入通常应保持高度可见。
+
+#### 6.18.5 Memory 不能伪装成当前事实
+
+Retrieved Memory 应保留来源语义：
+
+```text
+Relevant Memory:
+- Python version was previously observed as 3.10
+  source: ...
+  observed_at: ...
+```
+
+而不是直接把旧 Memory 渲染成：
+
+```text
+Python version = 3.10
+```
+
+尤其在 freshness 不确定时。
+
+#### 6.18.6 Evidence 与 Interpretation 分离
+
+Agent / Sub-agent 的判断不等于事实。推荐表示：
+
+```text
+Finding:
+...
+
+Evidence:
+- event://...
+- artifact://...
+- resource://...
+
+Confidence:
+...
+```
+
+这样 Context Manager 才能显式保留冲突结论，而不是把多个自然语言判断混成一个事实。
+
+#### 6.18.7 Capability / Tool 需要渐进加载
+
+大量 Tool Schema 不应永久进入 Context：
+
+```text
+Capability Metadata
+      ↓
+Tool Search
+      ↓
+候选工具
+      ↓
+Full Tool Schema
+```
+
+发现与加载分离可以同时降低 Token、注意力污染和 Tool Selection 难度。
+
+#### 6.18.8 Assembly 应兼顾 Prefix Stability
+
+推荐：
+
+```text
+[Stable Prefix]
+System
+Policy
+Stable Task
+Stable Capability Metadata
+
+[Dynamic Suffix]
+Current State
+Current Summary
+Recent Observation
+Current Input
+```
+
+上下文尽量 append-friendly；阶段性 Compaction 后再建立新的 Summary Baseline。
+
+缓存效率属于执行优化，不能为了缓存命中而保留已经失效的 Current State。
+
+#### 6.18.9 强约束与参考信息分层
+
+不同信息不应都渲染成同等级文字：
+
+```text
+Policy / Hard Constraints
+Task Requirements
+Current State
+Evidence
+Relevant Memory
+Suggestions / Hints
+```
+
+违反 Policy 和忽略 Hint 的系统语义完全不同。
+
+#### 6.18.10 Untrusted Context 需要显式隔离
+
+外部网页、文件、第三方 Tool Result 等不可信内容应在 Context 中保持来源 / 信任边界：
+
+```text
+trusted instruction
+≠
+untrusted external content
+```
+
+信息被读取或摘要后不会自动获得指令权威。
+
+> **Context Source Boundary 同时也是 Trust Boundary。**
+
+#### 6.18.11 Decision Context 可以作为最小 IR
+
+第一版可以只固定少数 Primitive：
+
+```text
+Goal
+Constraint
+State
+Observation
+Memory
+Resource
+Capability
+CurrentInput
+```
+
+例如：
+
+```text
+DecisionContext
+├── goal
+├── constraints
+├── current_state
+├── observations
+├── memories
+├── resources
+├── capabilities
+└── current_input
+```
+
+不同模型使用不同 Renderer，但上层上下文语义保持稳定。
+
+避免过早设计复杂 Context DSL / AST；只有真实 Eval 证明需要新的语义 Primitive 时再扩展。
+
+#### 6.18.12 Context Assembly Eval
+
+相同 Context Items 可以使用不同 Layout 做 A/B Eval，重点观察：
+
+- Goal 是否持续被遵守；
+- Constraint 是否被违反；
+- Current State 是否被旧 History / Memory 覆盖；
+- Observation 是否被正确使用；
+- Conflict 是否被识别；
+- Capability 是否被正确选择；
+- Token / Cache / Latency 成本。
+
+具体 Prompt Layout 是模型相关优化，应通过模型级 Eval 验证，而不是固化一个永久最优顺序。
+
+### 6.19 上下文工程核心不变量
 
 1. **Runtime State ≠ Model Context。**
 2. **Memory ≠ Context；Memory 是可取回信息，Context 是当前实际加载的信息。**
@@ -1763,6 +2265,13 @@ Agent Retrieval 的优化目标同时包括“找到正确的信息”和“不�
 14. **能够精确查询的事实，不应优先依赖向量召回。**
 15. **Agent Retrieval 是多轮、动态、按需的信息获取循环。**
 16. **Context 应同时提供信息与继续导航信息世界的 Reference。**
+17. **Event Log 保存经历，Memory 保存值得未来复用的知识。**
+18. **Memory 必须具有 Scope、Source、Freshness、Version 与 Trust。**
+19. **Memory Retrieval 不等于 Context Injection。**
+20. **长期 Memory 必须支持失效、替代、合并和整合，而不是只追加。**
+21. **Goal、Plan、Current State、History、Memory、Observation 应保留不同语义角色。**
+22. **Context Assembly 应保留 Authority / Trust / Provenance，而不是把所有 Token 当成同等级文本。**
+23. **Context 可以有模型相关 Renderer，但上层决策上下文语义不应绑定具体模型 Prompt 格式。**
 
 ## 7. 能力工程
 
