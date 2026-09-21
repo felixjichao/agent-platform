@@ -731,7 +731,34 @@ Run terminal state ≠ World fully reconciled
 
 ## 6. 上下文、记忆、工作空间
 
-### 6.1 会话 ≠ 会话历史 ≠ 状态视图 ≠ 上下文
+上下文工程不是“不断裁剪聊天历史”，而是：
+
+> **从系统能够访问的完整状态空间中，为当前这一次决策构造有限、可信、高信息密度的模型工作集。**
+
+统一关系：
+
+```text
+运行时状态 / 事件日志
+工作空间
+记忆
+会话历史
+制品 / 外部资源
+技能 / 工具
+策略 / 目标
+      ↓
+上下文构建器
+Select / Retrieve / Compress / Reference / Assemble
+      ↓
+当前模型上下文
+      ↓
+模型决策
+```
+
+因此：
+
+> **系统保存完整事实；模型只看到当前决策需要的事实。**
+
+### 6.1 会话 ≠ 历史 ≠ 状态 ≠ 记忆 ≠ 上下文
 
 ```text
 会话
@@ -740,125 +767,1511 @@ Run terminal state ≠ World fully reconciled
 会话历史
 → 会话范围内已经发生的交互与历史记录
 
-状态视图
-→ 当前执行事实视图
+运行时状态 / 状态视图
+→ 当前权威执行状态及其查询投影
+
+记忆
+→ 可跨时间保存、检索和复用的信息
 
 上下文
-→ 当前模型工作集
+→ 当前模型调用实际加载的工作集
 ```
 
-上下文是查询投影，可以丢弃和重建；会话历史、状态视图和上下文都不能反过来替代会话实体。
+上下文不是事实源，也不是长期存储。它可以丢弃、压缩和重建。
 
-### 6.2 上下文构建器
+> **事件是执行事实，状态是当前投影，上下文是面向当前决策的查询结果。**
+
+### 6.2 上下文构建器属于执行策略
+
+上下文构建器（Context Builder / Context Manager）属于 L4 执行框架中的上下文策略，不应成为另一个隐藏的决策主体。
+
+它负责：
 
 ```text
-会话历史
-状态视图
-记忆
-笔记
-制品
-工作空间
-技能
-能力
-外部资源
-    ↓
-上下文构建器
-    ↓
-  上下文
+Select
+→ 哪些已有信息继续进入工作集
+
+Retrieve
+→ 当前缺少什么，需要从哪里取回
+
+Compress
+→ 如何降低表示成本
+
+Reference
+→ 哪些大对象只保留引用
+
+Assemble
+→ 最终如何排序并组成模型输入
 ```
 
-上下文构建器属于执行框架中的上下文策略。
+它可以依据确定性信息执行：
 
-### 6.3 上下文是工作集
+- 时间、版本、作用域筛选；
+- 去重、截断和结构化抽取；
+- 来源优先级和时效性检查；
+- 将大对象替换成资源引用；
+- 标记冲突、过期和不确定信息；
+- 按既定规则构造当前状态投影。
+
+它不应自行决定：
+
+- 用户真正想要什么；
+- 哪个业务方案更合理；
+- 下一步应该调用什么工具；
+- 无法通过确定性规则消解的语义冲突应该如何处理。
+
+> **上下文构建器回答“当前有哪些值得模型看到的信息”；模型 / 执行策略回答“基于这些信息下一步怎么办”。**
+
+### 6.3 上下文是有限工作集，也是注意力预算
 
 > **上下文包含的是地图，而不是整个世界。**
 
-稳定内容适合前置：
-
-- 系统规则 / 策略；
-- 智能体定义；
-- 能力元数据。
-
-阶段性稳定：
-
-- 目标；
-- 执行检查点的摘要 / 引用；
-- 摘要；
-- 当前计划。
-
-动态内容：
-
-- 最近历史；
-- 观察；
-- 即时知识；
-- 工具 / 技能细节。
-
-### 6.4 上下文压缩
+上下文窗口大小只是硬上限，不代表有效上下文容量。上下文工程优化的目标不是尽量填满窗口，而是在有限注意力预算下提高决策相关信息密度：
 
 ```text
-会话历史追加事实
-      ↓
-上下文策略
-      ↓
-选择 / 摘要 / 压缩
-      ↓
-上下文
+Context Utility
+≈ 决策相关信息
+  ─────────────
+  Token + 噪声 + 歧义
 ```
 
-压缩改变模型看到什么，不改变真实发生过什么。
+因此即使模型仍有剩余窗口，也可能需要删除低价值内容、外部化大型结果或重新组织工作集。
 
-### 6.5 笔记 / 待办
-
-智能体当前主观工作认知，包括计划、待办、假设和临时结论。
-
-它可以被修改，也可能是错的，因此不是事实源。
-
-### 6.6 记忆（Memory）
-
-可以区分：
-
-- 工作记忆 → 笔记 / 待办；
-- 情景记忆 → 过去任务 / 会话经验；
-- 语义记忆 → 稳定知识、规则、偏好。
-
-长期记忆推荐采用晋升流程：
+推荐按生命周期组织：
 
 ```text
-会话历史 / 观察
-     ↓
-候选记忆
-     ↓
-验证 / 来源 / 信任
-     ↓
-长期记忆
+稳定前缀
+├── System / Policy
+├── 稳定任务约束
+└── 稳定能力元数据
+
+阶段性稳定
+├── Goal
+├── 当前阶段摘要
+├── 当前 Plan / Notes
+└── 关键状态
+
+动态工作集
+├── 最近交互
+├── 最近 Action / Observation
+├── 当前错误
+└── 即时检索内容
+```
+
+稳定前缀尽量保持不变，以提高 Prompt / Prefix Cache 复用；但缓存效率不能凌驾于上下文正确性和质量之上。
+
+### 6.4 Push Context 与 Pull Context
+
+不是所有信息都应该预加载。
+
+```text
+Push
+→ 系统主动进入当前上下文
+
+Pull
+→ 模型 / 执行框架在需要时再取回
+```
+
+适合 Push：
+
+- 当前目标和关键约束；
+- 当前计划 / 进度；
+- 最近高价值观察；
+- 未解决失败和阻塞；
+- 当前有效的权限、预算和完成条件。
+
+适合 Pull：
+
+- 大文件和长日志；
+- 长尾历史；
+- 大量知识库内容；
+- 大规模工具 / MCP 定义；
+- 很少使用的历史制品。
+
+因此能力发现与能力加载应分离：
+
+```text
+能力目录 / Tool Search
+        ↓
+候选能力
+        ↓
+按需加载具体 Skill / Tool Schema
+```
+
+大量工具不应默认全部进入模型上下文。
+
+### 6.5 Working / Episodic / Semantic Memory
+
+“上下文之外的信息”不能全部称为 Memory。
+
+#### Working Memory
+
+当前任务的短期工作认知：
+
+- 当前计划；
+- 待办；
+- 假设；
+- 临时结论；
+- 当前问题状态。
+
+它更新频繁，通常由 Notes / Todo / Strategy State 等形式承载，可能出错，因此不是事实源。
+
+#### Episodic Memory
+
+描述“过去发生过什么”：
+
+- 过去任务 / 会话经验；
+- Action / Observation 历史；
+- 过去失败和恢复过程；
+- 可复用的任务经历。
+
+它具有时间和事件语义，可以基于 Event Log、Session History、Trace 等来源建立检索表示，但不能替代原始事实。
+
+#### Semantic Memory
+
+描述“系统已经形成了什么相对稳定的知识”：
+
+- 项目约束；
+- 稳定规则；
+- 用户 / 团队偏好；
+- 长期有效的环境知识。
+
+它通常来自多个历史事实的抽取、验证和合成，应具有来源、版本、时效和信任信息。
+
+推荐长期记忆晋升流程：
+
+```text
+会话历史 / 观察 / Episodic Memory
+              ↓
+          候选记忆
+              ↓
+      验证 / 来源 / 信任
+              ↓
+        Semantic Memory
+```
+
+> **可以自由写入候选，但必须谨慎晋升为长期记忆。**
+
+### 6.6 Event Log、Memory、Workspace、Artifact 的边界
+
+```text
+Event Log
+→ 发生过什么；权威执行历史
+
+Memory
+→ 哪些信息值得跨时间复用
+
+Workspace
+→ 当前可持续修改的外部工作状态
+
+Artifact
+→ 大对象、阶段产物或正式交付结果
+
+Context
+→ 当前决策实际看到什么
+```
+
+其中：
+
+> **Event Log 是执行历史事实源；Memory 是检索与复用表示；Context 是临时投影。**
+
+Memory 可以摘要、索引或向量化；Event Log 不能因为生成了 Memory 就被覆盖。
+
+Workspace 描述当前真实工作世界，例如代码、文件、浏览器状态和中间数据。Memory 中保存的旧状态与当前 Workspace 冲突时，应重新读取当前权威来源，而不是让 Memory 覆盖真实世界。
+
+### 6.7 上下文信息需要来源、时效和版本
+
+上下文中的事实不应只有 `value`，还应尽可能带有：
+
+```text
+source
+observed_at
+version
+scope
+authority / trust
+freshness / ttl
+resource_ref
+provenance
+```
+
+信息价值不只由“是否相关”决定，还受到时效性、权威性和当前任务状态影响。
+
+例如：
+
+```text
+两小时前读取：
+timeout = 30
+
+当前配置：
+timeout = 60
+```
+
+Event Log 可以保留整个变化过程；当前上下文则应优先投影最新有效状态，同时保留来源和历史引用。
+
+对于无法通过版本、时间或权威来源确定优先级的冲突，上下文构建器应显式标记冲突，而不是自行进行业务语义裁决。
+
+> **确定性冲突由投影规则消解；真正的语义不确定性交给模型 / Policy。**
+
+### 6.8 压缩应优先低损，再使用模型摘要
+
+上下文压缩不是简单“让模型总结历史”。推荐从低损到高损逐级处理：
+
+```text
+1. 去重
+2. 确定性过滤
+3. 结构化抽取
+4. 清理低价值 Tool Result
+5. 大对象外部化 + Resource Reference
+6. 抽取式摘要
+7. 模型生成摘要
+8. 阶段性完整 Compaction
 ```
 
 原则：
 
-> **可以自由写入候选，但必须谨慎晋升为长期记忆。**
+> **优先使用确定性、低损压缩；只有必要时才使用模型生成的有损摘要。**
 
-召回不能只用向量 Top-K，还应考虑目标、状态、范围、时效性、重要性、置信度、信任与来源。
-
-### 6.7 工作空间（Workspace）
-
-工作空间是工作单元范围内可被持续读取和修改的工作状态边界。它可以承载文件、代码、中间数据和生成内容，但不要求物理上一定是一个目录，也不要求第一版建设独立工作空间服务。
-
-本地 Coding Agent 的合法第一版实现可以只是：
+Compaction 改变模型看到什么，不改变真实发生过什么：
 
 ```text
-/work/project
+Raw Facts / Resources
+        ↓
+Summary / Projection
+        ↓
+Context
 ```
 
-工作空间至少应可寻址，并且其工作状态不应因为一次运行或一个沙箱结束就自动消失：
+摘要必须保留 provenance 或 source reference，使后续能够回到原始 Event、Artifact、文件或 Tool Result。
+
+> **压缩可以有损，但事实必须可追溯。**
+
+### 6.9 Tool Result 不应原样进入上下文
+
+大型 Tool Result 是长任务上下文膨胀的主要来源之一：
 
 ```text
-Workspace lifetime ≠ Run lifetime
-Workspace lifetime ≠ Sandbox lifetime
+pytest → 数万行日志
+grep → 数千行
+SQL → 大量记录
+Browser → 完整页面 / DOM
 ```
 
-工作空间不等于记忆，也不属于单个上下文。运行时的执行检查点可以保存工作空间引用，但不应把文件树、浏览器状态和其他外部世界状态复制进运行时状态。
+推荐：
 
-快照、分支、变化集、资源版本、合并等可以由具体工作空间后端按需提供；它们是协作 / 恢复增强能力，不是工作空间核心语义的先决条件。
+```text
+Raw Tool Result
+      ↓
+Artifact / Resource Store
+      ↓
+Result Processor
+      ↓
+Compact Observation
+      ↓
+Context
+```
+
+例如模型优先看到：
+
+```text
+pytest failed
+
+3 failures:
+- test_login
+- test_refresh
+- test_logout
+
+Primary error:
+JWTValidationError at auth.py:81
+
+Full log:
+artifact://run-123/test-18
+```
+
+需要更多细节时再按引用读取。
+
+因此：
+
+> **观察是原始执行结果的高信号投影；上下文再从观察中选择当前需要的部分。**
+
+### 6.10 长历史需要结构化检索，而不只是向量 Top-K
+
+长任务运行数小时、产生数百次 Action 后，模型不能依赖摘要永久保存所有细节。
+
+平台应提供历史 / 资源检索能力，例如：
+
+```text
+search_history(
+  time_range,
+  tool_id,
+  action_type,
+  status,
+  keyword,
+  semantic_query,
+  ordering
+)
+```
+
+检索优先级：
+
+```text
+能够通过结构化事实精确定位
+→ 时间 / Tool / Action / Status / Version 过滤
+
+无法明确定位
+→ 关键词 + 向量 + 重排的混合检索
+```
+
+向量检索用于扩大召回，不应替代确定性的时间、身份、版本和状态查询。
+
+### 6.11 Hot / Warm / Cold 上下文分层
+
+为了避免每次模型调用都重新搜索整个历史，可以维护分层工作集：
+
+```text
+Hot
+→ 当前 Prompt / Working Set
+→ 小、快、高相关
+
+Warm
+→ 阶段摘要、近期 Episode、常用事实、检索缓存
+→ 低成本可取回
+
+Cold
+→ Event Log、Artifact、Workspace、完整历史
+→ 完整、可信、访问成本更高
+```
+
+信息是否常驻 Hot Context，至少可以综合考虑：
+
+- 当前任务相关性；
+- 最近使用时间；
+- 使用频率；
+- 来源权威性；
+- 是否仍未解决；
+- 风险等级；
+- freshness / volatility。
+
+不能仅用 LRU 或“越新越重要”决定模型工作集。
+
+### 6.12 上下文压缩与 KV / Prefix Cache
+
+推荐上下文结构尽量 append-friendly：
+
+```text
+[Stable System / Policy / Task Prefix]
+[Current Summary Baseline]
+[Recent Actions / Observations]
+[Latest Input]
+```
+
+随着任务推进，可以不断追加动态尾部，从而复用稳定前缀。
+
+当工作集达到压缩阈值、信息密度下降或任务阶段结束时，再执行阶段性 Compaction：
+
+```text
+旧 baseline + 大量历史
+        ↓
+      compact
+        ↓
+新 baseline + 新 working set
+```
+
+压缩通常会建立新的缓存基线，因此不应每一轮都重写前部 Context；但不能为了缓存命中而无限增长上下文。
+
+优先级：
+
+```text
+上下文正确性
+    ↓
+上下文质量
+    ↓
+Token / 延迟 / 成本
+    ↓
+缓存复用
+```
+
+### 6.13 Context Isolation
+
+复杂子任务可能产生大量局部信息，此时可以通过 Context Isolation 将局部工作卸载：
+
+```text
+Parent Context
+   │
+   ├── Child A：大量局部搜索
+   ├── Child B：大量文件分析
+   └── Child C：独立实验
+
+Child
+→ 返回高信号结论 + evidence / resource refs
+→ 不返回全部内部历史
+```
+
+Sub-agent 的一个重要平台价值是上下文隔离和卸载，而不只是增加模型实例。
+
+是否创建独立子会话 / 子运行仍取决于它是否需要独立、持久、可恢复的生命周期；纯上下文隔离并不自动要求新的 L3 运行。
+
+### 6.14 上下文工程需要独立评估
+
+不能只用最终 Agent 成功率判断 Context Manager。
+
+至少需要区分：
+
+```text
+Context Quality
+      ↓
+Decision Quality
+      ↓
+Task Outcome
+```
+
+上下文层可以评估：
+
+- **关键事实召回率**：正确决策需要的信息是否进入 Context；
+- **信息精度**：是否混入大量无关内容；
+- **摘要忠实度**：压缩是否改变原始事实；
+- **时效性**：是否继续使用已经过期的状态；
+- **冲突保留**：无法确定的冲突是否被错误消解；
+- **Token Efficiency**：达到同等信息覆盖使用了多少 Token；
+- **Retrieval Cost / Latency**：构造一次 Context 的成本。
+
+评估错误决策时，可以使用对照：
+
+```text
+Gold Context + 当前模型
+当前 Context + 当前模型
+```
+
+如果 Gold Context 可以稳定得到正确决策，而当前 Context 不能，应优先检查 Context 构建、检索和压缩；如果两者都失败，再检查模型、Prompt 或决策策略。
+
+### 6.15 Compaction 是上下文生命周期管理
+
+Compaction 不应被等同于“对历史做一次摘要”。长任务中的上下文收缩至少包括四种不同机制：
+
+```text
+Trimming
+→ 删除已经确定没有继续价值的内容
+
+Externalization
+→ 原始内容移出 Context，只保留摘要和资源引用
+
+Compaction
+→ 把一段历史转换成更短的表示
+
+Context Reset
+→ 基于目标、当前状态、交接信息和资源引用建立新的 Context
+```
+
+它们的破坏性逐级增强。推荐优先采用低损方式：
+
+```text
+原始 Context
+    ↓
+去重
+    ↓
+确定性过滤
+    ↓
+结构化抽取
+    ↓
+大型结果外部化
+    ↓
+局部摘要
+    ↓
+阶段摘要
+    ↓
+必要时 Context Reset
+```
+
+不应一开始就依赖模型自由摘要，因为当前看起来不重要的信息可能在后续阶段重新变得关键。原始 Event、Artifact、Workspace 状态和 Tool Result 应继续保留，Summary 只是新的派生表示。
+
+#### 6.15.1 Tool Result Clearing
+
+长任务中最容易导致 Context 膨胀的通常不是用户消息，而是大量 Tool Result：
+
+```text
+grep
+pytest
+browser
+shell
+SQL
+search
+```
+
+Tool Result 可以区分：
+
+```text
+尚未消费
+→ 应保留
+
+已消费但仍影响当前决策
+→ 保留高信号 Observation
+
+已消费且只具有历史价值
+→ Externalize / Clear
+```
+
+例如：
+
+```text
+500 行 grep 输出
+    ↓
+模型已经定位 src/foo.py:182
+    ↓
+Context 仅保留：
+Relevant definition found at src/foo.py:182
+
+原始输出：
+artifact://grep-182
+```
+
+#### 6.15.2 Protected Context
+
+Compaction 不能简单按时间删除旧信息。以下内容通常需要受到保护：
+
+- Goal；
+- 用户和业务关键约束；
+- Policy / Governance 边界；
+- 当前 Plan / Progress；
+- 未解决失败和阻塞；
+- 已做出的关键决策；
+- 当前验证状态和完成条件；
+- 关键 Resource / Evidence Reference。
+
+因此上下文保留策略应综合考虑：
+
+```text
+task relevance
++ semantic importance
++ freshness
++ unresolved state
++ future utility
+```
+
+而不是“只保留最近 N 条”。
+
+#### 6.15.3 Structured Handoff
+
+阶段摘要应优先使用结构化交接，而不是自由自然语言：
+
+```text
+Goal
+Current State
+Completed Work
+Important Decisions
+Unresolved Issues
+Current Plan
+Critical Constraints
+Relevant Resources
+Verification State
+Evidence References
+```
+
+这样既提高后续恢复的一致性，也更容易评估 Summary 是否遗漏关键事实。
+
+#### 6.15.4 Structured Notes 与 Compaction
+
+二者解决不同问题：
+
+```text
+Compaction
+→ 反应式：Context 已经过大，需要压缩过去
+
+Structured Notes
+→ 主动式：在工作过程中持续维护未来需要的信息
+```
+
+例如：
+
+```text
+progress.md
+todo.md
+known-facts.json
+plan.md
+```
+
+Structured Notes 可以减少未来 Context Reset 对长历史的依赖。
+
+#### 6.15.5 Context Reset
+
+Context Reset 是比 Compaction 更强的生命周期动作：
+
+```text
+旧 Context
+   ×
+   ↓
+Goal
++ Current State
++ Structured Handoff
++ Relevant Resources
+   ↓
+新 Context
+```
+
+它适合：
+
+- Context 长期增长后信息密度明显下降；
+- 任务阶段发生显著变化；
+- 旧历史持续干扰模型；
+- 需要新的模型 / 执行框架实例接管工作。
+
+Reset 不意味着运行结束，也不改变 Session / Run 的持久事实。
+
+#### 6.15.6 Compaction 触发
+
+不能只在接近 Context Window 硬上限时处理。可以结合：
+
+- Token soft limit；
+- Tool Result 占比；
+- 重复信息比例；
+- 信息密度下降；
+- 任务阶段结束；
+- 模型开始重复探索；
+- Context 结构严重碎片化。
+
+阶段边界通常是自然的 Compaction 点：
+
+```text
+需求分析完成
+→ compact
+
+实现完成
+→ compact
+
+进入验证阶段
+→ compact
+```
+
+#### 6.15.7 Compaction 与 Prefix Cache
+
+推荐采用阶段性 baseline：
+
+```text
+[Stable Prefix]
+[Summary Baseline]
+[Recent Actions / Observations]
+```
+
+任务推进时尽量追加动态尾部：
+
+```text
+baseline + A
+baseline + A + B
+baseline + A + B + C
+```
+
+达到阈值后再阶段性压缩并建立新的 baseline，而不是每轮重写前缀。
+
+> **Compaction 不一定可逆，但必须可追溯；缓存复用是优化目标，不是正确性边界。**
+
+### 6.16 Agent Retrieval 是动态信息获取循环
+
+Agent Retrieval 不应被建模成传统的一次性：
+
+```text
+Query
+→ Vector Search
+→ Top-K
+→ LLM
+```
+
+更符合长任务 Agent 的模型是：
+
+```text
+Observe
+   ↓
+识别当前 Information Gap
+   ↓
+Retrieve
+   ↓
+形成新的 Observation
+   ↓
+Reason / Act
+   ↓
+再次出现新的 Information Gap
+```
+
+因此：
+
+> **Retrieval 的目标不是找到最多相关文档，而是以最低成本消除当前 Decision 的信息缺口。**
+
+#### 6.16.1 Retrieval 首先是 Source Routing
+
+Context Source 至少包括：
+
+```text
+Runtime State
+Event Log
+Session History
+Memory
+Workspace
+Artifact
+Knowledge Base
+Capability / Tool Registry
+External Systems
+```
+
+不同问题应优先访问不同事实源：
+
+```text
+“Action 是否成功？”
+→ Runtime State
+
+“第三次部署为什么失败？”
+→ Event Log / Episodic History
+
+“现在 auth.py 是什么？”
+→ Workspace
+
+“项目约定使用哪个 Python 版本？”
+→ Semantic Memory / Project Docs
+
+“完整测试日志是什么？”
+→ Artifact
+
+“有哪些 Kubernetes 能力？”
+→ Capability / Tool Registry
+```
+
+> **Retrieval 首先决定去哪里找，其次才决定怎么搜索。**
+
+#### 6.16.2 Query Planning
+
+找到 Source 后，再选择查询方式。推荐 Retrieval Ladder：
+
+```text
+1. Direct Lookup
+2. Structured Filter
+3. Keyword / Lexical Search
+4. Semantic Search
+5. Hybrid Retrieval
+6. Agent Exploration
+```
+
+越靠前越确定、成本越低；越靠后召回能力越强，但不确定性和成本也越高。
+
+例如：
+
+```text
+“最后一次 production deploy 使用的 timeout”
+```
+
+应该优先编译成：
+
+```text
+tool = deploy
+environment = production
+order by timestamp desc
+limit 1
+```
+
+而不是先进行向量检索。
+
+#### 6.16.3 结构化查询优先于语义检索
+
+向量检索天然不擅长：
+
+- latest / first / before / after 等时间关系；
+- 精确版本、ID、数字；
+- FAILED / SUCCEEDED 等状态过滤；
+- “列出全部”等完整性要求。
+
+因此：
+
+> **能通过结构化事实精确定位，就不要优先依赖语义检索。**
+
+语义检索更适合：
+
+- 不知道信息具体在哪里；
+- 查询表达与历史表达差异较大；
+- 需要找“类似问题 / 类似经验”。
+
+#### 6.16.4 Hybrid Retrieval
+
+典型流程：
+
+```text
+结构化过滤
+→ 缩小作用域
+
+关键词检索
+→ 捕获精确术语
+
+Semantic Retrieval
+→ 扩大语义召回
+
+Rerank
+→ 选择最终少量候选
+
+Materialize
+→ 读取必要原文 / Resource
+```
+
+Embedding 通常只是 Retrieval Pipeline 的一个阶段，而不是整个检索系统。
+
+#### 6.16.5 Progressive Disclosure
+
+Retrieval 应逐层披露信息：
+
+```text
+Metadata
+   ↓
+Summary / Relevant Fragment
+   ↓
+Full Resource
+```
+
+例如文件：
+
+```text
+auth.py
+JWT authentication implementation
+   ↓
+auth.py:120-180
+   ↓
+完整 auth.py
+```
+
+同样适用于 Tool、Memory、Artifact 和 Knowledge。
+
+Context 因此不仅要包含信息，还应包含继续探索世界的导航能力：
+
+```text
+当前高信号信息
++
+resource_ref
++
+如何继续读取
+```
+
+#### 6.16.6 Retrieval Result 必须带有效性信息
+
+推荐 Retrieval Result 带有：
+
+```text
+source
+observed_at
+version
+scope
+authority / trust
+freshness
+resource_ref
+```
+
+相关不等于有效。Memory 中高度相关但已经过期的事实，不能覆盖 Workspace / External System 的当前状态。
+
+因此：
+
+> **Retrieval 不只是 relevance search，还包括 validity check。**
+
+#### 6.16.7 Retrieval Cache
+
+近期已读取资源可以进入 Warm Cache：
+
+```text
+resource_id
+version
+content / compact representation
+```
+
+如果 source 有稳定版本：
+
+```text
+version 未变化
+→ reuse
+
+version 变化
+→ invalidate
+```
+
+无法提供版本的数据源可以使用 TTL、etag、last_modified 或重新查询策略。
+
+#### 6.16.8 Retrieval Budget
+
+Agent 可能陷入无界搜索：
+
+```text
+search
+→ search
+→ search
+→ search
+```
+
+因此 Retrieval 也需要预算和停止条件，例如：
+
+- 最大检索轮数；
+- Token Budget；
+- Latency Budget；
+- 外部 API Cost；
+- Search Depth；
+- 信息增益阈值。
+
+任务级“是否继续搜索”属于 L4 策略；API 限流、权限和资源硬限制由更靠近能力 / 执行边界的位置强制落实。
+
+#### 6.16.9 Retrieval Failure 必须可解释
+
+空结果不能统一表示成 `[]`。至少应区分：
+
+```text
+NOT_FOUND
+NO_MATCH
+ACCESS_DENIED
+INDEX_STALE
+SOURCE_UNAVAILABLE
+INVALID_QUERY
+```
+
+这样模型才能正确选择：
+
+- 换 Query；
+- 换 Source；
+- 放宽过滤；
+- 请求权限；
+- 等待恢复；
+- 停止继续搜索。
+
+#### 6.16.10 Retrieval Eval
+
+除了传统 Recall / Precision，还应评估：
+
+- Ranking Quality；
+- Freshness；
+- Source Accuracy；
+- Token Efficiency；
+- Retrieval Cost / Latency；
+- Retrieval Necessity。
+
+最后一项尤其重要：
+
+> **一次 Retrieval 即使结果相关，也可能根本没有必要发生。**
+
+Agent Retrieval 的优化目标同时包括“找到正确的信息”和“不要在已经足够决策时继续搜索”。
+
+### 6.17 Memory 是知识生命周期，不是历史副本
+
+Memory 解决的不是“如何把历史保存下来”，而是：
+
+> **什么信息值得跨时间复用，什么时候晋升、合并、失效和重新验证。**
+
+推荐生命周期：
+
+```text
+Raw Experience
+    ↓
+Candidate Memory
+    ↓
+Validate / Scope / Trust
+    ↓
+Promote
+    ↓
+Long-term Memory
+    ↓
+Retrieve
+    ↓
+Context
+```
+
+Event Log 和 Memory 必须保持不同语义：
+
+```text
+Event Log
+→ 发生过什么；保存权威执行历史
+
+Memory
+→ 哪些经验 / 知识值得未来复用
+```
+
+Memory 是派生知识，不应覆盖原始事实来源。
+
+#### 6.17.1 Working / Episodic / Semantic
+
+```text
+Working Memory
+→ 当前计划、待办、假设、临时结论
+
+Episodic Memory
+→ 过去某次任务 / 会话中发生过什么
+
+Semantic Memory
+→ 脱离具体一次事件后形成的稳定知识
+```
+
+Working Memory 生命周期短，通常由 Notes / Todo / Strategy State 承载；Episodic Memory 保留经历语义；Semantic Memory 则是对多个事实 / 经历的抽象和合成。
+
+#### 6.17.2 Memory Write 比 Retrieval 更难
+
+不能把所有 Tool Result / Observation 自动写入长期 Memory，否则：
+
+```text
+Memory ≈ History
+```
+
+推荐晋升流程：
+
+```text
+Observation / Episode
+        ↓
+Candidate Memory
+        ↓
+future utility
+stability
+frequency
+authority
+scope
+cost to rediscover
+        ↓
+Validation
+        ↓
+Promotion
+```
+
+模型可以提出 Candidate Memory，但长期知识的晋升应由 Memory System / Policy 做确定性校验与治理。
+
+#### 6.17.3 Memory 必须有 Scope
+
+Memory 至少需要明确作用域：
+
+```text
+Run
+Session
+Work
+Project
+User
+Team
+Organization
+Global
+```
+
+同一个事实在不同 Scope 下可能完全不同。Scope 越大、寿命越长、未来召回频率越高，晋升门槛应越高。
+
+#### 6.17.4 Memory 必须有时间与版本语义
+
+长期 Memory 不能只有 `key / value`。建议至少携带：
+
+```text
+source
+created_at
+observed_at
+valid_from
+valid_until
+version
+supersedes
+scope
+trust
+```
+
+例如：
+
+```text
+old:
+deployment = Jenkins
+
+new:
+deployment = GitHub Actions
+supersedes = old
+```
+
+旧知识保留历史，但当前投影应只把最新有效版本当作当前事实。
+
+#### 6.17.5 Episodic → Semantic
+
+Semantic Memory 通常来自多个 Episode 的模式抽取：
+
+```text
+Episode 1
+Episode 2
+Episode 3
+    ↓
+Pattern Extraction
+    ↓
+Candidate Semantic Memory
+    ↓
+Validation
+    ↓
+Promotion
+```
+
+这是一种有损抽象，因此同样需要 source / provenance，避免模型合成出的错误知识长期污染后续任务。
+
+#### 6.17.6 Memory Conflict 与 Freshness
+
+当多个 Memory 冲突时，应先依据：
+
+```text
+scope
+source
+version
+time
+authority
+trust
+```
+
+进行确定性消解。
+
+如果能够确定当前版本，则 Context 只投影最新有效知识；如果无法确定，例如文档与 CI 配置互相冲突，则应把冲突暴露给模型，而不是 Memory System 自行做业务语义裁决。
+
+#### 6.17.7 Memory Retrieval ≠ Context Injection
+
+```text
+Memory Store
+   ↓
+Retrieve Candidates
+   ↓
+Freshness / Conflict / Scope Check
+   ↓
+Context Selection
+   ↓
+Model Context
+```
+
+检索出的 Memory 不应未经筛选直接进入 Prompt。Memory 是 Context Source，而不是 Context 本身。
+
+#### 6.17.8 Memory Trust
+
+信息经过模型摘要或抽取不会自动提高可信度：
+
+```text
+Untrusted Source
+    ↓
+LLM Summary
+    ↓
+仍然是 Untrusted-derived Memory
+```
+
+长期记忆写入近似于修改未来 Agent 的决策上下文，因此需要保留来源和信任传播。
+
+#### 6.17.9 Memory 需要失效与整合
+
+Memory Store 不能只支持 append，还应支持：
+
+```text
+invalidate
+supersede
+expire
+merge
+consolidate
+demote
+```
+
+例如：
+
+```text
+Memory A: uses pytest
+Memory B: tests executed with pytest
+Memory C: pytest is the test framework
+        ↓
+Consolidate
+        ↓
+Semantic Memory:
+test_framework = pytest
+```
+
+长期 Memory 实际上是一个持续维护的版本化知识系统。
+
+#### 6.17.10 Memory Eval
+
+至少需要评估：
+
+- Write Precision：写进去的信息是否值得长期保存；
+- Write Recall：关键长期知识是否遗漏；
+- Retrieval Recall：需要时是否能够取回；
+- Freshness：是否召回已经过期的信息；
+- Conflict Accuracy：冲突是否正确保留 / 消解；
+- Faithfulness：Memory 是否忠实于来源；
+- Utility：是否减少未来重新探索成本；
+- Negative Transfer：错误 / 无关 Memory 是否降低后续决策质量。
+
+Memory 风险可以粗略理解为：
+
+```text
+Memory Risk
+≈ Error Probability
+× Persistence
+× Retrieval Frequency
+× Scope
+```
+
+因此长期、广作用域、高频召回的 Memory 需要更严格的晋升与验证。
+
+### 6.18 Context Assembly 是决策输入的编译过程
+
+Select、Retrieve、Compress、Reference 解决“哪些信息进入 Context”；Assembly 解决：
+
+> **这些信息以什么语义结构、权威层级和顺序交给模型。**
+
+推荐不要在业务代码中到处拼字符串，而是先构造稳定的决策上下文表示，再由模型适配层渲染：
+
+```text
+Policy
+Goal
+Runtime State
+Memory
+Workspace
+Observation
+Resources
+Capabilities
+    ↓
+Context Builder
+    ↓
+Decision Context
+    ↓
+Model-specific Renderer
+    ↓
+Model
+```
+
+#### 6.18.1 语义分区优先于字符串拼接
+
+一个基础 Context Skeleton 可以是：
+
+```text
+System / Policy
+Task / Goal
+Current State
+Working Plan / Notes
+Relevant Memory
+Recent Observations
+Retrieved Resources
+Available Capabilities
+Current Input
+```
+
+关键不在于固定顺序，而在于信息具有明确的：
+
+```text
+semantic role
+authority
+trust
+freshness
+lifecycle
+```
+
+模型不应该自行猜测某段文本究竟是 Policy、历史事实、旧 Memory 还是当前用户要求。
+
+#### 6.18.2 Goal 与 Plan 必须分离
+
+```text
+Goal
+→ 相对稳定，描述为什么做、最终要完成什么
+
+Plan
+→ 当前策略，可以被修正或推翻
+```
+
+推荐至少保留：
+
+```text
+Original Goal
+Current Subgoal
+Completion Criteria
+```
+
+这样可以降低长任务中的 Goal Drift。
+
+#### 6.18.3 Current State 与 History 必须分离
+
+历史：
+
+```text
+timeout 30 → 60 → 90
+```
+
+当前模型更需要：
+
+```text
+Current State:
+timeout = 90
+
+Recent Changes:
+30 → 60 → 90
+
+History:
+event://...
+```
+
+> **History 用于解释当前状态；Current State 用于当前决策。**
+
+#### 6.18.4 Observation 应保持在热工作集
+
+Observation 是刚刚发生、下一步可能直接依赖的信息，例如测试失败、Tool Result、环境变化。
+
+它不应被埋在长历史中。当前状态、最近 Observation 和最新输入通常应保持高度可见。
+
+#### 6.18.5 Memory 不能伪装成当前事实
+
+Retrieved Memory 应保留来源语义：
+
+```text
+Relevant Memory:
+- Python version was previously observed as 3.10
+  source: ...
+  observed_at: ...
+```
+
+而不是直接把旧 Memory 渲染成：
+
+```text
+Python version = 3.10
+```
+
+尤其在 freshness 不确定时。
+
+#### 6.18.6 Evidence 与 Interpretation 分离
+
+Agent / Sub-agent 的判断不等于事实。推荐表示：
+
+```text
+Finding:
+...
+
+Evidence:
+- event://...
+- artifact://...
+- resource://...
+
+Confidence:
+...
+```
+
+这样 Context Manager 才能显式保留冲突结论，而不是把多个自然语言判断混成一个事实。
+
+#### 6.18.7 Capability / Tool 需要渐进加载
+
+大量 Tool Schema 不应永久进入 Context：
+
+```text
+Capability Metadata
+      ↓
+Tool Search
+      ↓
+候选工具
+      ↓
+Full Tool Schema
+```
+
+发现与加载分离可以同时降低 Token、注意力污染和 Tool Selection 难度。
+
+#### 6.18.8 Assembly 应兼顾 Prefix Stability
+
+推荐：
+
+```text
+[Stable Prefix]
+System
+Policy
+Stable Task
+Stable Capability Metadata
+
+[Dynamic Suffix]
+Current State
+Current Summary
+Recent Observation
+Current Input
+```
+
+上下文尽量 append-friendly；阶段性 Compaction 后再建立新的 Summary Baseline。
+
+缓存效率属于执行优化，不能为了缓存命中而保留已经失效的 Current State。
+
+#### 6.18.9 强约束与参考信息分层
+
+不同信息不应都渲染成同等级文字：
+
+```text
+Policy / Hard Constraints
+Task Requirements
+Current State
+Evidence
+Relevant Memory
+Suggestions / Hints
+```
+
+违反 Policy 和忽略 Hint 的系统语义完全不同。
+
+#### 6.18.10 Untrusted Context 需要显式隔离
+
+外部网页、文件、第三方 Tool Result 等不可信内容应在 Context 中保持来源 / 信任边界：
+
+```text
+trusted instruction
+≠
+untrusted external content
+```
+
+信息被读取或摘要后不会自动获得指令权威。
+
+> **Context Source Boundary 同时也是 Trust Boundary。**
+
+#### 6.18.11 Decision Context 可以作为最小 IR
+
+第一版可以只固定少数 Primitive：
+
+```text
+Goal
+Constraint
+State
+Observation
+Memory
+Resource
+Capability
+CurrentInput
+```
+
+例如：
+
+```text
+DecisionContext
+├── goal
+├── constraints
+├── current_state
+├── observations
+├── memories
+├── resources
+├── capabilities
+└── current_input
+```
+
+不同模型使用不同 Renderer，但上层上下文语义保持稳定。
+
+避免过早设计复杂 Context DSL / AST；只有真实 Eval 证明需要新的语义 Primitive 时再扩展。
+
+#### 6.18.12 Context Assembly Eval
+
+相同 Context Items 可以使用不同 Layout 做 A/B Eval，重点观察：
+
+- Goal 是否持续被遵守；
+- Constraint 是否被违反；
+- Current State 是否被旧 History / Memory 覆盖；
+- Observation 是否被正确使用；
+- Conflict 是否被识别；
+- Capability 是否被正确选择；
+- Token / Cache / Latency 成本。
+
+具体 Prompt Layout 是模型相关优化，应通过模型级 Eval 验证，而不是固化一个永久最优顺序。
+
+### 6.19 上下文工程核心不变量
+
+1. **Runtime State ≠ Model Context。**
+2. **Memory ≠ Context；Memory 是可取回信息，Context 是当前实际加载的信息。**
+3. **History ≠ Context；历史可以无限增长，工作集必须受控。**
+4. **上下文窗口大小 ≠ 有效上下文容量。**
+5. **上下文是投影，不是事实源。**
+6. **Compaction 改变表示，不改写历史。**
+7. **Summary 是派生信息，必须保留来源和回溯路径。**
+8. **能够确定性处理的筛选、版本和时效问题不应全部交给模型。**
+9. **真正的语义判断和下一步决策仍属于模型 / 执行策略。**
+10. **大对象优先引用化，低频信息优先即时加载。**
+11. **Tool Result、Observation、Context 是不同层次，不能直接等同。**
+12. **Context Manager 可以忘记；系统底层事实不能因为 Context 被压缩而丢失。**
+13. **Retrieval 首先是 Source Routing，其次才是 Search。**
+14. **能够精确查询的事实，不应优先依赖向量召回。**
+15. **Agent Retrieval 是多轮、动态、按需的信息获取循环。**
+16. **Context 应同时提供信息与继续导航信息世界的 Reference。**
+17. **Event Log 保存经历，Memory 保存值得未来复用的知识。**
+18. **Memory 必须具有 Scope、Source、Freshness、Version 与 Trust。**
+19. **Memory Retrieval 不等于 Context Injection。**
+20. **长期 Memory 必须支持失效、替代、合并和整合，而不是只追加。**
+21. **Goal、Plan、Current State、History、Memory、Observation 应保留不同语义角色。**
+22. **Context Assembly 应保留 Authority / Trust / Provenance，而不是把所有 Token 当成同等级文本。**
+23. **Context 可以有模型相关 Renderer，但上层决策上下文语义不应绑定具体模型 Prompt 格式。**
 
 ## 7. 能力工程
 
