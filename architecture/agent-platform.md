@@ -1243,7 +1243,509 @@ Gold Context + 当前模型
 
 如果 Gold Context 可以稳定得到正确决策，而当前 Context 不能，应优先检查 Context 构建、检索和压缩；如果两者都失败，再检查模型、Prompt 或决策策略。
 
-### 6.15 上下文工程核心不变量
+### 6.15 Compaction 是上下文生命周期管理
+
+Compaction 不应被等同于“对历史做一次摘要”。长任务中的上下文收缩至少包括四种不同机制：
+
+```text
+Trimming
+→ 删除已经确定没有继续价值的内容
+
+Externalization
+→ 原始内容移出 Context，只保留摘要和资源引用
+
+Compaction
+→ 把一段历史转换成更短的表示
+
+Context Reset
+→ 基于目标、当前状态、交接信息和资源引用建立新的 Context
+```
+
+它们的破坏性逐级增强。推荐优先采用低损方式：
+
+```text
+原始 Context
+    ↓
+去重
+    ↓
+确定性过滤
+    ↓
+结构化抽取
+    ↓
+大型结果外部化
+    ↓
+局部摘要
+    ↓
+阶段摘要
+    ↓
+必要时 Context Reset
+```
+
+不应一开始就依赖模型自由摘要，因为当前看起来不重要的信息可能在后续阶段重新变得关键。原始 Event、Artifact、Workspace 状态和 Tool Result 应继续保留，Summary 只是新的派生表示。
+
+#### 6.15.1 Tool Result Clearing
+
+长任务中最容易导致 Context 膨胀的通常不是用户消息，而是大量 Tool Result：
+
+```text
+grep
+pytest
+browser
+shell
+SQL
+search
+```
+
+Tool Result 可以区分：
+
+```text
+尚未消费
+→ 应保留
+
+已消费但仍影响当前决策
+→ 保留高信号 Observation
+
+已消费且只具有历史价值
+→ Externalize / Clear
+```
+
+例如：
+
+```text
+500 行 grep 输出
+    ↓
+模型已经定位 src/foo.py:182
+    ↓
+Context 仅保留：
+Relevant definition found at src/foo.py:182
+
+原始输出：
+artifact://grep-182
+```
+
+#### 6.15.2 Protected Context
+
+Compaction 不能简单按时间删除旧信息。以下内容通常需要受到保护：
+
+- Goal；
+- 用户和业务关键约束；
+- Policy / Governance 边界；
+- 当前 Plan / Progress；
+- 未解决失败和阻塞；
+- 已做出的关键决策；
+- 当前验证状态和完成条件；
+- 关键 Resource / Evidence Reference。
+
+因此上下文保留策略应综合考虑：
+
+```text
+task relevance
++ semantic importance
++ freshness
++ unresolved state
++ future utility
+```
+
+而不是“只保留最近 N 条”。
+
+#### 6.15.3 Structured Handoff
+
+阶段摘要应优先使用结构化交接，而不是自由自然语言：
+
+```text
+Goal
+Current State
+Completed Work
+Important Decisions
+Unresolved Issues
+Current Plan
+Critical Constraints
+Relevant Resources
+Verification State
+Evidence References
+```
+
+这样既提高后续恢复的一致性，也更容易评估 Summary 是否遗漏关键事实。
+
+#### 6.15.4 Structured Notes 与 Compaction
+
+二者解决不同问题：
+
+```text
+Compaction
+→ 反应式：Context 已经过大，需要压缩过去
+
+Structured Notes
+→ 主动式：在工作过程中持续维护未来需要的信息
+```
+
+例如：
+
+```text
+progress.md
+todo.md
+known-facts.json
+plan.md
+```
+
+Structured Notes 可以减少未来 Context Reset 对长历史的依赖。
+
+#### 6.15.5 Context Reset
+
+Context Reset 是比 Compaction 更强的生命周期动作：
+
+```text
+旧 Context
+   ×
+   ↓
+Goal
++ Current State
++ Structured Handoff
++ Relevant Resources
+   ↓
+新 Context
+```
+
+它适合：
+
+- Context 长期增长后信息密度明显下降；
+- 任务阶段发生显著变化；
+- 旧历史持续干扰模型；
+- 需要新的模型 / 执行框架实例接管工作。
+
+Reset 不意味着运行结束，也不改变 Session / Run 的持久事实。
+
+#### 6.15.6 Compaction 触发
+
+不能只在接近 Context Window 硬上限时处理。可以结合：
+
+- Token soft limit；
+- Tool Result 占比；
+- 重复信息比例；
+- 信息密度下降；
+- 任务阶段结束；
+- 模型开始重复探索；
+- Context 结构严重碎片化。
+
+阶段边界通常是自然的 Compaction 点：
+
+```text
+需求分析完成
+→ compact
+
+实现完成
+→ compact
+
+进入验证阶段
+→ compact
+```
+
+#### 6.15.7 Compaction 与 Prefix Cache
+
+推荐采用阶段性 baseline：
+
+```text
+[Stable Prefix]
+[Summary Baseline]
+[Recent Actions / Observations]
+```
+
+任务推进时尽量追加动态尾部：
+
+```text
+baseline + A
+baseline + A + B
+baseline + A + B + C
+```
+
+达到阈值后再阶段性压缩并建立新的 baseline，而不是每轮重写前缀。
+
+> **Compaction 不一定可逆，但必须可追溯；缓存复用是优化目标，不是正确性边界。**
+
+### 6.16 Agent Retrieval 是动态信息获取循环
+
+Agent Retrieval 不应被建模成传统的一次性：
+
+```text
+Query
+→ Vector Search
+→ Top-K
+→ LLM
+```
+
+更符合长任务 Agent 的模型是：
+
+```text
+Observe
+   ↓
+识别当前 Information Gap
+   ↓
+Retrieve
+   ↓
+形成新的 Observation
+   ↓
+Reason / Act
+   ↓
+再次出现新的 Information Gap
+```
+
+因此：
+
+> **Retrieval 的目标不是找到最多相关文档，而是以最低成本消除当前 Decision 的信息缺口。**
+
+#### 6.16.1 Retrieval 首先是 Source Routing
+
+Context Source 至少包括：
+
+```text
+Runtime State
+Event Log
+Session History
+Memory
+Workspace
+Artifact
+Knowledge Base
+Capability / Tool Registry
+External Systems
+```
+
+不同问题应优先访问不同事实源：
+
+```text
+“Action 是否成功？”
+→ Runtime State
+
+“第三次部署为什么失败？”
+→ Event Log / Episodic History
+
+“现在 auth.py 是什么？”
+→ Workspace
+
+“项目约定使用哪个 Python 版本？”
+→ Semantic Memory / Project Docs
+
+“完整测试日志是什么？”
+→ Artifact
+
+“有哪些 Kubernetes 能力？”
+→ Capability / Tool Registry
+```
+
+> **Retrieval 首先决定去哪里找，其次才决定怎么搜索。**
+
+#### 6.16.2 Query Planning
+
+找到 Source 后，再选择查询方式。推荐 Retrieval Ladder：
+
+```text
+1. Direct Lookup
+2. Structured Filter
+3. Keyword / Lexical Search
+4. Semantic Search
+5. Hybrid Retrieval
+6. Agent Exploration
+```
+
+越靠前越确定、成本越低；越靠后召回能力越强，但不确定性和成本也越高。
+
+例如：
+
+```text
+“最后一次 production deploy 使用的 timeout”
+```
+
+应该优先编译成：
+
+```text
+tool = deploy
+environment = production
+order by timestamp desc
+limit 1
+```
+
+而不是先进行向量检索。
+
+#### 6.16.3 结构化查询优先于语义检索
+
+向量检索天然不擅长：
+
+- latest / first / before / after 等时间关系；
+- 精确版本、ID、数字；
+- FAILED / SUCCEEDED 等状态过滤；
+- “列出全部”等完整性要求。
+
+因此：
+
+> **能通过结构化事实精确定位，就不要优先依赖语义检索。**
+
+语义检索更适合：
+
+- 不知道信息具体在哪里；
+- 查询表达与历史表达差异较大；
+- 需要找“类似问题 / 类似经验”。
+
+#### 6.16.4 Hybrid Retrieval
+
+典型流程：
+
+```text
+结构化过滤
+→ 缩小作用域
+
+关键词检索
+→ 捕获精确术语
+
+Semantic Retrieval
+→ 扩大语义召回
+
+Rerank
+→ 选择最终少量候选
+
+Materialize
+→ 读取必要原文 / Resource
+```
+
+Embedding 通常只是 Retrieval Pipeline 的一个阶段，而不是整个检索系统。
+
+#### 6.16.5 Progressive Disclosure
+
+Retrieval 应逐层披露信息：
+
+```text
+Metadata
+   ↓
+Summary / Relevant Fragment
+   ↓
+Full Resource
+```
+
+例如文件：
+
+```text
+auth.py
+JWT authentication implementation
+   ↓
+auth.py:120-180
+   ↓
+完整 auth.py
+```
+
+同样适用于 Tool、Memory、Artifact 和 Knowledge。
+
+Context 因此不仅要包含信息，还应包含继续探索世界的导航能力：
+
+```text
+当前高信号信息
++
+resource_ref
++
+如何继续读取
+```
+
+#### 6.16.6 Retrieval Result 必须带有效性信息
+
+推荐 Retrieval Result 带有：
+
+```text
+source
+observed_at
+version
+scope
+authority / trust
+freshness
+resource_ref
+```
+
+相关不等于有效。Memory 中高度相关但已经过期的事实，不能覆盖 Workspace / External System 的当前状态。
+
+因此：
+
+> **Retrieval 不只是 relevance search，还包括 validity check。**
+
+#### 6.16.7 Retrieval Cache
+
+近期已读取资源可以进入 Warm Cache：
+
+```text
+resource_id
+version
+content / compact representation
+```
+
+如果 source 有稳定版本：
+
+```text
+version 未变化
+→ reuse
+
+version 变化
+→ invalidate
+```
+
+无法提供版本的数据源可以使用 TTL、etag、last_modified 或重新查询策略。
+
+#### 6.16.8 Retrieval Budget
+
+Agent 可能陷入无界搜索：
+
+```text
+search
+→ search
+→ search
+→ search
+```
+
+因此 Retrieval 也需要预算和停止条件，例如：
+
+- 最大检索轮数；
+- Token Budget；
+- Latency Budget；
+- 外部 API Cost；
+- Search Depth；
+- 信息增益阈值。
+
+任务级“是否继续搜索”属于 L4 策略；API 限流、权限和资源硬限制由更靠近能力 / 执行边界的位置强制落实。
+
+#### 6.16.9 Retrieval Failure 必须可解释
+
+空结果不能统一表示成 `[]`。至少应区分：
+
+```text
+NOT_FOUND
+NO_MATCH
+ACCESS_DENIED
+INDEX_STALE
+SOURCE_UNAVAILABLE
+INVALID_QUERY
+```
+
+这样模型才能正确选择：
+
+- 换 Query；
+- 换 Source；
+- 放宽过滤；
+- 请求权限；
+- 等待恢复；
+- 停止继续搜索。
+
+#### 6.16.10 Retrieval Eval
+
+除了传统 Recall / Precision，还应评估：
+
+- Ranking Quality；
+- Freshness；
+- Source Accuracy；
+- Token Efficiency；
+- Retrieval Cost / Latency；
+- Retrieval Necessity。
+
+最后一项尤其重要：
+
+> **一次 Retrieval 即使结果相关，也可能根本没有必要发生。**
+
+Agent Retrieval 的优化目标同时包括“找到正确的信息”和“不要在已经足够决策时继续搜索”。
+
+### 6.17 上下文工程核心不变量
 
 1. **Runtime State ≠ Model Context。**
 2. **Memory ≠ Context；Memory 是可取回信息，Context 是当前实际加载的信息。**
@@ -1257,6 +1759,10 @@ Gold Context + 当前模型
 10. **大对象优先引用化，低频信息优先即时加载。**
 11. **Tool Result、Observation、Context 是不同层次，不能直接等同。**
 12. **Context Manager 可以忘记；系统底层事实不能因为 Context 被压缩而丢失。**
+13. **Retrieval 首先是 Source Routing，其次才是 Search。**
+14. **能够精确查询的事实，不应优先依赖向量召回。**
+15. **Agent Retrieval 是多轮、动态、按需的信息获取循环。**
+16. **Context 应同时提供信息与继续导航信息世界的 Reference。**
 
 ## 7. 能力工程
 
